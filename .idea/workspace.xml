@@ -5,6 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6b1a0914-5c37-49d7-9fc1-96342e86bdcd" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/Code_Package/Controller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Code_Package/MyApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/Anima_StartMenu.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/CardGameBoard.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/GuiStartMeny.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../A1/A1_JavaDoc/allclasses-index.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../A1/A1_JavaDoc/allpackages-index.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../A1/A1_JavaDoc/copy.svg" beforeDir="false" />
@@ -59,6 +64,13 @@
       <change beforePath="$PROJECT_DIR$/../A1/A1_Kod/src/src.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../A1/A1_Kod/src/view/AirGui.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../A2/A2_Kod" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/A2_Kod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/anima_projekt/HelloApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/anima_projekt/HelloController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/anima_projekt/Launcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Code_Package/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/anima_projekt/hello-view.fxml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../DA339A/Repo_1" beforeDir="false" afterPath="$PROJECT_DIR$/../DA339A/Repo_1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DA339A/Ux/U3/A1.DA343A/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../DA339A/Ux/U3/A1.DA343A/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DA339A/Ux/U3/U3 kod" beforeDir="false" afterPath="$PROJECT_DIR$/../DA339A/Ux/U3/U3 kod" afterDir="false" />
@@ -68,6 +80,14 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="FxmlFile" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -102,14 +122,26 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.HelloApplication.executor": "Run",
     "Application.Launcher.executor": "Run",
+    "Application.Main.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true"
+    "git-widget-placeholder": "GuiTesting",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "preferences.JavaFX"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\erikk\OneDrive\Dokument\Universitet\Anima_Projekt\src\main\resources" />
+      <recent name="C:\Users\erikk\OneDrive\Dokument\Universitet\Anima_Projekt\src\main\resources\com\example\anima_projekt" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.example.anima_projekt" />
+    </key>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="6b1a0914-5c37-49d7-9fc1-96342e86bdcd" name="Changes" comment="" />

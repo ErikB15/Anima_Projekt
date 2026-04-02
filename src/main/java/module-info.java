@@ -11,6 +11,6 @@ module com.example.anima_projekt {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
 
-    opens com.example.anima_projekt to javafx.fxml;
-    exports com.example.anima_projekt;
+    opens Code_Package to javafx.fxml;
+    exports Code_Package;
 }
