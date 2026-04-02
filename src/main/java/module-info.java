@@ -10,6 +10,7 @@ module com.example.anima_projekt {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires javafx.graphics;
 
     opens Code_Package to javafx.fxml;
     exports Code_Package;

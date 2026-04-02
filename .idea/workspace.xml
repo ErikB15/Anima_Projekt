@@ -5,11 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6b1a0914-5c37-49d7-9fc1-96342e86bdcd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Code_Package/Controller.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Code_Package/MyApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/Anima_StartMenu.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/CardGameBoard.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/GuiStartMeny.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../A1/A1_JavaDoc/allclasses-index.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../A1/A1_JavaDoc/allpackages-index.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../A1/A1_JavaDoc/copy.svg" beforeDir="false" />
@@ -65,12 +60,10 @@
       <change beforePath="$PROJECT_DIR$/../A1/A1_Kod/src/view/AirGui.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../A2/A2_Kod" beforeDir="false" afterPath="$PROJECT_DIR$/../A2/A2_Kod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/anima_projekt/HelloApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/anima_projekt/HelloController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/anima_projekt/Launcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Code_Package/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Code_Package/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Code_Package/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Code_Package/MyApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Code_Package/MyApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/anima_projekt/hello-view.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/GuiStartMeny.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/GuiStartMeny.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DA339A/Repo_1" beforeDir="false" afterPath="$PROJECT_DIR$/../DA339A/Repo_1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DA339A/Ux/U3/A1.DA343A/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../DA339A/Ux/U3/A1.DA343A/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DA339A/Ux/U3/U3 kod" beforeDir="false" afterPath="$PROJECT_DIR$/../DA339A/Ux/U3/U3 kod" afterDir="false" />
@@ -91,19 +84,20 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="SYNC" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "ErikB15"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;ErikB15&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/ErikB15/Universitet.git",
-    "accountId": "389f0f0c-9ce5-4c5a-bfb4-5a3bfb7cdf68"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ErikB15/Universitet.git&quot;,
+    &quot;accountId&quot;: &quot;389f0f0c-9ce5-4c5a-bfb4-5a3bfb7cdf68&quot;
   }
-}]]></component>
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -111,10 +105,10 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="3BlFLxcLxN3dJgI80gRlpDtzVz8" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -125,10 +119,11 @@
     "Application.HelloApplication.executor": "Run",
     "Application.Launcher.executor": "Run",
     "Application.Main.executor": "Run",
+    "Application.MyApplication.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "git-widget-placeholder": "GuiTesting",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "settings.editor.selected.configurable": "preferences.JavaFX"
   }
