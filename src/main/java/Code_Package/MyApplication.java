@@ -8,9 +8,8 @@ import javafx.stage.Stage;
 
 public class MyApplication extends javafx.application.Application {
 
-    //denna metod kan teknsikt sätt ligga i controllern som lägget är just nu sålänge vi ärver Application.
-    // Anledning till att den ligger kvar här är för att jag inte orkar flytta den för metoden var skapad i denna klassen från början.
-    // I början fanns ingen controller jag skspade den, så det är lite som vi har 2 controllers just nu.
+    //Denna klass/metod är den som hanterar uppstarten av progrommet. Klassens ansvar är att programstart
+    // Controllerns ansvar är mer att regera
     @Override
     public void start(Stage stage) throws Exception {
 
@@ -44,8 +43,8 @@ public class MyApplication extends javafx.application.Application {
             }
 
             // annars stänger vi programmet
-            System.out.println("You have logged out");
             stage.close();
+            System.out.println("You have logged out");
         });
     }
 }
