@@ -12,6 +12,6 @@ module com.example.anima_projekt {
     requires com.almasb.fxgl.all;
     requires javafx.graphics;
 
-    opens Code_Package to javafx.fxml;
-    exports Code_Package;
+    opens View to javafx.fxml;
+    exports View;
 }

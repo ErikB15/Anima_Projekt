@@ -17,7 +17,7 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.shape.Sphere?>
 
-<AnchorPane fx:id="scenePane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Code_Package.Controller">    <children>
+<AnchorPane fx:id="scenePane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIController">    <children>
         <MenuBar layoutY="2.0" prefHeight="26.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
@@ -41,7 +41,7 @@
                         <DatePicker layoutX="25.0" layoutY="54.0" />
                         <ColorPicker layoutX="410.0" layoutY="54.0" />
 
-                        <!-- Knappen anropar handleStart i Controller -->
+                        <!-- Knappen anropar handleStart i GUIController -->
                         <Button layoutX="113.0" layoutY="116.0" mnemonicParsing="false" onAction="#handleStart" text="Press me to start next FXML (fx fil)" wrapText="true">
                             <textFill>
                                 <LinearGradient cycleMethod="REFLECT" endX="1.0" endY="1.0" startX="0.4962121221152219">

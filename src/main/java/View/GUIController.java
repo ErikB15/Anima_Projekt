@@ -1,4 +1,4 @@
-package Code_Package;
+package View;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class Controller {
+public class GUIController {
 
 
     @FXML
