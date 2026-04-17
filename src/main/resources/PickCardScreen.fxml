@@ -20,7 +20,32 @@
             <Font name="Ebrima" size="18.0" />
          </font>
       </Button>
-      <ImageView fx:id="cardLowerLeft" fitHeight="150.0" fitWidth="93.0" layoutX="25.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card21" fitHeight="150.0" fitWidth="93.0" layoutX="25.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@CardFRONT.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="card11" fitHeight="150.0" fitWidth="93.0" layoutX="25.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@CardFRONT.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="card12" fitHeight="136.0" fitWidth="93.0" layoutX="137.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@CardFRONT.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="card22" fitHeight="129.0" fitWidth="88.0" layoutX="137.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@CardFRONT.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="card13" fitHeight="136.0" fitWidth="93.0" layoutX="248.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@CardFRONT.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="card23" fitHeight="129.0" fitWidth="109.0" layoutX="248.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardFRONT.png" />
          </image>

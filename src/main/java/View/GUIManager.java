@@ -4,8 +4,10 @@ import Controller.GameController;
 import Controller.MainMenuController;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class GUIManager {
@@ -19,7 +21,23 @@ public class GUIManager {
     private MainMenuController mainMenuController;
     private GameController gameController;
 
-    //FÖR IHOPKOPPLING MED CONTROLLER, FUNKAR INTE JUST NU
+    //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta på
+    @FXML
+    ImageView card11;
+    @FXML
+    ImageView card12;
+    @FXML
+    ImageView card13;
+    @FXML
+    ImageView card21;
+    @FXML
+    ImageView card22;
+    @FXML
+    ImageView card23;
+
+
+
+    //FÖR IHOPKOPPLING MED CONTROLLER
     public GUIManager(){
         mainMenuController = new MainMenuController();
         mainMenuController.setGuiManager(this);
