@@ -14,12 +14,14 @@ public class GameController {
     private Player playerOne;
     private Player playerTwo;
     private Board board;
+    private GUIManager guiManager; //ELNA: La till denna för att koppla GUIManager till controller
     private Card testCard; //ENDAST FÖR TESTNING
 
     /**
      * Constructor för Game Controllern.
      */
-    public GameController(){
+    public GameController(GUIManager guiManager){
+        this.guiManager = guiManager; //ELNA: La till denna för att koppla Controller med GUI.
         allCards = new ArrayList<Card>();
         allEffects = new ArrayList<Effect>();
         addAllCards();
