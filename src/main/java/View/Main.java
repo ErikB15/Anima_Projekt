@@ -8,11 +8,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //Funkar inte just nu
-       /* MainMenuController mainMenuController = new MainMenuController();
-        GUIManager guiManager = new GUIManager();
-        mainMenuController.setGuiManager(guiManager);
-        guiManager.setMainMenuController(mainMenuController);*/
 
         Application.launch(MainGUILauncher.class, args);
 
