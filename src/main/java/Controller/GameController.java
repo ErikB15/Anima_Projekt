@@ -20,8 +20,7 @@ public class GameController {
     /**
      * Constructor för Game Controllern.
      */
-    public GameController(GUIManager guiManager){
-        this.guiManager = guiManager; //ELNA: La till denna för att koppla Controller med GUI.
+    public GameController(){
         allCards = new ArrayList<Card>();
         allEffects = new ArrayList<Effect>();
         addAllCards();

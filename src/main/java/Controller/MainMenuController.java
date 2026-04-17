@@ -7,14 +7,13 @@ import javafx.application.Application;
 public class MainMenuController {
     private GUIManager guiManager;
 
-    //FÖR IHOPKOPPLING MED GUIMANAGER, FUNKAR INTE JUST NU
+    //FÖR IHOPKOPPLING MED GUIMANAGER
    public void setGuiManager (GUIManager guiManager){
         this.guiManager = guiManager;
     }
 
     public MainMenuController(){
-        //FÖR IHOPKOPPLING MED GUIMANAGER, FUNKAR INTE JUST NU
-        //guiManager = new GUIManager(this);
+
     }
 
     //TESTMETOD FÖR IHOPKOPPLING MED GUI

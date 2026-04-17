@@ -41,7 +41,7 @@ public class GUIManager {
     public GUIManager(){
         mainMenuController = new MainMenuController();
         mainMenuController.setGuiManager(this);
-        //this.mainMenuController = mainMenuController;
+
     }
 
     public void switchToStartScreen(ActionEvent event){
