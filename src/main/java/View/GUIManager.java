@@ -7,8 +7,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class GUIManager {
 //Denna klass tänker jag att vi använder som Controller för GUI. Denna klass ska skicka info vidare till andra controllers när saker sker i GUI.
@@ -23,7 +28,7 @@ public class GUIManager {
 
     //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta på
     @FXML
-    ImageView card11;
+    ImageView card25;
     @FXML
     ImageView card12;
     @FXML
@@ -109,14 +114,47 @@ public class GUIManager {
         }
     }
 
+    public void switchToGameBoard(ActionEvent event){
+
+        try{
+            root = FXMLLoader.load(getClass().getClassLoader().getResource("GameBoard.fxml"));
+            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setFullScreen(true);
+            stage.setResizable(false);
+            stage.show();
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void exitApplication(ActionEvent e){
         Platform.exit();
     }
 
-    //FÖR IHOPKOPPLING MED CONTROLLER, FUNKAR INTE JUST NU
-    /*public void setMainMenuController(MainMenuController mainMenuController){
-        this.mainMenuController = mainMenuController;
-    }*/
+    //Denna metoden registrerar vilket nod-id som klickats på i "välja kort" och skickar detta till MainMenuController tillsammans med spelar-id.
+    public void pickedCard(MouseEvent event){
+        System.out.println("I have clicked the card!");
+        //Här under tar jag ut IDt för varje nodelement(representerar kort) som klickas på i GUI.
+        //nodens ID borde matcha med kortets ID sen.
+        String cardID = event.getPickResult().getIntersectedNode().getId();
+        String[] splitID;
+        splitID = cardID.split("_");
+        int  cardIDInt = Integer.parseInt(splitID[1]);
+        //Här anropar jag en metod i en av controllers som får göra nått med det IDt.
+        //0 är placeholder, vet inte hur vi gör med playerID än.
+        mainMenuController.cardPickedInGui(cardIDInt, 0);
+
+        if()
+        Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
+
+
+
+
+
+    }
 
     //TESTMETOD för sammankoppling med GUI
     public void sendMessageToConsole(){
