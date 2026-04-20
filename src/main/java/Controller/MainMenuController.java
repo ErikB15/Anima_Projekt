@@ -21,4 +21,9 @@ public class MainMenuController {
         System.out.println("Successfully sending through MainMenuController");
         guiManager.sendMessageToConsole();
     }
+
+    //För att skicka info från GUI till controller. vet ej om det är denna infon som ska skickas sen, men testar nu.
+    public void cardPickedInGui(int cardID, int playerID){
+       System.out.println(cardID + playerID);
+    }
 }
