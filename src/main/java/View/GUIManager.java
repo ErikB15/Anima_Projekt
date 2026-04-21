@@ -28,17 +28,17 @@ public class GUIManager {
 
     //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta på
     @FXML
-    ImageView card25;
+    ImageView card_25;
     @FXML
-    ImageView card12;
+    ImageView card_12;
     @FXML
-    ImageView card13;
+    ImageView card_13;
     @FXML
-    ImageView card21;
+    ImageView card_21;
     @FXML
-    ImageView card22;
+    ImageView card_22;
     @FXML
-    ImageView card23;
+    ImageView card_23;
 
 
 
@@ -147,8 +147,13 @@ public class GUIManager {
         //0 är placeholder, vet inte hur vi gör med playerID än.
         mainMenuController.cardPickedInGui(cardIDInt, 0);
 
-        if()
+        //Försöker få bilden att ändras till kortets baksida. INTE KLAR
         Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
+
+        if(cardIDInt == 25){
+            card_25.setImage(backsideCard);
+        }
+
 
 
 
