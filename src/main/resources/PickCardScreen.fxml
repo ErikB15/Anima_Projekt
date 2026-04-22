@@ -19,32 +19,32 @@
             <Font name="Ebrima" size="18.0" />
          </font>
       </Button>
-      <ImageView fx:id="card_21" fitHeight="150.0" fitWidth="93.0" layoutX="25.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_21" fitHeight="150.0" fitWidth="93.0" layoutX="25.0" layoutY="219.0" onMouseClicked="#pickedCard" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardFRONT.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_25" fitHeight="150.0" fitWidth="93.0" layoutX="25.0" layoutY="58.0" onMouseClicked="#pickedCard" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_25" fitHeight="150.0" fitWidth="93.0" layoutX="25.0" layoutY="57.0" onMouseClicked="#pickedCard" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardFRONT.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_12" fitHeight="136.0" fitWidth="93.0" layoutX="137.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_12" fitHeight="136.0" fitWidth="93.0" layoutX="137.0" layoutY="58.0" onMouseClicked="#pickedCard" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardFRONT.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_22" fitHeight="129.0" fitWidth="88.0" layoutX="137.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_22" fitHeight="129.0" fitWidth="88.0" layoutX="137.0" layoutY="219.0" onMouseClicked="#pickedCard" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardFRONT.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_13" fitHeight="136.0" fitWidth="93.0" layoutX="248.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_13" fitHeight="136.0" fitWidth="93.0" layoutX="248.0" layoutY="58.0" onMouseClicked="#pickedCard" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardFRONT.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_23" fitHeight="129.0" fitWidth="109.0" layoutX="248.0" layoutY="219.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_23" fitHeight="129.0" fitWidth="109.0" layoutX="248.0" layoutY="217.0" onMouseClicked="#pickedCard" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardFRONT.png" />
          </image>

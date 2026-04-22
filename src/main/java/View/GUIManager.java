@@ -148,11 +148,11 @@ public class GUIManager {
         mainMenuController.cardPickedInGui(cardIDInt, 0);
 
         //Försöker få bilden att ändras till kortets baksida. INTE KLAR
-        Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
+       // Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
 
-        if(cardIDInt == 25){
+       /* if(cardIDInt == 25){
             card_25.setImage(backsideCard);
-        }
+        }*/
 
 
 
