@@ -145,9 +145,7 @@ public class GUIManager {
         ImageView clicked = (ImageView) event.getSource();
         Card card = (Card) clicked.getUserData();
 
-        int cardIDInt = card.getCardID(); // eller från card direkt
-
-        mainMenuController.cardPickedInGui(cardIDInt, 0, card.getCardAD(), card.getCardHP());
+        mainMenuController.cardPickedInGui(card.getCardID(), 0, card.getCardAD(), card.getCardHP());
         //Försöker få bilden att ändras till kortets baksida. INTE KLAR
        // Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
 
