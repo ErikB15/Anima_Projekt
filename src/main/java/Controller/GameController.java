@@ -3,6 +3,9 @@ package Controller;
 import java.util.ArrayList;
 import Model.*;
 import View.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 /**
  * Game Controller klassen, syftet är att kontroller flödet av information från view och Model under matchens gång.
@@ -14,7 +17,7 @@ public class GameController {
     private Player playerOne;
     private Player playerTwo;
     private Board board;
-    private GUIManager guiManager; //ELNA: La till denna för att koppla GUIManager till controller
+    private GUIManager guiManager;
     private Card testCard; //ENDAST FÖR TESTNING
 
     /**
@@ -32,9 +35,12 @@ public class GameController {
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        this.testCard = new Card("Test", 1,2,25,null);
-        // Sedan lägger vi till det i vår arraylist av alla kort.
-        allCards.add(testCard);
+        allCards.add(new Card("Test1", 1,2,25,null, "CardFRONT.png"));
+        allCards.add(new Card("Test2", 1,2,25,null, "CardFRONT.png"));
+        allCards.add(new Card("Test3", 1,2,25,null, "CardFRONT.png"));
+        allCards.add(new Card("Test4", 1,2,25,null, "CardFRONT.png"));
+        allCards.add(new Card("Test5", 1,2,25,null, "CardFRONT.png"));
+        allCards.add(new Card("Test6", 1,2,25,null, "CardFRONT.png"));
     }
 
     /**
@@ -64,5 +70,49 @@ public class GameController {
                 random = 1;
             }
         }
+    }
+
+    public void bindCardsToView(ArrayList<ImageView> cardImageView) {
+        if (allCards == null || allCards.size() < cardImageView.size()) {
+            throw new IllegalStateException("Not enough cards");
+        }
+
+        for (int i = 0; i < cardImageView.size(); i++) {
+            bind(cardImageView.get(i), allCards.get(i));
+        }
+    }
+
+
+    private void bind(ImageView view, Card card) {
+        var url = getClass().getClassLoader().getResource(card.getImagePath());
+
+        if (url == null) {
+            throw new IllegalStateException("Resource not found: " + card.getImagePath());
+        }
+
+        view.setImage(new Image(url.toExternalForm()));
+        view.setUserData(card);
+    }
+
+
+
+    public void handleCardClick(MouseEvent event) {
+
+        ImageView clicked = (ImageView) event.getSource();
+        Card card = (Card) clicked.getUserData();
+        pickCard(card);
+    }
+
+    public void pickCard(Card card) {
+        System.out.println("Picked card: " + card);
+    }
+
+
+    public void setCards(ArrayList<Card> cards) {
+        this.allCards = cards;
+    }
+
+    public void setGuiManager(GUIManager guiManager){
+        this.guiManager=guiManager;
     }
 }
