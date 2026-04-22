@@ -35,12 +35,12 @@ public class GameController {
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        allCards.add(new Card("Test1", 1,2,25,null, "CardFRONT.png"));
-        allCards.add(new Card("Test2", 1,2,25,null, "CardFRONT.png"));
-        allCards.add(new Card("Test3", 1,2,25,null, "CardFRONT.png"));
-        allCards.add(new Card("Test4", 1,2,25,null, "CardFRONT.png"));
-        allCards.add(new Card("Test5", 1,2,25,null, "CardFRONT.png"));
-        allCards.add(new Card("Test6", 1,2,25,null, "CardFRONT.png"));
+        allCards.add(new Card("Test1", 1,2,1,null, "CardFRONT.png"));
+        allCards.add(new Card("Test2", 1,2,2,null, "CardFRONT.png"));
+        allCards.add(new Card("Test3", 1,2,3,null, "CardFRONT.png"));
+        allCards.add(new Card("Test4", 1,2,4,null, "CardFRONT.png"));
+        allCards.add(new Card("Test5", 1,2,5,null, "CardFRONT.png"));
+        allCards.add(new Card("Test6", 1,2,6,null, "CardFRONT.png"));
     }
 
     /**
