@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -27,6 +28,9 @@ public class GUIManager {
     //Finns instans av GUIManager i controller-klasserna också.
     private MainMenuController mainMenuController;
     private GameController gameController;
+
+    //boolean för att kontrollera ordningen av knapptryck i spelfas
+    private boolean cardFromHandPicked = false;
 
     //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta på
     @FXML private ImageView card_1;
@@ -50,7 +54,7 @@ public class GUIManager {
     }
 
 
-    public void switchToStartScreen(ActionEvent event){
+    public void switchToStartScreen(MouseEvent event){
 
         try{
             setGameController(gameController);
@@ -60,7 +64,7 @@ public class GUIManager {
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
-            stage.setFullScreen(true);
+            //stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -69,14 +73,14 @@ public class GUIManager {
         }
     }
 
-    public void switchToConnectScreen(ActionEvent event){
+    public void switchToConnectScreen(MouseEvent event){
 
         try{
             root = FXMLLoader.load(getClass().getClassLoader().getResource("ConnectScreen.fxml"));
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
-            stage.setFullScreen(true);
+           // stage.setFullScreen(true);
             stage.setResizable(false);
             mainMenuController.sendMessageToConsole();
             stage.show();
@@ -86,13 +90,13 @@ public class GUIManager {
         }
     }
 
-    public void switchToGameRulesScreen(ActionEvent event){
+    public void switchToGameRulesScreen(MouseEvent event){
         try{
             root = FXMLLoader.load(getClass().getClassLoader().getResource("GameRuleScreen.fxml"));
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
-            stage.setFullScreen(true);
+           // stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -107,7 +111,7 @@ public class GUIManager {
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
-            stage.setFullScreen(true);
+            //stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -125,7 +129,7 @@ public class GUIManager {
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
-            stage.setFullScreen(true);
+            //stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -134,8 +138,78 @@ public class GUIManager {
         }
     }
 
-    public void exitApplication(ActionEvent e){
+    public void exitApplication(MouseEvent e){
         Platform.exit();
+    }
+
+    //Denna metod skickar en indexpoint mellan 0-2 till controller. Används för handen
+    public void pickedCardIndexPoint(MouseEvent event){
+
+        if(cardFromHandPicked == true) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Warning!");
+            alert.setContentText("You have already chose a card!");
+            alert.show();
+        } else{
+
+            String cardID = event.getPickResult().getIntersectedNode().getId();
+            String[] splitID;
+            splitID = cardID.split("_");
+            int  cardIDInt = Integer.parseInt(splitID[1]);
+            System.out.println(cardIDInt);
+
+                if((cardIDInt < 3) && (cardIDInt >= 0)){
+                    gameController.setIndexCardOnHandToMove(cardIDInt);
+                    cardFromHandPicked = true;
+                } else{
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Warning!");
+                    alert.setContentText("INVALID NUMBER");
+                    alert.show();
+            }
+        }
+
+
+
+    }
+
+    //Denna metod skickar indexpoint mellan 3 - 6 till controller. Används för plats där spelaren ska lägga sitt kort.
+    public void pickedSpotToPlaceCardIndexPoint(MouseEvent event){
+
+        if(cardFromHandPicked == false){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Warning!");
+            alert.setContentText("The card you pick has to be from your hand!");
+            alert.show();
+
+        } else{
+
+            String cardID = event.getPickResult().getIntersectedNode().getId();
+            String[] splitID;
+            splitID = cardID.split("_");
+            int  cardIDInt = Integer.parseInt(splitID[1]);
+            System.out.println(cardIDInt);
+
+                if((cardIDInt >= 3) && (cardIDInt < 7)){
+                    gameController.setIndexSpotToPlaceCard(cardIDInt);
+                    cardFromHandPicked = false;
+                } else{
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Warning!");
+                    alert.setContentText("INVALID NUMBER");
+                    alert.show();
+                }
+        }
+
+
+
+    }
+
+    public void sendMessageThroughGUI(String message){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Warning!");
+        alert.setContentText(message);
+        alert.show();
     }
 
     //Denna metoden registrerar vilket nod-id som klickats på i "välja kort" och skickar detta till MainMenuController tillsammans med spelar-id.
