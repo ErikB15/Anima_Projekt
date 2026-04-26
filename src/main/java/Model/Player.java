@@ -1,17 +1,87 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Player {
     private int hp;
-    private ArrayList<Card> cardDeck;
+    private ArrayList<Card> deck;
+    private ArrayList<Card> hand;
+    private ArrayList<Card> graveyard;
 
+
+    /**
+     * Spelaren har koll på 4 viktiga grejer. Sitt egna HP samt tre olika typer av "kortlekar"
+     * Deck - De korten som spelaren drar från varje runda.
+     * Hand - De korten en spelare kan spela och har i sin hand varje runda.
+     * Graveyard - De korten en spelare har förlorat.
+     */
     public Player(){
         this.hp = 30; // PS. 30 Är bara test "value" just nu.
-        this.cardDeck = new ArrayList<Card>();
+        this.deck = new ArrayList<>();
+        this.hand = new ArrayList<>();
+        this.graveyard = new ArrayList<>();
     }
 
-    public void addCard(Card addedCard){
-        cardDeck.add(addedCard);
+    /**
+     * Lägger bara till ett kort, nödvändigt för första fasen där de två spelarna väljer kort.
+     * @param addedCard Kortet en spelare valt att de vill ha.
+     */
+    public void addCardToDeck(Card addedCard){
+        deck.add(addedCard);
+    }
+
+    /**
+     * Metoden som tillåter spelaren att dra ett nytt kort från sin "deck".
+     * Den har några safety checks, är spelarens kortlek tom så reshuffle vi den genom en metod.
+     * Sen kollar vi igen, detta är en safety check för att se till att allt funkade som det skulle.
+     * Sedan drar vi kortet från kortleken.
+     * @param nbrOfCardsToDraw - Hur många kort som ska dras, ändras beroende på antalet rundor.
+     */
+    public void drawCard(int nbrOfCardsToDraw) {
+        for (int i = 0; i < nbrOfCardsToDraw; i++) {
+
+            if (deck.isEmpty()) {
+                reshuffleDeck();
+            }
+
+            if (deck.isEmpty()) {
+                return;
+            }
+
+            hand.add(deck.removeFirst());
+        }
+    }
+
+    /**
+     * Det här är för när ett kort dör, då ska det läggas in i "graveyard" kortleken.
+     * Notera att vi nollställer kortets stats efter vi slängt in den i graveyard kortleken.
+     * @param deadCard - Det kortet som blev dödat.
+     */
+    public void sendCardToGraveyard(Card deadCard){
+        graveyard.add(deadCard);
+        deadCard.setCardCurrentHP(deadCard.getCardMaxHP());
+        deadCard.setAsleep(false);
+        deadCard.setHasAttackedThisTurn(false);
+    }
+
+    /**
+     * Simpelt, lägger till alla korten från graveyard in i din riktiga deck.
+     * Sedan clearar vi graveyard och gör den tom igen.
+     * Därefter shufflar vi den genom en "Collection" metod.
+     */
+    public void reshuffleDeck(){
+        deck.addAll(graveyard);
+        graveyard.clear();
+        Collections.shuffle(deck);
+    }
+
+
+    public boolean setHp(int hp) {
+        this.hp = hp;
+        if(hp <= 0){
+            return true;
+        }
+        return false;
     }
 }

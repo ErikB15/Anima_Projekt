@@ -7,14 +7,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import Model.Card;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class GUIManager {
@@ -145,7 +142,7 @@ public class GUIManager {
         ImageView clicked = (ImageView) event.getSource();
         Card card = (Card) clicked.getUserData();
 
-        mainMenuController.cardPickedInGui(card.getCardID(), 0, card.getCardAD(), card.getCardHP());
+        mainMenuController.cardPickedInGui(card.getCardID(), 0, card.getCardAD(), card.getCardMaxHP());
         //Försöker få bilden att ändras till kortets baksida. INTE KLAR
        // Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
 

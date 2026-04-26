@@ -59,13 +59,13 @@ public class GameController {
             if(random == 1){
                 // Där bör finnas logik här för vilket kort spelaren väljer.
                 // Svårt att implementera utan GUI:n dock.
-                playerOne.addCard(testCard);
+                playerOne.addCardToDeck(testCard);
                 allCards.remove(testCard);
                 random = 2;
             }else{
                 // Där bör finnas logik här för vilket kort spelaren väljer.
                 // Svårt att implementera utan GUI:n dock.
-                playerTwo.addCard(testCard);
+                playerTwo.addCardToDeck(testCard);
                 allCards.remove(testCard);
                 random = 1;
             }
@@ -104,7 +104,7 @@ public class GameController {
     }
 
     public void pickCard(Card card) {
-        System.out.println("Picked card: " + card);
+        playerOne.addCardToDeck(card);
     }
 
 
