@@ -14,6 +14,29 @@
 <junit.version>5.12.1</junit.version>  </properties>
 
   <dependencies>
+  <dependency>
+    <groupId>com.code-disaster.steamworks4j</groupId>
+    <artifactId>steamworks4j</artifactId>
+    <version>1.8.0</version>
+  </dependency>
+  <!-- libGDX loader -->
+  <dependency>
+    <groupId>com.code-disaster.steamworks4j</groupId>
+    <artifactId>steamworks4j-gdx</artifactId>
+    <version>1.10.0</version>
+  </dependency>
+  <!-- LWJGL3 loader -->
+  <dependency>
+    <groupId>com.code-disaster.steamworks4j</groupId>
+    <artifactId>steamworks4j-lwjgl3</artifactId>
+    <version>1.10.0</version>
+  </dependency>
+  <!-- server API -->
+  <dependency>
+    <groupId>com.code-disaster.steamworks4j</groupId>
+    <artifactId>steamworks4j-server</artifactId>
+    <version>1.10.0</version>
+  </dependency>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
