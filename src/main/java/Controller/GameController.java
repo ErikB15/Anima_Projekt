@@ -3,7 +3,6 @@ package Controller;
 import java.util.ArrayList;
 import Model.*;
 import View.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
@@ -35,12 +34,12 @@ public class GameController {
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        allCards.add(new Card("Test1", 1,2,1,null, "CardFRONT.png"));
-        allCards.add(new Card("Test2", 1,2,2,null, "CardFRONT.png"));
-        allCards.add(new Card("Test3", 1,2,3,null, "CardFRONT.png"));
-        allCards.add(new Card("Test4", 1,2,4,null, "CardFRONT.png"));
-        allCards.add(new Card("Test5", 1,2,5,null, "CardFRONT.png"));
-        allCards.add(new Card("Test6", 1,2,6,null, "CardFRONT.png"));
+        allCards.add(new Card("Test1", 1,50,1,null, "CardFRONT.png"));
+        allCards.add(new Card("Test2", 5,25,2,null, "CardFRONT.png"));
+        allCards.add(new Card("Test3", 13,34,3,null, "CardFRONT.png"));
+        allCards.add(new Card("Test4", 30,20,4,null, "CardFRONT.png"));
+        allCards.add(new Card("Test5", 10,30,5,null, "CardFRONT.png"));
+        allCards.add(new Card("Test6", 2,40,6,null, "CardFRONT.png"));
     }
 
     /**
@@ -90,7 +89,7 @@ public class GameController {
             throw new IllegalStateException("Resource not found: " + card.getImagePath());
         }
 
-        view.setImage(new Image(url.toExternalForm()));
+        //view.setImage(new Image(url.toExternalForm())); Onödig, tänkte jag behövde den. Kan tas bort men dubbelkolla första att allt funkar
         view.setUserData(card);
     }
 
