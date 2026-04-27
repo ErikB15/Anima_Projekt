@@ -14,18 +14,11 @@
    <top>
       <Pane prefHeight="40.0" prefWidth="600.0" style="-fx-background-color: green;" BorderPane.alignment="CENTER">
          <children>
-             <Button fx:id="backButton"
-                     layoutX="474.0"
-                     layoutY="4.0"
-                     mnemonicParsing="false"
-                     onMouseClicked="#switchToStartScreen"
-                     style="-fx-background-color: transparent;"
-                     text="Back to Menu">
-                 <font>
-                     <Font name="Times New Roman" size="17.0" />
-                 </font>
-             </Button>
-
+            <Button fx:id="backButton" layoutX="474.0" layoutY="4.0" mnemonicParsing="false" onAction="#switchToStartScreen" style="-fx-background-color: transparent;" text="Back to Menu">
+               <font>
+                  <Font name="Times New Roman" size="17.0" />
+               </font>
+            </Button>
             <Label layoutX="14.0" layoutY="7.0" text="Game rules">
                <font>
                   <Font name="Times New Roman" size="23.0" />
