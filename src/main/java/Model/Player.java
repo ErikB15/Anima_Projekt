@@ -76,12 +76,25 @@ public class Player {
         Collections.shuffle(deck);
     }
 
-
+    /**
+     * Kan du gissa vad detta göra?
+     * @param hp - HP:et du vill sätta det till.
+     * @return - En boolean, syftet med denna är att göra en enkel check som till och med kollar ifall matchen
+     * är över.
+     */
     public boolean setHp(int hp) {
         this.hp = hp;
         if(hp <= 0){
             return true;
         }
         return false;
+    }
+
+    /**
+     * Enkel getter.
+     * @return Ger tillbaka HP:et av spelaren
+     */
+    public int getHp() {
+        return hp;
     }
 }
