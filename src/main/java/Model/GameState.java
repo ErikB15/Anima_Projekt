@@ -7,6 +7,10 @@ import java.util.ArrayList;
  * Det är som att ta en bild på hur planen ser ut "JUST NU"
  * Där finns en helvetes många variabler, jag har försökt at separera dem lite för att göra det enklare.
  * Dem är separerade utifrån saker som ofta hör ihop med varandra.
+ *
+ * NOTERA. GameState är INTE vad som kontrollerar regler osv, det är endast en "så här ser det ut just nu"
+ * Där finns vissa check metoder, detta är mest för att dem kanske blir användbara sen.
+ * Blir dem inte det tar vi bara bort dem.
  */
 public class GameState {
     private Player playerOne;
