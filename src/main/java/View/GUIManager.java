@@ -11,6 +11,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import Model.Card;
@@ -39,7 +40,10 @@ public class GUIManager {
     @FXML private ImageView card_4;
     @FXML private ImageView card_5;
     @FXML private ImageView card_6;
-    private Card card;
+    @FXML private Pane generalRules;
+    @FXML private Pane cardRules;
+    @FXML private Pane playerRules;
+    @FXML private Pane effectsRules;
 
 
 
@@ -92,7 +96,8 @@ public class GUIManager {
 
     public void switchToGameRulesScreen(MouseEvent event){
         try{
-            root = FXMLLoader.load(getClass().getClassLoader().getResource("GameRuleScreen.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameRuleScreen.fxml"));
+            root = loader.load();
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
@@ -252,5 +257,44 @@ public class GUIManager {
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
     }
+
+    private void showPane(Pane pane) {
+        generalRules.setVisible(false);
+        generalRules.setManaged(false);
+
+        cardRules.setVisible(false);
+        cardRules.setManaged(false);
+
+        playerRules.setVisible(false);
+        playerRules.setManaged(false);
+
+        effectsRules.setVisible(false);
+        effectsRules.setManaged(false);
+
+        pane.setVisible(true);
+        pane.setManaged(true);
+    }
+
+
+    @FXML
+    private void showGeneralRules() {
+        showPane(generalRules);
+    }
+
+    @FXML
+    private void showCardRules() {
+        showPane(cardRules);
+    }
+
+    @FXML
+    private void showPlayerRules() {
+        showPane(playerRules);
+    }
+
+    @FXML
+    private void showEffectsRules(){
+        showPane(effectsRules);
+    }
+
 
 }
