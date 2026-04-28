@@ -17,7 +17,12 @@ public class ApiController {
             SteamAPI.loadLibraries();
             if (getIsSteamInitialized() == false || !SteamAPI.init()) {
                 SteamAPI.init();
+                if (SteamAPI.init()){
                 System.out.println("Success! SteamAPI initialized.");
+            } else {
+                System.out.println("Failed to initialize Steamworks. Open Steam.");
+                return false;
+            }
                 isSteamInitialized = true;
                 return true;
             } else {
@@ -25,7 +30,7 @@ public class ApiController {
                 return false;
             }
         } catch (SteamException e) {
-            System.out.println("A Steam error occurred during init!");
+            System.out.println("A Steam error occurred during init");
             e.printStackTrace();
             return false;
         }
