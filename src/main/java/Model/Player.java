@@ -99,6 +99,33 @@ public class Player {
     }
 
     /**
+     * Enkel getter för att hämta handen spelaren har.
+     * @return En arraylist av cards som är spelarens hand.
+     * @author Jim Ström
+     */
+    public ArrayList<Card> getHand() {
+        return hand;
+    }
+
+    /**
+     * Enkel getter för att hämta kortlek spelaren har.
+     * @return En arraylist av cards som är spelarens kortlek.
+     * @author Jim Ström
+     */
+    public ArrayList<Card> getDeck() {
+        return deck;
+    }
+
+    /**
+     * Enkel getter för att hämta graveyard spelaren har.
+     * @return En arraylist av cards som är spelarens graveyard.
+     * @author Jim Ström
+     */
+    public ArrayList<Card> getGraveyard() {
+        return graveyard;
+    }
+
+    /**
      * getter för hand
      * @return
      */

@@ -31,8 +31,4 @@ public class Board {
     public void sendCardToGraveyard(Card card){
 
     }
-
-    public Card[] getPlayerOneSlots(){
-        return playerOneSlots;
-    }
 }
