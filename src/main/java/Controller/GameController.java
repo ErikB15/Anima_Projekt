@@ -126,10 +126,11 @@ public class GameController {
 
            if((playerOne.getHand().get(indexCardOnHandToMove)  != null) && (playerOne.getHand().get(indexSpotToPlaceCard) == null)){
 
-               /* Card cardMoved = playerOne.getHand().get(indexCardOnHandToMove);
-               board.getPlayerOneSlots()
-               playerOneActiveCards.add(indexSpotToPlaceCard, cardMoved);
-               playerOneActiveCards.remove(indexCardOnHandToMove);*/
+                Card cardMoved = playerOne.getHand().get(indexCardOnHandToMove);
+                board.placeCard(PlayerID.PLAYER_ONE,indexSpotToPlaceCard, cardMoved);
+                playerOne.getHand().remove(indexCardOnHandToMove);
+
+
            } else{
                //guiManager.sendMessageThroughGUI("Unable to move card");
            }
