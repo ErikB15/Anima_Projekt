@@ -14,8 +14,8 @@ public class GameController {
     private ArrayList<Card> allCards;
     private ArrayList<Effect> allEffects;
 
-    private ArrayList<Card> playerOneActiveCards;
-    private ArrayList<Card> playerOneCardPile;
+    //private ArrayList<Card> playerOneActiveCards;
+    //private ArrayList<Card> playerOneCardPile;
 
     //Mekanik för att byta plats på kort i playerOneActiveCards
     private int indexCardOnHandToMove;
@@ -36,8 +36,7 @@ public class GameController {
         allCards = new ArrayList<Card>();
         allEffects = new ArrayList<Effect>();
         addAllCards();
-        playerOneActiveCards = new ArrayList<Card>();
-        playerOneCardPile = new ArrayList<Card>();
+
     }
 
     /**
@@ -125,9 +124,10 @@ public class GameController {
 
         if((cardPicked == true)  && (spotPicked == true)){
 
-           if((playerOneActiveCards.get(indexCardOnHandToMove)  != null) && (playerOneActiveCards.get(indexSpotToPlaceCard) == null)){
+           if((playerOne.getHand().get(indexCardOnHandToMove)  != null) && (playerOne.getHand().get(indexSpotToPlaceCard) == null)){
 
-               Card cardMoved = playerOneActiveCards.get(indexCardOnHandToMove);
+               Card cardMoved = playerOne.getHand().get(indexCardOnHandToMove);
+
                playerOneActiveCards.add(indexSpotToPlaceCard, cardMoved);
                playerOneActiveCards.remove(indexCardOnHandToMove);
            } else{

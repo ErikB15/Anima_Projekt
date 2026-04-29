@@ -97,4 +97,13 @@ public class Player {
     public int getHp() {
         return hp;
     }
+
+    /**
+     * getter för hand
+     * @return
+     */
+
+    public ArrayList<Card> getHand(){
+        return hand;
+    }
 }
