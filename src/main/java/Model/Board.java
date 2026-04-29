@@ -1,7 +1,5 @@
 package Model;
 
-import java.util.ArrayList;
-
 public class Board {
     private Card[] playerOneSlots;
     private Card[] playerTwoSlots;
@@ -11,24 +9,34 @@ public class Board {
         playerTwoSlots = new Card[4];
     }
 
-    public void attack(int attackingCard, int defendingCard){
-        int defCardHP = playerTwoSlots[defendingCard].getCardCurrentHP();
-        int atkCardHP = playerOneSlots[attackingCard].getCardCurrentHP();
-        int defCardNewHP = (defCardHP - playerOneSlots[attackingCard].getCardAD());
-        int atkCardNewHP = (atkCardHP - playerTwoSlots[defendingCard].getCardAD());
-        playerTwoSlots[defendingCard].setCardCurrentHP(defCardNewHP);
-        playerOneSlots[attackingCard].setCardCurrentHP(atkCardNewHP);
+    public Card[] getSlotsForPlayer(PlayerID player){
+        return player == PlayerID.PLAYER_ONE ? playerTwoSlots : playerOneSlots;
 
-        if(defCardNewHP <= 0){
-            sendCardToGraveyard(playerTwoSlots[defendingCard]);
-        }
-        if(atkCardNewHP <= 0){
-            sendCardToGraveyard(playerOneSlots[attackingCard]);
-        }
     }
 
+    public Card[] getOpponentSlots(PlayerID player) {
+        return player == PlayerID.PLAYER_ONE ? playerTwoSlots : playerOneSlots;
+    }
 
-    public void sendCardToGraveyard(Card card){
+    public boolean placeCard(PlayerID player, int slotIndex, Card card) {
+        Card[] slots = getSlotsForPlayer(player);
 
+        if (slots[slotIndex] != null) {
+            return false;
+        }
+
+        slots[slotIndex] = card;
+        return true;
+    }
+
+    public Card removeCard(PlayerID player, int slotIndex) {
+        Card[] slots = getSlotsForPlayer(player);
+        Card removedCard = slots[slotIndex];
+        slots[slotIndex] = null;
+        return removedCard;
+    }
+
+    public Card getCard(PlayerID player, int slotIndex) {
+        return getSlotsForPlayer(player)[slotIndex];
     }
 }

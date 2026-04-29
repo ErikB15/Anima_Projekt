@@ -161,4 +161,31 @@ public class GameController {
     public void setGuiManager(GUIManager guiManager){
         this.guiManager=guiManager;
     }
+
+
+    /**
+     * IGNORERA DETTA, JAG SKREV LOGIK FÖR ATTACK I BOARD KLASSEN.
+     * INSÅG ATT DET ÄR BÄTTRE ATT HA DEN I CONTROLLERN DÅ DEN RÖR FLERA OBJEKT SAMTIDIGT.
+     * DET HÄR ÄR BARA KVAR SÅ JAG KAN ANVÄNDA DET SOM PROTOTYP FÖR NÄR JAG EVENTUELLT GÖR ATTACK
+     * FUNKTIONEN HÄR INNE.
+     *
+     * public void attack(int attackingCard, int defendingCard){
+     *         int defCardHP = playerTwoSlots[defendingCard].getCardCurrentHP();
+     *         int atkCardHP = playerOneSlots[attackingCard].getCardCurrentHP();
+     *         int defCardNewHP = (defCardHP - playerOneSlots[attackingCard].getCardAD());
+     *         int atkCardNewHP = (atkCardHP - playerTwoSlots[defendingCard].getCardAD());
+     *         playerTwoSlots[defendingCard].setCardCurrentHP(defCardNewHP);
+     *         playerOneSlots[attackingCard].setCardCurrentHP(atkCardNewHP);
+     *         playerOneSlots[attackingCard].setHasAttackedThisTurn(true);
+     *
+     *         if(defCardNewHP <= 0){
+     *             playerTwo.sendCardToGraveyard(playerTwoSlots[defendingCard]);
+     *             playerTwoSlots[defendingCard] = null;
+     *         }
+     *         if(atkCardNewHP <= 0){
+     *             playerOne.sendCardToGraveyard(playerOneSlots[attackingCard]);
+     *             playerOneSlots[attackingCard] = null;
+     *         }
+     *     }
+     */
 }
