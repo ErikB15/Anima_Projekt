@@ -103,6 +103,7 @@ public class Player {
      * @return En arraylist av cards som är spelarens hand.
      * @author Jim Ström
      */
+
     public ArrayList<Card> getHand() {
         return hand;
     }
@@ -125,12 +126,4 @@ public class Player {
         return graveyard;
     }
 
-    /**
-     * getter för hand
-     * @return
-     */
-
-    public ArrayList<Card> getHand(){
-        return hand;
-    }
 }

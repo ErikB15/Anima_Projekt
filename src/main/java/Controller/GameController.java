@@ -126,10 +126,10 @@ public class GameController {
 
            if((playerOne.getHand().get(indexCardOnHandToMove)  != null) && (playerOne.getHand().get(indexSpotToPlaceCard) == null)){
 
-               Card cardMoved = playerOne.getHand().get(indexCardOnHandToMove);
-
+               /* Card cardMoved = playerOne.getHand().get(indexCardOnHandToMove);
+               board.getPlayerOneSlots()
                playerOneActiveCards.add(indexSpotToPlaceCard, cardMoved);
-               playerOneActiveCards.remove(indexCardOnHandToMove);
+               playerOneActiveCards.remove(indexCardOnHandToMove);*/
            } else{
                //guiManager.sendMessageThroughGUI("Unable to move card");
            }
@@ -142,6 +142,10 @@ public class GameController {
 
     }
 
+    /**
+     * Radera? tänker att vi inte ska ha event listeners i controller -Elna
+     * @param event
+     */
     public void handleCardClick(MouseEvent event) {
 
         ImageView clicked = (ImageView) event.getSource();
