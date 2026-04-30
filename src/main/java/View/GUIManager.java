@@ -60,7 +60,7 @@ public class GUIManager {
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
      * Sätter upp grundläggande kommunikation mellan gui:t och spel-logik.
-     * @auther: Erik
+     * @auther: Erik, Elna
      */
 
     public GUIManager(){
@@ -79,7 +79,7 @@ public class GUIManager {
      * Laddar FXML, kopplar ny controller till GameController och ersätter aktuell scen i Stage.
      *
      * @Param: event - MouseEvent från knapptryck i gui
-     * @auther: Erik
+     * @auther: Erik, Elna
      */
     public void switchToStartScreen(MouseEvent event){
         try{
@@ -106,7 +106,7 @@ public class GUIManager {
      * Laddar FXML och kopplar GameController till den nya GUI-instansen.
      *
      * @Param: event - MouseEvent från knapptryck i gui
-     * @auther: Erik
+     * @auther: Erik, Elna
      */
     public void switchToConnectScreen(MouseEvent event){
         try{
@@ -137,7 +137,7 @@ public class GUIManager {
      * Laddar FXML och visar spelregler i gui:t.
      *
      * @Param: event - MouseEvent från användarinput
-     * @auther: Erik
+     * @auther: Erik, Elna
      */
     public void switchToGameRulesScreen(MouseEvent event){
         try{
@@ -233,6 +233,7 @@ public class GUIManager {
      * @auther: Elna
      */
     public void pickedCardIndexPoint(MouseEvent event){
+
         if(cardFromHandPicked == true) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Warning!");
@@ -290,8 +291,6 @@ public class GUIManager {
             alert.show();
         }
     }
-
-
     /**
      * Skickar varning till gui, används ej.
      * @param message
@@ -424,6 +423,10 @@ public class GUIManager {
     @FXML
     private void showEffectsRules(){
         showPane(effectsRules);
+    }
+
+    private void makeDraggable(Image image){
+
     }
 
     /**
