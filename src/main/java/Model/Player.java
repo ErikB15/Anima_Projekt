@@ -75,7 +75,7 @@ public class Player {
         deck.addAll(graveyard);
         graveyard.clear();
         Collections.shuffle(deck);
-        drawInitialHand(3);
+        drawCard();
     }
 
     /**
@@ -126,16 +126,6 @@ public class Player {
      */
     public ArrayList<Card> getGraveyard() {
         return graveyard;
-    }
-
-    public void drawInitialHand(int amount) {
-        for (int i = 0; i < amount; i++) {
-            if (deck.isEmpty()) return;
-
-            int randomIndex = (int)(Math.random() * deck.size());
-            Card drawn = deck.remove(randomIndex);
-            hand.add(drawn);
-        }
     }
 
 

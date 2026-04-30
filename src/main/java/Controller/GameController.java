@@ -276,8 +276,8 @@ public class GameController {
      * @auther: Erik
      */
     public void startGame() {
-        playerOne.drawInitialHand(3);
-        playerTwo.drawInitialHand(3);
+        playerOne.drawCard();
+        playerTwo.drawCard();
 
         guiManager.renderHand(playerOne.getHand());
     }
