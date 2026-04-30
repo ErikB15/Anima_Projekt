@@ -290,6 +290,7 @@ public class GUIManager {
            // int boardIndex = cardIDInt - 3; // KRITISK FIX //Behövs inte längre, fixat fxIDistället
             gameController.setIndexSpotToPlaceCard(cardIDInt);
             cardFromHandPicked = false;
+            System.out.println(cardIDInt);
         } else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Warning!");
@@ -335,7 +336,7 @@ public class GUIManager {
 
     /**
      * TESTMETOD för sammankoppling med GUI
-     * @auther: Elna
+     * @author: Elna
      */
     public void sendMessageToConsole(){
         System.out.println("Successfully sending message through GUIManager");
