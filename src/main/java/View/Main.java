@@ -1,7 +1,7 @@
 package View;
 
 import Controller.GameController;
-import Controller.MainMenuController;
+//import Controller.MainMenuController;
 import javafx.application.Application;
 
 public class Main {

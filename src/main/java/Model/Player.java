@@ -49,9 +49,11 @@ public class Player {
                 return;
             }
 
-            hand.add(deck.removeFirst());
+            int randomIndex = (int)(Math.random() * deck.size());
+            hand.add(deck.remove(randomIndex));
         }
     }
+
 
     /**
      * Det här är för när ett kort dör, då ska det läggas in i "graveyard" kortleken.
@@ -74,6 +76,7 @@ public class Player {
         deck.addAll(graveyard);
         graveyard.clear();
         Collections.shuffle(deck);
+        drawInitialHand(3);
     }
 
     /**
@@ -125,5 +128,18 @@ public class Player {
     public ArrayList<Card> getGraveyard() {
         return graveyard;
     }
+
+    public void drawInitialHand(int amount) {
+        for (int i = 0; i < amount; i++) {
+            if (deck.isEmpty()) return;
+
+            int randomIndex = (int)(Math.random() * deck.size());
+            Card drawn = deck.remove(randomIndex);
+            hand.add(drawn);
+        }
+    }
+
+
+
 
 }

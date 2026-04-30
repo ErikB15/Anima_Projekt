@@ -6,6 +6,7 @@ import View.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
+
 /**
  * Game Controller klassen, syftet är att kontroller flödet av information från view och Model under matchens gång.
  * När matchens avslutas stängs även game controllern, då den endast är nödvändig när matchen är aktiv.
@@ -28,40 +29,58 @@ public class GameController {
     private Board board;
     private GUIManager guiManager;
     private Card testCard; //ENDAST FÖR TESTNING
+    private GameState gameState;
 
     /**
-     * Constructor för Game Controllern.
+     * Skapar en ny GameController och initierar spelets grunddata.
+     * Initierar listor för alla kort och effekter samt skapar spelare och spelbräde.
+     * Anropar addAllCards() för att fylla spelet med alla hårdkodade kort.
+     *
+     * @auther: Erik
      */
     public GameController(){
-        allCards = new ArrayList<Card>();
-        allEffects = new ArrayList<Effect>();
-        addAllCards();
+        allCards = new ArrayList<>();
+        allEffects = new ArrayList<>();
 
+        playerOne = new Player();
+        playerTwo = new Player();
+        board = new Board();
+
+        addAllCards();
     }
 
+
     /**
-     * Tanken med denna är det kommer vara här vi hård kodar in alla dem korten vi vill lägga till i vårt spel.
-     * Det är även här vi ska skapa korten och lägga in bilderna osv för korten. (Osäker med bilderna)
+     * Lägger till alla kort som finns i spelet genom hårdkodad initiering.
+     * Skapar Card-objekt och lägger dem i allCards-listan.
+     *
+     * @auther: Erik
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        allCards.add(new Card("Test1", 1,50,1,null, "CardFRONT.png"));
-        allCards.add(new Card("Test2", 5,25,2,null, "CardFRONT.png"));
-        allCards.add(new Card("Test3", 13,34,3,null, "CardFRONT.png"));
-        allCards.add(new Card("Test4", 30,20,4,null, "CardFRONT.png"));
-        allCards.add(new Card("Test5", 10,30,5,null, "CardFRONT.png"));
-        allCards.add(new Card("Test6", 2,40,6,null, "CardFRONT.png"));
+        allCards.add(new Card("Test1", 1,50,1,null, "/CardFRONT.png"));
+        allCards.add(new Card("Test2", 5,25,2,null, "/CardFRONT.png"));
+        allCards.add(new Card("Test3", 13,34,3,null, "/CardFRONT.png"));
+        allCards.add(new Card("Test4", 30,20,4,null, "/CardFRONT.png"));
+        allCards.add(new Card("Test5", 10,30,5,null, "/CardFRONT.png"));
+        allCards.add(new Card("Test6", 2,40,6,null, "/CardFRONT.png"));
     }
 
     /**
-     * Detta ska initiera själva brädets skapande, dvs skapar GUI:et och gör så att båda spelarna får upp det.
+     * Initierar spelbrädet.
+     * Just nu tom metod som är avsedd för framtida uppsättning av spelbräde och UI-koppling.
+     *
+     * @auther:
      */
     public void setupBoard(){
 
     }
-
     /**
-     * Metoden designerad för att låta en spelare välja kort. Kan även omdirigeras till MainMenuController.
+     * Hanterar kortvalsfasen där spelare turas om att välja kort från en gemensam kortpool.
+     * Kort flyttas från allCards till respektive spelares deck.
+     * Används inte i nuläget, kan bli relevant när vi ska göra varanan val.
+     *
+     * @auther:
      */
     public void chooseCardPhase(){
         int random = (int)(Math.random() * 2) + 1;
@@ -82,87 +101,112 @@ public class GameController {
         }
     }
 
+    /**
+     * Binder kort-objektet till motsvarande ImageView i gui.
+     * Kopplar varje kort i allCards till en visuell representation i guit.
+     *
+     * @Param: cardImageView - lista av ImageView som representerar kort i gui
+     * @auther: Erik
+     */
     public void bindCardsToView(ArrayList<ImageView> cardImageView) {
-        if (allCards == null || allCards.size() < cardImageView.size()) {
-            throw new IllegalStateException("Not enough cards");
-        }
-
         for (int i = 0; i < cardImageView.size(); i++) {
             bind(cardImageView.get(i), allCards.get(i));
         }
     }
 
-
+    /**
+     * Kopplar ett enskilt kort till en ImageView genom att lagra kortet i view:ns userData.
+     *
+     * @param view - bild-"ramen".
+     * @param card - objektet som ska kopplas.
+     * @auther: Erik
+     */
     private void bind(ImageView view, Card card) {
-        var url = getClass().getClassLoader().getResource(card.getImagePath());
-
-        if (url == null) {
-            throw new IllegalStateException("Resource not found: " + card.getImagePath());
-        }
-
-        //view.setImage(new Image(url.toExternalForm())); Onödig, tänkte jag behövde den. Kan tas bort men dubbelkolla första att allt funkar
         view.setUserData(card);
     }
 
-    //Denna metod anropas och sätts när en spelare väljer ett kort att flytta
+    /**
+     * Sätter index för vilket kort i handen som ska flyttas.
+     *
+     * @Param: index - positionen i spelarens hand
+     * @auther: Elna
+     */
     public void setIndexCardOnHandToMove(int index){
         indexCardOnHandToMove = index;
         cardPicked = true;
-
     }
 
-    //Denna metod anropas och sätts när en spelare väljer ett kort att flytta.
-    // Denna metod anropar metoden som faktiskt flyttar korten.
+    /**
+     * Sätter index för vilken plats på brädet kortet ska placeras på.
+     * Triggar sedan flytt av kort från hand till bräde.
+     *
+     * @Param: index - position på spelbrädet
+     * @auther: Erik
+     */
     public void setIndexSpotToPlaceCard(int index){
         indexSpotToPlaceCard = index;
         spotPicked = true;
         moveCardFromHandtoBoard();
     }
 
-    //Denna metod flyttar plats på ett kort i arrayen, från en spelares hand( index 0-2) ut på spelbrädet ( index 3-6)
-    public void moveCardFromHandtoBoard(){
+    /**
+     * Metoden hanterar flytten av ett kort från spelarens hand till spelbrädet. Metoden kontrollerar valda index,
+     * uppdaterar spelmodellen genom att flytta kortet och ta bort det från handen, och anropar sedan GUIManager för att uppdatera det visuella resultatet.
+     * Sen återställs input-status för nästa drag.
+     *
+     * @auther: Erik
+      */
+    public void moveCardFromHandtoBoard() {
 
-        if((cardPicked == true)  && (spotPicked == true)){
+        if (!cardPicked || !spotPicked) return;
 
-           if((playerOne.getHand().get(indexCardOnHandToMove)  != null) && (playerOne.getHand().get(indexSpotToPlaceCard) == null)){
+        if (playerOne.getHand().size() <= indexCardOnHandToMove) return;
 
-                Card cardMoved = playerOne.getHand().get(indexCardOnHandToMove);
-                board.placeCard(PlayerID.PLAYER_ONE,indexSpotToPlaceCard, cardMoved);
-                playerOne.getHand().remove(indexCardOnHandToMove);
+        Card cardMoved = playerOne.getHand().get(indexCardOnHandToMove);
 
+        board.placeCard(PlayerID.PLAYER_ONE, indexSpotToPlaceCard, cardMoved);
 
-           } else{
-               //guiManager.sendMessageThroughGUI("Unable to move card");
-           }
+        playerOne.getHand().remove(indexCardOnHandToMove);
 
-            cardPicked = false;
-            spotPicked = false;
+        guiManager.renderHand(playerOne.getHand());
+        guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
 
-        }
-
-
+        cardPicked = false;
+        spotPicked = false;
     }
+
 
     /**
      * Radera? tänker att vi inte ska ha event listeners i controller -Elna
+     *
      * @param event
+     * @auther:
      */
     public void handleCardClick(MouseEvent event) {
-
         ImageView clicked = (ImageView) event.getSource();
         Card card = (Card) clicked.getUserData();
         pickCard(card);
     }
 
+    /**
+     * Lägger valt kort i spelarens deck och tar bort det från den gemensamma kortlistan.
+     * SideNote: check av pilesize är endast för att kontrollera att kortet faktiskt läggs till i deck. Inte nödvändingt men bra dubbelcheckning.
+     *
+     * @Param: card - kort som ska läggas till i spelarens deck
+     * @auther: Erik
+     */
     public void pickCard(Card card) {
+        System.out.println("Pile size before: " + playerOne.getDeck().size());
         playerOne.addCardToDeck(card);
+        System.out.println("Pile size after: " + playerOne.getDeck().size());
     }
 
-
-    public void setCards(ArrayList<Card> cards) {
-        this.allCards = cards;
-    }
-
+    /**
+     * Sätter guiManager instans.
+     *
+     * @param guiManager
+     * @auther: Erik
+     */
     public void setGuiManager(GUIManager guiManager){
         this.guiManager=guiManager;
     }
@@ -193,4 +237,34 @@ public class GameController {
      *         }
      *     }
      */
+
+    /**
+     * Metod för att lägga till valt kort i spelarens hand.
+     * Delen med "NULL CARD" är för att kolla om det finns ett kort eller inte i bildramen.
+     * Detta syns när man spelat en runda, trycker exitGame, sen försöker spela en runda till.
+     * Vi måste lösa så att spelet återställs vid exit-game.
+     *
+     * @param card - kort-objektet
+     * @auther: Erik
+     */
+    public void addCardToPlayerOne(Card card){
+        System.out.println(card);
+        System.out.println(card != null ? card.getImagePath() : "NULL CARD");
+
+        playerOne.addCardToDeck(card);
+        allCards.remove(card);
+    }
+
+
+    /**
+     * Startar spelet genom att låta spelarna dra sina initiala händer och renderar spelarens hand i gui.
+     *
+     * @auther: Erik
+     */
+    public void startGame() {
+        playerOne.drawInitialHand(3);
+        playerTwo.drawInitialHand(3);
+
+        guiManager.renderHand(playerOne.getHand());
+    }
 }

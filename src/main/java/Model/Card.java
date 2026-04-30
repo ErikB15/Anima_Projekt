@@ -99,4 +99,8 @@ public class Card {
     public boolean getHasAttackedThisTurn(){return hasAttackedThisTurn;}
 
     public int getCardCost() {return cardCost;}
+
+    public String getCardName(){
+        return cardName;
+    }
 }
