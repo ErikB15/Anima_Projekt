@@ -242,7 +242,7 @@ public class GUIManager {
             int  cardIDInt = Integer.parseInt(splitID[1]);
             System.out.println(cardIDInt);
 
-                if((cardIDInt >= 3) && (cardIDInt < 7)){
+                if((cardIDInt <= 3) && (cardIDInt >= 0)){
                     gameController.setIndexSpotToPlaceCard(cardIDInt);
                     cardFromHandPicked = false;
                 } else{
