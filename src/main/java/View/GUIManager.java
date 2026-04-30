@@ -30,6 +30,9 @@ import java.util.ArrayList;
 public class GUIManager {
 //Denna klass tänker jag att vi använder som Controller för GUI. Denna klass ska skicka info vidare till andra controllers när saker sker i GUI.
 
+    //denna ska vara en check för vems tur det är. när det är den egna spelarens tur är denna true.
+    private boolean isYourTurn = true;
+
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -46,6 +49,9 @@ public class GUIManager {
     @FXML private ImageView hand_1;
     @FXML private ImageView hand_2;
 
+    //Array för att lägga till alla Image View i
+    private ArrayList<ImageView> boardImageViews = new ArrayList<ImageView>();
+
     @FXML private ImageView p1board_0;
     @FXML private ImageView p1board_1;
     @FXML private ImageView p1board_2;
@@ -60,18 +66,22 @@ public class GUIManager {
     @FXML private Pane cardRules;
     @FXML private Pane playerRules;
     @FXML private Pane effectsRules;
+
+
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
 
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
      * Sätter upp grundläggande kommunikation mellan gui:t och spel-logik.
-     * @auther: Erik, Elna
+     * @author: Erik, Elna
      */
 
     public GUIManager(){
         gameController = new GameController();
         gameController.setGuiManager(this);
+
+
         /*
         mainMenuController = new MainMenuController();
         mainMenuController.setGuiManager(this);
@@ -85,7 +95,7 @@ public class GUIManager {
      * Laddar FXML, kopplar ny controller till GameController och ersätter aktuell scen i Stage.
      *
      * @Param: event - MouseEvent från knapptryck i gui
-     * @auther: Erik, Elna
+     * @author: Erik, Elna
      */
     public void switchToStartScreen(MouseEvent event){
         try{
@@ -111,7 +121,7 @@ public class GUIManager {
      * Laddar FXML och kopplar GameController till den nya GUI-instansen.
      *
      * @Param: event - MouseEvent från knapptryck i gui
-     * @auther: Erik, Elna
+     * @author: Erik, Elna
      */
     public void switchToConnectScreen(MouseEvent event){
         try{
@@ -142,7 +152,7 @@ public class GUIManager {
      * Laddar FXML och visar spelregler i gui:t.
      *
      * @Param: event - MouseEvent från användarinput
-     * @auther: Erik, Elna
+     * @author: Erik, Elna
      */
     public void switchToGameRulesScreen(MouseEvent event){
         try{
@@ -165,7 +175,7 @@ public class GUIManager {
      * Laddar gui, kopplar controller och binder kortdata till ImageView.
      *
      * @Param: event - ActionEvent från knapptryck
-     * @auther: Erik, Elna
+     * @author: Erik, Elna
      */
     public void switchToPickCardScreen(ActionEvent event){
         try{
@@ -195,7 +205,7 @@ public class GUIManager {
      * Initierar gui och startar GameController-logik.
      *
      * @Param: event - ActionEvent från knapptryck
-     * @auther: Erik, ELna
+     * @author: Erik, ELna
      */
     public void switchToGameBoard(ActionEvent event){
         try{
@@ -216,6 +226,11 @@ public class GUIManager {
             controller.init();
             gameController.startGame();
 
+            addImageViewToList();
+            //enemyPlaceCard(1, "CardBACKSIDE.png");
+
+
+
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -225,7 +240,7 @@ public class GUIManager {
      * Stänger applikationen helt.
      *
      * @Param: e - MouseEvent från gui
-     * @auther: Elna
+     * @author: Elna
      */
     public void exitApplication(MouseEvent e){
         Platform.exit();
@@ -236,31 +251,34 @@ public class GUIManager {
      * Validerar om ett kort redan är valt och skickar index till GameController.
      *
      * @Param: event - MouseEvent från klick på ImageView
-     * @auther: Elna
+     * @author: Elna
      */
     public void pickedCardIndexPoint(MouseEvent event){
 
-        if(cardFromHandPicked == true) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Warning!");
-            alert.setContentText("You have already chose a card!");
-            alert.show();
-        } else{
+        if(isYourTurn == true) {
 
-            String cardID = event.getPickResult().getIntersectedNode().getId();
-            String[] splitID;
-            splitID = cardID.split("_");
-            int  cardIDInt = Integer.parseInt(splitID[1]);
-            System.out.println(cardIDInt);
+            if (cardFromHandPicked == true) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("You have already chose a card!");
+                alert.show();
+            } else {
 
-                if((cardIDInt < 3) && (cardIDInt >= 0)){
+                String cardID = event.getPickResult().getIntersectedNode().getId();
+                String[] splitID;
+                splitID = cardID.split("_");
+                int cardIDInt = Integer.parseInt(splitID[1]);
+                System.out.println(cardIDInt);
+
+                if ((cardIDInt < 3) && (cardIDInt >= 0)) {
                     gameController.setIndexCardOnHandToMove(cardIDInt);
                     cardFromHandPicked = true;
-                } else{
+                } else {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Warning!");
                     alert.setContentText("INVALID NUMBER");
                     alert.show();
+                }
             }
         }
     }
@@ -270,38 +288,43 @@ public class GUIManager {
      * Validerar att ett kort först valts och skickar sedan platsindex till GameController.
      *
      * @Param: event - MouseEvent från klick på brädets UI
-     * @auther: Elna
+     * @author: Elna
      */
     public void pickedSpotToPlaceCardIndexPoint(MouseEvent event){
 
-        if(cardFromHandPicked == false){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Warning!");
-            alert.setContentText("The card you pick has to be from your hand!");
-            alert.show();
-            return;
-        }
+        if(isYourTurn == true) {
 
-        String cardID = event.getPickResult().getIntersectedNode().getId();
-        String[] splitID = cardID.split("_");
-        int cardIDInt = Integer.parseInt(splitID[1]);
 
-        if((cardIDInt <= 3) && (cardIDInt >= 0)){
-           // int boardIndex = cardIDInt - 3; // KRITISK FIX //Behövs inte längre, fixat fxIDistället
-            gameController.setIndexSpotToPlaceCard(cardIDInt);
-            cardFromHandPicked = false;
-            System.out.println(cardIDInt);
-        } else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Warning!");
-            alert.setContentText("INVALID NUMBER");
-            alert.show();
+            if (cardFromHandPicked == false) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("The card you pick has to be from your hand!");
+                alert.show();
+                return;
+            }
+
+            String cardID = event.getPickResult().getIntersectedNode().getId();
+            String[] splitID = cardID.split("_");
+            int cardIDInt = Integer.parseInt(splitID[1]);
+
+            if ((cardIDInt <= 3) && (cardIDInt >= 0)) {
+                gameController.setIndexSpotToPlaceCard(cardIDInt);
+                cardFromHandPicked = false;
+                System.out.println(cardIDInt);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("INVALID NUMBER");
+                alert.show();
+            }
+
+            isYourTurn = false;
         }
     }
     /**
      * Skickar varning till gui, används ej.
      * @param message
-     * @auther: Elna
+     * @author: Elna
      */
     public void sendMessageThroughGUI(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -315,7 +338,7 @@ public class GUIManager {
      * Hämtar kort från gui och skickar det till GameController för att läggas i spelarens deck.
      *
      * @Param: event - MouseEvent från ImageView
-     * @auther: Erik, Elna
+     * @author: Erik, Elna
      */
     public void pickedCard(MouseEvent event) {
         System.out.println("I have clicked the card!");
@@ -348,7 +371,7 @@ public class GUIManager {
      *
      * @Param: scene - aktuell JavaFX Scene där korten finns
      * @return: lista av ImageView som representerar kort
-     * @auther: Erik
+     * @author: Erik
      */
     public ArrayList<ImageView> getCardImageView(Scene scene) {
 
@@ -370,7 +393,7 @@ public class GUIManager {
      * Används för att möjliggöra kommunikation mellan gui och spel-logik.
      *
      * @Param: gameController - instans av GameController
-     * @auther: Erik
+     * @author: Erik
      */
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
@@ -379,7 +402,7 @@ public class GUIManager {
     /**
      * I gameRules guit kan man välja olika tabbar av information, alla dessa Show-metoder visar bara den specifika panen i gameRules guit.
      * @param pane
-     * @auther: Erik
+     * @author: Erik
      */
     private void showPane(Pane pane) {
         generalRules.setVisible(false);
@@ -401,7 +424,7 @@ public class GUIManager {
 
     /**
      * Visar allmänna spelregler i gui.
-     * @auther: Erik
+     * @author: Erik
      */
     @FXML
     private void showGeneralRules() {
@@ -409,7 +432,7 @@ public class GUIManager {
     }
     /**
      * Visar allmänna kort-regler i gui.
-     * @auther: Erik
+     * @author: Erik
      */
     @FXML
     private void showCardRules() {
@@ -417,7 +440,7 @@ public class GUIManager {
     }
     /**
      * Visar allmänna spelareregler gällande spelare i gui.
-     * @auther: Erik
+     * @author: Erik
      */
     @FXML
     private void showPlayerRules() {
@@ -426,13 +449,18 @@ public class GUIManager {
 
     /**
      * Visar allmänna regler för effekter i gui.
-     * @auther: Erik
+     * @author: Erik
      */
     @FXML
     private void showEffectsRules(){
         showPane(effectsRules);
     }
 
+    /**
+     * Ska göra komponenter draggable, om vi vill ha det sen
+     * @param image
+     * @author Elna
+     */
     private void makeDraggable(Image image){
 
     }
@@ -447,10 +475,38 @@ public class GUIManager {
 
     /**
      * Metod för att visa bilden när ett kort ska placeras på en imageview.
-     * @auther: Erik
+     * BORDE ANROPAS FRÅN GAMECONTROLLER NÄR MOTSTÅNDARE LÄGGER KORT
+     * @author: Elna, Erik
      */
-    public void placeCard(){
+    public void enemyPlaceCard(int index, String imagePath){
+        String fxID = ("p2board_" + index);
+        Image newImage = new Image(imagePath);
 
+        for(ImageView img : boardImageViews){
+
+            if(fxID == img.getId()){
+                img.setImage(newImage);
+            }
+
+        }
+
+    }
+
+    /**
+     * Metod för att lägga till alla ImageView som representerar board i en array.
+     * Det förenklar när man ska lägga ut bilder på plan att kunna loopa igenom alla ImageView.
+     * @author Elna
+     */
+    public void addImageViewToList(){
+         boardImageViews.add(p2board_0);
+         boardImageViews.add(p2board_1);
+         boardImageViews.add(p2board_2);
+         boardImageViews.add(p2board_3);
+
+         boardImageViews.add(p1board_0);
+         boardImageViews.add(p1board_1);
+         boardImageViews.add(p1board_2);
+         boardImageViews.add(p1board_3);
     }
 
 
