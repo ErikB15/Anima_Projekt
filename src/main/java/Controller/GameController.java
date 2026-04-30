@@ -1,10 +1,11 @@
 package Controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
+
 import Model.*;
 import View.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 
 
 /**
@@ -14,9 +15,6 @@ import javafx.scene.input.MouseEvent;
 public class GameController {
     private ArrayList<Card> allCards;
     private ArrayList<Effect> allEffects;
-
-    //private ArrayList<Card> playerOneActiveCards;
-    //private ArrayList<Card> playerOneCardPile;
 
     //Mekanik för att byta plats på kort i playerOneActiveCards
     private int indexCardOnHandToMove;
@@ -36,16 +34,15 @@ public class GameController {
      * Initierar listor för alla kort och effekter samt skapar spelare och spelbräde.
      * Anropar addAllCards() för att fylla spelet med alla hårdkodade kort.
      *
-     * @auther: Erik
+     * @author Erik,Jim Ström, Elna
      */
     public GameController(){
         allCards = new ArrayList<>();
         allEffects = new ArrayList<>();
-
         playerOne = new Player();
         playerTwo = new Player();
         board = new Board();
-
+        gameState = new GameState(playerOne, playerTwo, board);
         addAllCards();
     }
 
@@ -54,7 +51,7 @@ public class GameController {
      * Lägger till alla kort som finns i spelet genom hårdkodad initiering.
      * Skapar Card-objekt och lägger dem i allCards-listan.
      *
-     * @auther: Erik
+     * @author Erik
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
@@ -70,35 +67,90 @@ public class GameController {
      * Initierar spelbrädet.
      * Just nu tom metod som är avsedd för framtida uppsättning av spelbräde och UI-koppling.
      *
-     * @auther:
+     * @author Jim Ström
      */
     public void setupBoard(){
+        // Koppla spelare till de två olika "connections" vi gjort.
+        // board = new Board();
+        // gameState = new GameState(playerOne, playerTwo, board);
+        // Kommer antagligen behöva göras sen när vi gör en connection istället.
+        // Vi kommer behöva koppla player ett och player två till de två olika uppkopplingarna.
+        // Och gameState ska bara skapas när vi gjort dessa grejer.
+    }
 
+    public void startDraftPhase(){
+        int random = (int)(Math.random() * 2) + 1;
+        if(random == 1){
+            gameState.setFirstDraftPlayer(PlayerID.PLAYER_ONE);
+            gameState.setCurrentDraftPlayer(PlayerID.PLAYER_ONE);
+        }else {
+            gameState.setFirstDraftPlayer(PlayerID.PLAYER_TWO);
+            gameState.setCurrentDraftPlayer(PlayerID.PLAYER_TWO);
+        }
+        gameState.setPhase(GamePhase.DRAFT);
     }
     /**
-     * Hanterar kortvalsfasen där spelare turas om att välja kort från en gemensam kortpool.
-     * Kort flyttas från allCards till respektive spelares deck.
-     * Används inte i nuläget, kan bli relevant när vi ska göra varanan val.
      *
-     * @auther:
+     * @param cardIndex - Index på kortet som väljs
+     * @author Jim Ström
      */
-    public void chooseCardPhase(){
-        int random = (int)(Math.random() * 2) + 1;
-        while(!allCards.isEmpty()){
-            if(random == 1){
-                // Där bör finnas logik här för vilket kort spelaren väljer.
-                // Svårt att implementera utan GUI:n dock.
-                playerOne.addCardToDeck(testCard);
-                allCards.remove(testCard);
-                random = 2;
-            }else{
-                // Där bör finnas logik här för vilket kort spelaren väljer.
-                // Svårt att implementera utan GUI:n dock.
-                playerTwo.addCardToDeck(testCard);
-                allCards.remove(testCard);
-                random = 1;
-            }
+    public void chooseCardPhase(int cardIndex){
+        if(gameState.getPhase() != GamePhase.DRAFT){return;}
+        if(cardIndex < 0 || cardIndex >= allCards.size()){return;}
+
+        Card chosenCard = allCards.get(cardIndex);
+        gameState.getCurrentDraftPlayer().addCardToDeck(chosenCard);
+        allCards.remove(chosenCard);
+
+        if(allCards.isEmpty()){
+            startPlayPhase();
+            return;
         }
+
+        gameState.switchDraftPlayer();
+        // Ska finnas en metod eller callback för att uppdatera GUI:et
+    }
+
+    public void startPlayPhase(){
+        if(gameState.getFirstDraftPlayer() == PlayerID.PLAYER_ONE){
+            gameState.setCurrentPlayer(PlayerID.PLAYER_TWO);
+        }else{
+            gameState.setCurrentPlayer(PlayerID.PLAYER_ONE);
+        }
+        Collections.shuffle(playerOne.getDeck());
+        Collections.shuffle(playerTwo.getDeck());
+        playerOne.drawCard();
+        playerTwo.drawCard();
+        gameState.setPhase(GamePhase.PLAY);
+    }
+
+
+    /**
+     * Metoden hanterar flytten av ett kort från spelarens hand till spelbrädet. Metoden kontrollerar valda index,
+     * uppdaterar spelmodellen genom att flytta kortet och ta bort det från handen, och anropar sedan GUIManager för att uppdatera det visuella resultatet.
+     * Sen återställs input-status för nästa drag.
+     *
+     * @author Erik, Jim Ström
+     */
+    public void moveCardFromHandtoBoard() {
+        Player currentPlayer = gameState.getCurrentPlayer();
+        PlayerID currentPlayerId = gameState.getCurrentPlayerId();
+
+        if (!cardPicked || !spotPicked) return;
+
+        if (currentPlayer.getHand().size() <= indexCardOnHandToMove) return;
+
+        Card cardMoved = currentPlayer.getHand().get(indexCardOnHandToMove);
+
+        board.placeCard(currentPlayerId, indexSpotToPlaceCard, cardMoved);
+
+        currentPlayer.getHand().remove(indexCardOnHandToMove);
+
+        guiManager.renderHand(currentPlayer.getHand());
+        guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
+
+        cardPicked = false;
+        spotPicked = false;
     }
 
     /**
@@ -140,8 +192,8 @@ public class GameController {
      * Sätter index för vilken plats på brädet kortet ska placeras på.
      * Triggar sedan flytt av kort från hand till bräde.
      *
-     * @Param: index - position på spelbrädet
-     * @auther: Erik
+     * @param index - position på spelbrädet
+     * @author Erik
      */
     public void setIndexSpotToPlaceCard(int index){
         indexSpotToPlaceCard = index;
@@ -149,63 +201,25 @@ public class GameController {
         moveCardFromHandtoBoard();
     }
 
-    /**
-     * Metoden hanterar flytten av ett kort från spelarens hand till spelbrädet. Metoden kontrollerar valda index,
-     * uppdaterar spelmodellen genom att flytta kortet och ta bort det från handen, och anropar sedan GUIManager för att uppdatera det visuella resultatet.
-     * Sen återställs input-status för nästa drag.
-     *
-     * @auther: Erik
-      */
-    public void moveCardFromHandtoBoard() {
-
-        if (!cardPicked || !spotPicked) return;
-
-        if (playerOne.getHand().size() <= indexCardOnHandToMove) return;
-
-        Card cardMoved = playerOne.getHand().get(indexCardOnHandToMove);
-
-        board.placeCard(PlayerID.PLAYER_ONE, indexSpotToPlaceCard, cardMoved);
-
-        playerOne.getHand().remove(indexCardOnHandToMove);
-
-        guiManager.renderHand(playerOne.getHand());
-        guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
-
-        cardPicked = false;
-        spotPicked = false;
-    }
 
 
     /**
      * Radera? tänker att vi inte ska ha event listeners i controller -Elna
      *
      * @param event
-     * @auther:
+     * @author
      */
-    public void handleCardClick(MouseEvent event) {
-        ImageView clicked = (ImageView) event.getSource();
-        Card card = (Card) clicked.getUserData();
-        pickCard(card);
-    }
-
-    /**
-     * Lägger valt kort i spelarens deck och tar bort det från den gemensamma kortlistan.
-     * SideNote: check av pilesize är endast för att kontrollera att kortet faktiskt läggs till i deck. Inte nödvändingt men bra dubbelcheckning.
-     *
-     * @Param: card - kort som ska läggas till i spelarens deck
-     * @auther: Erik
-     */
-    public void pickCard(Card card) {
-        System.out.println("Pile size before: " + playerOne.getDeck().size());
-        playerOne.addCardToDeck(card);
-        System.out.println("Pile size after: " + playerOne.getDeck().size());
-    }
+    //public void handleCardClick(MouseEvent event) {
+    //    ImageView clicked = (ImageView) event.getSource();
+    //    Card card = (Card) clicked.getUserData();
+    //    pickCard(card);
+    //}
 
     /**
      * Sätter guiManager instans.
      *
      * @param guiManager
-     * @auther: Erik
+     * @author Erik
      */
     public void setGuiManager(GUIManager guiManager){
         this.guiManager=guiManager;
@@ -245,7 +259,7 @@ public class GameController {
      * Vi måste lösa så att spelet återställs vid exit-game.
      *
      * @param card - kort-objektet
-     * @auther: Erik
+     * @author Erik
      */
     public void addCardToPlayerOne(Card card){
         System.out.println(card);

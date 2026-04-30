@@ -36,10 +36,9 @@ public class Player {
      * Den har några safety checks, är spelarens kortlek tom så reshuffle vi den genom en metod.
      * Sen kollar vi igen, detta är en safety check för att se till att allt funkade som det skulle.
      * Sedan drar vi kortet från kortleken.
-     * @param nbrOfCardsToDraw - Hur många kort som ska dras, ändras beroende på antalet rundor.
      */
-    public void drawCard(int nbrOfCardsToDraw) {
-        for (int i = 0; i < nbrOfCardsToDraw; i++) {
+    public void drawCard() {
+        for (int i = hand.size(); i < 3; i++) {
 
             if (deck.isEmpty()) {
                 reshuffleDeck();
