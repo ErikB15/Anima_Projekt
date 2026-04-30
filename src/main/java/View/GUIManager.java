@@ -57,7 +57,11 @@ public class GUIManager {
         mainMenuController.setGameController(gameController);
     }
 
-
+    /**
+     * Bytar till startscen vid knapptryck
+     * @param event
+     * @author Elna N
+     */
     public void switchToStartScreen(MouseEvent event){
 
         try{
@@ -77,6 +81,11 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Bytar till scen för att connecta vid knapptryck
+     * @param event
+     * @author Elna N
+     */
     public void switchToConnectScreen(MouseEvent event){
 
         try{
@@ -94,6 +103,11 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Bytar till scen för att gamerules vid knapptryck
+     * @param event
+     * @author Elna N / Erik
+     */
     public void switchToGameRulesScreen(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameRuleScreen.fxml"));
@@ -110,6 +124,11 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Bytar till scen för att välja kort vid knapptryck
+     * @param event
+     * @author Elna N / Erik
+     */
     public void switchToPickCardScreen(ActionEvent event){
         try{
             root = FXMLLoader.load(getClass().getClassLoader().getResource("PickCardScreen.fxml"));
@@ -127,6 +146,11 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Bytar till skärm för spelplan vid knapptryck
+     * @param event
+     * @author Elna N.
+     */
     public void switchToGameBoard(ActionEvent event){
 
         try{
@@ -143,11 +167,21 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Stänger ner applikation
+     * @param e
+     * @author Elna N.
+     */
     public void exitApplication(MouseEvent e){
         Platform.exit();
     }
 
-    //Denna metod skickar en indexpoint mellan 0-2 till controller. Används för handen
+
+    /**
+     * Denna metod skickar en indexpoint mellan 0-2 till controller. Används för handen
+     * @param event
+     * @author Elna N.
+     */
     public void pickedCardIndexPoint(MouseEvent event){
 
         if(cardFromHandPicked == true) {
@@ -178,7 +212,12 @@ public class GUIManager {
 
     }
 
-    //Denna metod skickar indexpoint mellan 3 - 6 till controller. Används för plats där spelaren ska lägga sitt kort.
+    /**
+     *  Denna metod skickar indexpoint mellan 3 - 6 till controller. Används för plats där spelaren ska lägga sitt kort.
+     * @param event
+     * @author Elna N.
+     */
+
     public void pickedSpotToPlaceCardIndexPoint(MouseEvent event){
 
         if(cardFromHandPicked == false){
@@ -210,6 +249,11 @@ public class GUIManager {
 
     }
 
+    /**
+     * Metod som skickar en popup genom gUI
+     * @param message - meddelande som ska visas
+     * @author Elna N
+     */
     public void sendMessageThroughGUI(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Warning!");
@@ -217,7 +261,11 @@ public class GUIManager {
         alert.show();
     }
 
-    //Denna metoden registrerar vilket nod-id som klickats på i "välja kort" och skickar detta till MainMenuController tillsammans med spelar-id.
+    /**
+     * Denna metoden registrerar vilket nod-id som klickats på i "välja kort" och skickar detta till MainMenuController tillsammans med spelar-id.
+     * @author Elna N
+     */
+
     public void pickedCard(MouseEvent event) {
         System.out.println("I have clicked the card!");
 
@@ -294,6 +342,10 @@ public class GUIManager {
     @FXML
     private void showEffectsRules(){
         showPane(effectsRules);
+    }
+
+    private void makeDraggable(Image image){
+
     }
 
 
