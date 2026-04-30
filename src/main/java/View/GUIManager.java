@@ -89,14 +89,16 @@ public class GUIManager {
      */
     public void switchToStartScreen(MouseEvent event){
         try{
-            setGameController(gameController);
-            gameController.setGuiManager(this);
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("StartScreen.fxml"));
+            root = loader.load();
 
-            root = FXMLLoader.load(getClass().getClassLoader().getResource("StartScreen.fxml"));
+            GUIManager controller = loader.getController();
+            controller.setGameController(gameController);
+            gameController.setGuiManager(controller);
+
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
-            //stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -104,7 +106,6 @@ public class GUIManager {
             e.printStackTrace();
         }
     }
-
     /**
      * Byter scen till anslutningsskärmen.
      * Laddar FXML och kopplar GameController till den nya GUI-instansen.
@@ -278,31 +279,28 @@ public class GUIManager {
             alert.setTitle("Warning!");
             alert.setContentText("The card you pick has to be from your hand!");
             alert.show();
+            return;
+        }
 
+        String cardID = event.getPickResult().getIntersectedNode().getId();
+        String[] splitID = cardID.split("_");
+        int cardIDInt = Integer.parseInt(splitID[1]);
+
+        if((cardIDInt >= 3) && (cardIDInt < 7)){
+            int boardIndex = cardIDInt - 3; // KRITISK FIX
+            gameController.setIndexSpotToPlaceCard(boardIndex);
+            cardFromHandPicked = false;
         } else{
-
-            String cardID = event.getPickResult().getIntersectedNode().getId();
-            String[] splitID;
-            splitID = cardID.split("_");
-            int  cardIDInt = Integer.parseInt(splitID[1]);
-            System.out.println(cardIDInt);
-
-            if(cardIDInt >= 0 && cardIDInt < 4){
-                gameController.setIndexSpotToPlaceCard(cardIDInt);
-                cardFromHandPicked = false;
-            } else {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Warning!");
-                alert.setContentText("INVALID NUMBER");
-                alert.show();
-            }
-
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Warning!");
+            alert.setContentText("INVALID NUMBER");
+            alert.show();
         }
     }
     /**
-     * Metod som skickar en popup genom gUI
-     * @param message - meddelande som ska visas
-     * @author Elna N
+     * Skickar varning till gui, används ej.
+     * @param message
+     * @auther: Elna
      */
     public void sendMessageThroughGUI(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
