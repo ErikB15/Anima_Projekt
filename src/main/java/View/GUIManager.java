@@ -80,7 +80,8 @@ public class GUIManager {
     public GUIManager(){
         gameController = new GameController();
         gameController.setGuiManager(this);
-        addImageViewToList();
+
+
         /*
         mainMenuController = new MainMenuController();
         mainMenuController.setGuiManager(this);
@@ -224,6 +225,11 @@ public class GUIManager {
 
             controller.init();
             gameController.startGame();
+
+            addImageViewToList();
+            //enemyPlaceCard(1, "CardBACKSIDE.png");
+
+
 
         } catch(Exception e){
             e.printStackTrace();
