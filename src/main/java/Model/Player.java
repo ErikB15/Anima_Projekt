@@ -75,7 +75,15 @@ public class Player {
         deck.addAll(graveyard);
         graveyard.clear();
         Collections.shuffle(deck);
-        drawCard();
+    }
+
+
+    public void takeDamage(int damage) {
+        if ((hp - damage) <= 0) {
+            this.hp = 0;
+        } else {
+            this.hp = (hp - damage);
+        }
     }
 
     /**

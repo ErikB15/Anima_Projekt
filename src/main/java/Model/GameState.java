@@ -150,7 +150,7 @@ public class GameState {
 
     public Player getWinner() {return winner;}
 
-    public Player getCurrentDraftPlayer() {return currentDraftPlayer == PlayerID.PLAYER_ONE ? playerTwo : playerOne;}
+    public Player getCurrentDraftPlayer() {return currentDraftPlayer == PlayerID.PLAYER_ONE ? playerOne : playerTwo;}
 
     public PlayerID getCurrentDraftPlayerId() {return currentDraftPlayer;}
 

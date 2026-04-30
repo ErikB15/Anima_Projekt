@@ -124,13 +124,31 @@ public class GameController {
         gameState.setPhase(GamePhase.PLAY);
     }
 
+    public boolean placeCard(int handIndex, int boardIndex){
+        if(gameState.getPhase() != GamePhase.PLAY){return false;}
+        Player currentPlayer = gameState.getCurrentPlayer();
+        PlayerID currentPlayerID = gameState.getCurrentPlayerId();
+        if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){
+            return false;
+        }
+        Card playedCard = currentPlayer.getHand().remove(handIndex);
+        playerOne.takeDamage(playedCard.getCardCost());
+        board.getCard(currentPlayerID, boardIndex).setAsleep(true);
+        gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
+        gameState.checkGameOver();
+        if(gameState.isGameOver()){
+            gameOver();
+        }
+
+        return true;
+    }
 
     /**
      * Metoden hanterar flytten av ett kort från spelarens hand till spelbrädet. Metoden kontrollerar valda index,
      * uppdaterar spelmodellen genom att flytta kortet och ta bort det från handen, och anropar sedan GUIManager för att uppdatera det visuella resultatet.
      * Sen återställs input-status för nästa drag.
      *
-     * @author Erik, Jim Ström
+     * @author Erik, Jim Ström, Elna
      */
     public void moveCardFromHandtoBoard() {
         Player currentPlayer = gameState.getCurrentPlayer();
@@ -151,6 +169,10 @@ public class GameController {
 
         cardPicked = false;
         spotPicked = false;
+    }
+
+    public void gameOver(){
+
     }
 
     /**
