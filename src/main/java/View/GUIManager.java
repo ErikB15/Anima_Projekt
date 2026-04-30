@@ -34,12 +34,20 @@ public class GUIManager {
     private boolean cardFromHandPicked = false;
 
     //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta på
-    @FXML private ImageView card_1;
-    @FXML private ImageView card_2;
-    @FXML private ImageView card_3;
-    @FXML private ImageView card_4;
-    @FXML private ImageView card_5;
-    @FXML private ImageView card_6;
+    @FXML private ImageView hand_0;
+    @FXML private ImageView hand_1;
+    @FXML private ImageView hand_2;
+
+    @FXML private ImageView p1board_0;
+    @FXML private ImageView p1board_1;
+    @FXML private ImageView p1board_2;
+    @FXML private ImageView p1board_3;
+
+    @FXML private ImageView p2board_0;
+    @FXML private ImageView p2board_1;
+    @FXML private ImageView p2board_2;
+    @FXML private ImageView p2board_3;
+
     @FXML private Pane generalRules;
     @FXML private Pane cardRules;
     @FXML private Pane playerRules;
@@ -213,7 +221,7 @@ public class GUIManager {
     }
 
     /**
-     *  Denna metod skickar indexpoint mellan 3 - 6 till controller. Används för plats där spelaren ska lägga sitt kort.
+     *  Denna metod skickar indexpoint mellan 0 - 3 till controller. Används för plats där spelaren ska lägga sitt kort.
      * @param event
      * @author Elna N.
      */
