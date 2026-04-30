@@ -66,7 +66,7 @@ public class GUIManager {
     @FXML private Pane cardRules;
     @FXML private Pane playerRules;
     @FXML private Pane effectsRules;
-    
+
 
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
@@ -80,6 +80,7 @@ public class GUIManager {
     public GUIManager(){
         gameController = new GameController();
         gameController.setGuiManager(this);
+        addImageViewToList();
         /*
         mainMenuController = new MainMenuController();
         mainMenuController.setGuiManager(this);
@@ -468,22 +469,38 @@ public class GUIManager {
 
     /**
      * Metod för att visa bilden när ett kort ska placeras på en imageview.
-     * @author: Erik
+     * BORDE ANROPAS FRÅN GAMECONTROLLER NÄR MOTSTÅNDARE LÄGGER KORT
+     * @author: Elna, Erik
      */
-    public void placeCard(int index, String imagePath){
+    public void enemyPlaceCard(int index, String imagePath){
         String fxID = ("p2board_" + index);
+        Image newImage = new Image(imagePath);
 
+        for(ImageView img : boardImageViews){
+
+            if(fxID == img.getId()){
+                img.setImage(newImage);
+            }
+
+        }
 
     }
 
     /**
      * Metod för att lägga till alla ImageView som representerar board i en array.
      * Det förenklar när man ska lägga ut bilder på plan att kunna loopa igenom alla ImageView.
-     * @param image - View som ska läggas till
      * @author Elna
      */
-    public void addImageViewToList(ImageView image){
-    boardImageViews.add(image);
+    public void addImageViewToList(){
+         boardImageViews.add(p2board_0);
+         boardImageViews.add(p2board_1);
+         boardImageViews.add(p2board_2);
+         boardImageViews.add(p2board_3);
+
+         boardImageViews.add(p1board_0);
+         boardImageViews.add(p1board_1);
+         boardImageViews.add(p1board_2);
+         boardImageViews.add(p1board_3);
     }
 
 
