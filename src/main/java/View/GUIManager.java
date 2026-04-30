@@ -42,13 +42,19 @@ public class GUIManager {
     private boolean cardFromHandPicked = false;
 
     //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta på
-    @FXML private ImageView index_0;
-    @FXML private ImageView index_1;
-    @FXML private ImageView index_2;
-    @FXML private ImageView index_3;
-    @FXML private ImageView index_4;
-    @FXML private ImageView index_5;
-    @FXML private ImageView index_6;
+    @FXML private ImageView hand_0;
+    @FXML private ImageView hand_1;
+    @FXML private ImageView hand_2;
+
+    @FXML private ImageView p1board_0;
+    @FXML private ImageView p1board_1;
+    @FXML private ImageView p1board_2;
+    @FXML private ImageView p1board_3;
+
+    @FXML private ImageView p2board_0;
+    @FXML private ImageView p2board_1;
+    @FXML private ImageView p2board_2;
+    @FXML private ImageView p2board_3;
 
     @FXML private Pane generalRules;
     @FXML private Pane cardRules;
@@ -83,16 +89,14 @@ public class GUIManager {
      */
     public void switchToStartScreen(MouseEvent event){
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("StartScreen.fxml"));
-            root = loader.load();
+            setGameController(gameController);
+            gameController.setGuiManager(this);
 
-            GUIManager controller = loader.getController();
-            controller.setGameController(gameController);
-            gameController.setGuiManager(controller);
-
+            root = FXMLLoader.load(getClass().getClassLoader().getResource("StartScreen.fxml"));
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
+            //stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -174,6 +178,7 @@ public class GUIManager {
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
+            //stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -273,27 +278,31 @@ public class GUIManager {
             alert.setTitle("Warning!");
             alert.setContentText("The card you pick has to be from your hand!");
             alert.show();
-            return;
-        }
 
-        String cardID = event.getPickResult().getIntersectedNode().getId();
-        String[] splitID = cardID.split("_");
-        int cardIDInt = Integer.parseInt(splitID[1]);
-
-        if((cardIDInt >= 3) && (cardIDInt < 7)){
-            int boardIndex = cardIDInt - 3; // KRITISK FIX
-            gameController.setIndexSpotToPlaceCard(boardIndex);
-            cardFromHandPicked = false;
         } else{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Warning!");
-            alert.setContentText("INVALID NUMBER");
-            alert.show();
+
+            String cardID = event.getPickResult().getIntersectedNode().getId();
+            String[] splitID;
+            splitID = cardID.split("_");
+            int  cardIDInt = Integer.parseInt(splitID[1]);
+            System.out.println(cardIDInt);
+
+            if(cardIDInt >= 0 && cardIDInt < 4){
+                gameController.setIndexSpotToPlaceCard(cardIDInt);
+                cardFromHandPicked = false;
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("INVALID NUMBER");
+                alert.show();
+            }
+
         }
     }
     /**
-     * Skickar varning till gui, används ej.
-     * @param message
+     * Metod som skickar en popup genom gUI
+     * @param message - meddelande som ska visas
+     * @author Elna N
      */
     public void sendMessageThroughGUI(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -470,8 +479,8 @@ public class GUIManager {
      * @author: Erik
      */
     public void init() {
-        zoneMap.put(Zone.HAND, new ImageView[]{index_0, index_1, index_2});
-        zoneMap.put(Zone.PLAYER_BOARD, new ImageView[]{index_3, index_4, index_5, index_6});
+        zoneMap.put(Zone.HAND, new ImageView[]{hand_0, hand_1, hand_2});
+        zoneMap.put(Zone.PLAYER_BOARD, new ImageView[]{p1board_0, p1board_1, p1board_2, p1board_3});
         //zoneMap.put(Zone.OPPONENT_BOARD, new ImageView[]{card_4, card_5, card_6}); // ändra senare när moståndare är aktuellt.
     }
 
