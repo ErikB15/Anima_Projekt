@@ -37,7 +37,7 @@ public class Player {
      * Sen kollar vi igen, detta är en safety check för att se till att allt funkade som det skulle.
      * Sedan drar vi kortet från kortleken.
      */
-    public void drawCard() {
+    public void drawUntilHandIsFull() {
         for (int i = hand.size(); i < 3; i++) {
 
             if (deck.isEmpty()) {

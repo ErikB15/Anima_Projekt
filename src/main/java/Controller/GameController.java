@@ -119,8 +119,8 @@ public class GameController {
         }
         Collections.shuffle(playerOne.getDeck());
         Collections.shuffle(playerTwo.getDeck());
-        playerOne.drawCard();
-        playerTwo.drawCard();
+        playerOne.drawUntilHandIsFull();
+        playerTwo.drawUntilHandIsFull();
         gameState.setPhase(GamePhase.PLAY);
     }
 
@@ -128,11 +128,9 @@ public class GameController {
         if(gameState.getPhase() != GamePhase.PLAY){return false;}
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
-        if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){
-            return false;
-        }
+        if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){return false;}
         Card playedCard = currentPlayer.getHand().remove(handIndex);
-        playerOne.takeDamage(playedCard.getCardCost());
+        currentPlayer.takeDamage(playedCard.getCardCost());
         board.getCard(currentPlayerID, boardIndex).setAsleep(true);
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
@@ -298,8 +296,8 @@ public class GameController {
      * @auther: Erik
      */
     public void startGame() {
-        playerOne.drawCard();
-        playerTwo.drawCard();
+        playerOne.drawUntilHandIsFull();
+        playerTwo.drawUntilHandIsFull();
 
         guiManager.renderHand(playerOne.getHand());
     }
