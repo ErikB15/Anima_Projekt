@@ -286,9 +286,9 @@ public class GUIManager {
         String[] splitID = cardID.split("_");
         int cardIDInt = Integer.parseInt(splitID[1]);
 
-        if((cardIDInt >= 3) && (cardIDInt < 7)){
-            int boardIndex = cardIDInt - 3; // KRITISK FIX
-            gameController.setIndexSpotToPlaceCard(boardIndex);
+        if((cardIDInt <= 3) && (cardIDInt >= 0)){
+           // int boardIndex = cardIDInt - 3; // KRITISK FIX //Behövs inte längre, fixat fxIDistället
+            gameController.setIndexSpotToPlaceCard(cardIDInt);
             cardFromHandPicked = false;
         } else{
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
