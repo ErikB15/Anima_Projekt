@@ -1,6 +1,7 @@
 package View;
 
 import Controller.GameController;
+import Model.PlayerID;
 import Model.Zone;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -14,7 +15,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import Model.Card;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,10 +66,9 @@ public class GUIManager {
     @FXML private Pane cardRules;
     @FXML private Pane playerRules;
     @FXML private Pane effectsRules;
-
-
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
+    private boolean playerOnesTurn = true;
 
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
@@ -346,8 +345,15 @@ public class GUIManager {
         ImageView clicked = (ImageView) event.getSource();
         Card card = (Card) clicked.getUserData();
 
-        gameController.addCardToPlayerOne(card);
-        System.out.println("GUI GC instance: " + gameController);
+        if (playerOnesTurn == true){
+            gameController.addCardToPlayerOne(card);
+            System.out.println("card added to player 1 deck");
+            playerOnesTurn = false;
+        } else {
+            gameController.addCardToOpponent(card);
+            System.out.println("card added to player 2 deck");
+            playerOnesTurn = true;
+        }
 
         //Försöker få bilden att ändras till kortets baksida. INTE KLAR
        // Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
@@ -467,10 +473,19 @@ public class GUIManager {
 
     /**
      * Metod för att ta bort bilderna på korten i imageView i gameboard
-     * @auther: Erik
+     * @authe Erik
      */
     public void killCard(){
 
+    }
+
+    /**
+     * Metoden existerar för att begränsa vem som kan samtala med gui och skickar endast vidare ansvaret av logiken till gameControllern.
+     * @author Erik
+     */
+    public void endTurnInGui(){
+        System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
+        gameController.endTurn();
     }
 
     /**

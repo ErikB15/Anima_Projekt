@@ -362,6 +362,23 @@ public class GameController {
         allCards.remove(card);
     }
 
+    /**
+     * Metod för att lägga till valt kort i motståndarens hand.
+     * Delen med "NULL CARD" är för att kolla om det finns ett kort eller inte i bildramen.
+     * Detta syns när man spelat en runda, trycker exitGame, sen försöker spela en runda till.
+     * Vi måste lösa så att spelet återställs vid exit-game.
+     *
+     * @param card - kort-objektet
+     * @author Erik
+     */
+    public void addCardToOpponent(Card card){
+        System.out.println(card);
+        System.out.println(card != null ? card.getImagePath() : "NULL CARD");
+
+        playerTwo.addCardToDeck(card);
+        allCards.remove(card);
+    }
+
 
     /**
      * Startar spelet genom att låta spelarna dra sina initiala händer och renderar spelarens hand i gui.
@@ -375,5 +392,8 @@ public class GameController {
         gameState.setCurrentPlayer(PlayerID.PLAYER_ONE); // Behövs för annars vet inte gameState vem det är.
         // Ska settas på ett annat ställe sen.
         guiManager.renderHand(playerOne.getHand());
+    }
+    public PlayerID getCurrentPlayerId(){
+        return gameState.getCurrentPlayerId();
     }
 }
