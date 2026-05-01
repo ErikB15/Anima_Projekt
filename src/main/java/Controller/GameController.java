@@ -216,6 +216,29 @@ public class GameController {
         spotPicked = false;
     }
 
+    /**
+     * Vad som ska hända när knappen EndTurn klickas, jag har lagt till en extra GamePhase.
+     * Detta är så att om en spelare börjar spam klicka eller försöka attackera precis efter de klickat EndTurn.
+     * Så kommer de andra checks (som kollar vilken "Phase" det är) stoppa dem från att göra det tills endTurn är klar.
+     * Har skapat en ytterligare metod, "wakeUpCardsForPlayer" som väcker korten av den spelare som klickat endTurn.
+     *
+     * OBS, behövs callback eller GUI uppdateringen här igen mot slutet!
+     * @author Jim Ström
+     */
+    public void endTurn(){
+        gameState.setPhase(GamePhase.END_TURN);
+
+        Player currentPlayer = gameState.getCurrentPlayer();
+        PlayerID currentPlayerID = gameState.getCurrentPlayerId();
+
+        currentPlayer.drawUntilHandIsFull();
+        board.wakeUpCardsForPlayer(currentPlayerID);
+
+        gameState.switchTurn();
+        gameState.setPhase(GamePhase.PLAY);
+    }
+
+
     public void gameOver(){
 
         // TODO.. Här ska det fixas game over, mest troligen blir det bara att gameState resettas samt GUI:n
