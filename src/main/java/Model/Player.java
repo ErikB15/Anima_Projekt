@@ -36,10 +36,9 @@ public class Player {
      * Den har några safety checks, är spelarens kortlek tom så reshuffle vi den genom en metod.
      * Sen kollar vi igen, detta är en safety check för att se till att allt funkade som det skulle.
      * Sedan drar vi kortet från kortleken.
-     * @param nbrOfCardsToDraw - Hur många kort som ska dras, ändras beroende på antalet rundor.
      */
-    public void drawCard(int nbrOfCardsToDraw) {
-        for (int i = 0; i < nbrOfCardsToDraw; i++) {
+    public void drawUntilHandIsFull() {
+        for (int i = hand.size(); i < 3; i++) {
 
             if (deck.isEmpty()) {
                 reshuffleDeck();
@@ -49,9 +48,11 @@ public class Player {
                 return;
             }
 
-            hand.add(deck.removeFirst());
+            int randomIndex = (int)(Math.random() * deck.size());
+            hand.add(deck.remove(randomIndex));
         }
     }
+
 
     /**
      * Det här är för när ett kort dör, då ska det läggas in i "graveyard" kortleken.
@@ -76,6 +77,15 @@ public class Player {
         Collections.shuffle(deck);
     }
 
+
+    public void takeDamage(int damage) {
+        if ((hp - damage) <= 0) {
+            this.hp = 0;
+        } else {
+            this.hp = (hp - damage);
+        }
+    }
+
     /**
      * Kan du gissa vad detta göra?
      * @param hp - HP:et du vill sätta det till.
@@ -97,4 +107,36 @@ public class Player {
     public int getHp() {
         return hp;
     }
+
+    /**
+     * Enkel getter för att hämta handen spelaren har.
+     * @return En arraylist av cards som är spelarens hand.
+     * @author Jim Ström
+     */
+
+    public ArrayList<Card> getHand() {
+        return hand;
+    }
+
+    /**
+     * Enkel getter för att hämta kortlek spelaren har.
+     * @return En arraylist av cards som är spelarens kortlek.
+     * @author Jim Ström
+     */
+    public ArrayList<Card> getDeck() {
+        return deck;
+    }
+
+    /**
+     * Enkel getter för att hämta graveyard spelaren har.
+     * @return En arraylist av cards som är spelarens graveyard.
+     * @author Jim Ström
+     */
+    public ArrayList<Card> getGraveyard() {
+        return graveyard;
+    }
+
+
+
+
 }

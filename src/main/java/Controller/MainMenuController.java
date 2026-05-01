@@ -1,4 +1,4 @@
-package Controller;
+/*package Controller;
 
 import View.GUIManager;
 import View.MainGUILauncher;
@@ -31,3 +31,4 @@ public class MainMenuController {
        System.out.println("CardID: " + cardID + ", playerID: " + playerID + ", Card attack damage: " + cardAD + ", Card HitPoints: " +  cardHP);
     }
 }
+*/

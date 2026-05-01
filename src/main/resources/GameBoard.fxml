@@ -4,28 +4,27 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="496.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIManager">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="496.0" prefWidth="524.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIManager">
    <children>
       <ImageView fitHeight="496.0" fitWidth="578.0" layoutX="-13.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@backgroundGameBoard.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="index_3" fitHeight="90.0" fitWidth="59.0" layoutX="66.0" layoutY="285.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="index_4" fitHeight="90.0" fitWidth="59.0" layoutX="144.0" layoutY="285.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="index_5" fitHeight="90.0" fitWidth="59.0" layoutX="219.0" layoutY="285.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="index_0" fitHeight="129.0" fitWidth="87.0" layoutX="40.0" layoutY="367.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="-10.0">
+      <ImageView fx:id="p1board_0" fitHeight="90.0" fitWidth="59.0" layoutX="66.0" layoutY="285.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p1board_1" fitHeight="90.0" fitWidth="59.0" layoutX="144.0" layoutY="285.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p1board_2" fitHeight="90.0" fitWidth="59.0" layoutX="219.0" layoutY="285.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="hand_0" fitHeight="129.0" fitWidth="87.0" layoutX="40.0" layoutY="367.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="-10.0">
          <image>
             <Image url="@CardFRONT.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="index_1" fitHeight="129.0" fitWidth="87.0" layoutX="122.0" layoutY="360.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="hand_1" fitHeight="129.0" fitWidth="87.0" layoutX="122.0" layoutY="360.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardFRONT.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="index_2" fitHeight="129.0" fitWidth="87.0" layoutX="199.0" layoutY="367.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="10.0">
+      <ImageView fx:id="hand_2" fitHeight="129.0" fitWidth="87.0" layoutX="199.0" layoutY="367.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="10.0">
          <image>
             <Image url="@CardFRONT.png" />
          </image>
@@ -35,11 +34,15 @@
             <Image url="@CardBACKSIDE.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="index_6" fitHeight="90.0" fitWidth="59.0" layoutX="296.0" layoutY="285.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p1board_3" fitHeight="90.0" fitWidth="59.0" layoutX="296.0" layoutY="285.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
       <ImageView fitHeight="40.0" fitWidth="119.0" layoutX="380.0" layoutY="41.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@ExitButton.png" />
          </image>
       </ImageView>
+      <ImageView fx:id="p2board_3" fitHeight="90.0" fitWidth="59.0" layoutX="296.0" layoutY="158.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p2board_2" fitHeight="90.0" fitWidth="59.0" layoutX="219.0" layoutY="151.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p2board_1" fitHeight="90.0" fitWidth="59.0" layoutX="144.0" layoutY="158.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p2board_0" fitHeight="90.0" fitWidth="59.0" layoutX="66.0" layoutY="158.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>
