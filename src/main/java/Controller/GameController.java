@@ -78,6 +78,12 @@ public class GameController {
         // Och gameState ska bara skapas när vi gjort dessa grejer.
     }
 
+    /**
+     * Startas när vi går in i välja kort fasen.
+     * Randomizer för att slumpmässigt välja vem som börjar välja.
+     * Sen avslutas det med att sätta "GamePhase" till draft fasen.
+     * @author Jim Ström
+     */
     public void startDraftPhase(){
         int random = (int)(Math.random() * 2) + 1;
         if(random == 1){
@@ -90,7 +96,17 @@ public class GameController {
         gameState.setPhase(GamePhase.DRAFT);
     }
     /**
+     * Denna metoden är den som ska kallas när en spelare försöker välja ett kort.
+     * Bör finnas någon form av callback eller "updateGUI" metod i botten av denna koden.
+     * Vi har två viktiga checks i början, vi kollar så att kortet som valts inte är utanför array listen.
+     * Vi kollar dessutom att gameStaten är DRAFT.
+     * Sen får personen som valt ett kort sitt kort och det tas bort från listan.
+     * Därefter kollar vi ifall listan är tom, ifall den är tom så startar vi "playPhase".
+     * Är den inte tom så bytas det vem som väljer kort nästa gång.
      *
+     * PS. Det kan bli så att det behövs lägga till en check här som ser till att,
+     * det är rätt spelare som försöker välja kort. Så att både spelarna inte kan välja kort samtidigt.
+     * Är inte helt säker på hur det ska göras än
      * @param cardIndex - Index på kortet som väljs
      * @author Jim Ström
      */
@@ -111,6 +127,13 @@ public class GameController {
         // Ska finnas en metod eller callback för att uppdatera GUI:et
     }
 
+    /**
+     * Lik startDraftPhase, nu kollar vi på vilken spelare som började få kort i draft fasen.
+     * Efteråt ser vi till att båda de kortlekarna spelarna fått blir blandande.
+     * Sen drar båda spelarna tills deras hand är fylld.
+     * Till sist sätter vi gameState till "Play".
+     * @author Jim Ström
+     */
     public void startPlayPhase(){
         if(gameState.getFirstDraftPlayer() == PlayerID.PLAYER_ONE){
             gameState.setCurrentPlayer(PlayerID.PLAYER_TWO);
@@ -124,16 +147,39 @@ public class GameController {
         gameState.setPhase(GamePhase.PLAY);
     }
 
+
+    /**
+     * Tanken är att denna metoden ska checka alla spelreglerna. Detta gör uppdelningen dels enklare men-
+     * också gör att vi slipper ha väldigt stora metoder.
+     * Så denna metoden hanterar spellogiken och alla checks som måste göras där.
+     * Sen moveCardFromHandToBoard genomför själva GUI rörelsen.
+     * Dessutom, kanske, ni märker att där finns många gameState.get/.set
+     * Detta är för att som jag fattat är det bäst att röra informationen i gameState och spara den där.
+     * Även ifall det ser väldigt fult ut rent kod -mässigt.
+     * @param handIndex - Indexet på kortet i handen vi vill röra.
+     * @param boardIndex - Index på brädan där vi vill placera kortet.
+     * @return - Returnerar en boolean för ifall att det lyckades eller inte.
+     */
     public boolean placeCard(int handIndex, int boardIndex){
-        if(gameState.getPhase() != GamePhase.PLAY){return false;}
+        //if(gameState.getPhase() != GamePhase.PLAY){return false;}
+        // Avkommenoterad för att kunna testa olika grejer, kommer finnas när allting puzzlat samman.
+
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
+
+        Card playedCard = currentPlayer.getHand().get(handIndex);
+
         if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){return false;}
-        Card playedCard = currentPlayer.getHand().remove(handIndex);
+        if(gameState.getCardsPlayedThisTurn() == gameState.getMaxCardsToPlayPerTurn()) {return false;}
+
+        currentPlayer.getHand().remove(handIndex);
         currentPlayer.takeDamage(playedCard.getCardCost());
-        board.getCard(currentPlayerID, boardIndex).setAsleep(true);
+
+        playedCard.setAsleep(true);
+
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
+
         if(gameState.isGameOver()){
             gameOver();
         }
@@ -143,14 +189,15 @@ public class GameController {
 
     /**
      * Metoden hanterar flytten av ett kort från spelarens hand till spelbrädet. Metoden kontrollerar valda index,
-     * uppdaterar spelmodellen genom att flytta kortet och ta bort det från handen, och anropar sedan GUIManager för att uppdatera det visuella resultatet.
+     * uppdaterar spelmodellen genom att kalla metoden placeCard som ändrar modellernas information.
+     * Efteråt anropar sedan GUIManager för att uppdatera det visuella resultatet.
      * Sen återställs input-status för nästa drag.
      *
      * @author Erik, Jim Ström, Elna
      */
     public void moveCardFromHandtoBoard() {
         Player currentPlayer = gameState.getCurrentPlayer();
-        PlayerID currentPlayerId = gameState.getCurrentPlayerId();
+        System.out.println("Current player: " + gameState.getCurrentPlayerId()); // Debug, var nödvändig.
 
         if (!cardPicked || !spotPicked) return;
 
@@ -158,9 +205,9 @@ public class GameController {
 
         Card cardMoved = currentPlayer.getHand().get(indexCardOnHandToMove);
 
-        board.placeCard(currentPlayerId, indexSpotToPlaceCard, cardMoved);
-
-        currentPlayer.getHand().remove(indexCardOnHandToMove);
+        // Det är här jag slängt in denna metoden. Istället för att sätta den på board här direkt.
+        if(!placeCard(indexCardOnHandToMove, indexSpotToPlaceCard)){return;}
+        // Själva metoden kommer skicka tillbaka om det inte gått, och då går det ännu längre bak.
 
         guiManager.renderHand(currentPlayer.getHand());
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
@@ -171,14 +218,17 @@ public class GameController {
 
     public void gameOver(){
 
+        // TODO.. Här ska det fixas game over, mest troligen blir det bara att gameState resettas samt GUI:n
+        // Om jag inte hunnit och ni redan kollar på detta, så kan ni göra en GUI metod som bara resettar allt.
+        // Och sedan kalla den här inne, så ska jag fixa att uppdaterra klasserna och all den delen strax.
     }
 
     /**
      * Binder kort-objektet till motsvarande ImageView i gui.
      * Kopplar varje kort i allCards till en visuell representation i guit.
      *
-     * @Param: cardImageView - lista av ImageView som representerar kort i gui
-     * @auther: Erik
+     * @param cardImageView - lista av ImageView som representerar kort i gui
+     * @author Erik
      */
     public void bindCardsToView(ArrayList<ImageView> cardImageView) {
         for (int i = 0; i < cardImageView.size(); i++) {
@@ -191,7 +241,7 @@ public class GameController {
      *
      * @param view - bild-"ramen".
      * @param card - objektet som ska kopplas.
-     * @auther: Erik
+     * @author Erik
      */
     private void bind(ImageView view, Card card) {
         view.setUserData(card);
@@ -200,8 +250,8 @@ public class GameController {
     /**
      * Sätter index för vilket kort i handen som ska flyttas.
      *
-     * @Param: index - positionen i spelarens hand
-     * @auther: Elna
+     * @param index - positionen i spelarens hand
+     * @author Elna
      */
     public void setIndexCardOnHandToMove(int index){
         indexCardOnHandToMove = index;
@@ -224,7 +274,7 @@ public class GameController {
 
 
     /**
-     * Radera? tänker att vi inte ska ha event listeners i controller -Elna
+     * Radera? Tänker att vi inte ska ha event listeners i controller -Elna
      *
      * @param event
      * @author
@@ -238,7 +288,7 @@ public class GameController {
     /**
      * Sätter guiManager instans.
      *
-     * @param guiManager
+     * @param guiManager -
      * @author Erik
      */
     public void setGuiManager(GUIManager guiManager){
@@ -299,6 +349,8 @@ public class GameController {
         playerOne.drawUntilHandIsFull();
         playerTwo.drawUntilHandIsFull();
 
+        gameState.setCurrentPlayer(PlayerID.PLAYER_ONE); // Behövs för annars vet inte gameState vem det är.
+        // Ska settas på ett annat ställe sen.
         guiManager.renderHand(playerOne.getHand());
     }
 }
