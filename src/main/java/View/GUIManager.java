@@ -1,6 +1,7 @@
 package View;
 
 import Controller.GameController;
+import Model.PlayerID;
 import Model.Zone;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -292,8 +293,6 @@ public class GUIManager {
     public void pickedSpotToPlaceCardIndexPoint(MouseEvent event){
 
         if(isYourTurn == true) {
-
-
             if (cardFromHandPicked == false) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Warning!");
@@ -342,6 +341,10 @@ public class GUIManager {
      * @Param: event - MouseEvent från ImageView
      * @author: Erik, Elna
      */
+
+    //Något jag vill lägga till i framtiden är att "moståndaren" i singleplayer-match ska välja sitt eget kort.
+    // För nu väljer du ditt kort, sen väljer du motståndarens kort. Men kan man göra så att moståndarens väljer sitt eget kort hade det varit nice
+    // /Erik
     public void pickedCard(MouseEvent event) {
         ImageView clickedCard = (ImageView) event.getSource();
         Card card = (Card) clickedCard.getUserData();
@@ -486,10 +489,14 @@ public class GUIManager {
 
     /**
      * Metoden existerar för att begränsa vem som kan samtala med gui och skickar endast vidare ansvaret av logiken till gameControllern.
+     * Anropas av FXML-filen "GameBoard".
      * @author Erik
      */
     public void endTurnInGui(){
         System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
+        if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
+            isYourTurn=true;
+        }
         gameController.endTurn();
     }
 
@@ -556,7 +563,7 @@ public class GUIManager {
     public void init() {
         zoneMap.put(Zone.HAND, new ImageView[]{hand_0, hand_1, hand_2});
         zoneMap.put(Zone.PLAYER_BOARD, new ImageView[]{p1board_0, p1board_1, p1board_2, p1board_3});
-        //zoneMap.put(Zone.OPPONENT_BOARD, new ImageView[]{card_4, card_5, card_6}); // ändra senare när moståndare är aktuellt.
+        zoneMap.put(Zone.OPPONENT_BOARD, new ImageView[]{p2board_0, p2board_1, p2board_2, p2board_3});
     }
 
     /**

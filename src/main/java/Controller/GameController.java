@@ -210,6 +210,7 @@ public class GameController {
      * @author Erik, Jim Ström, Elna
      */
     public void moveCardFromHandtoBoard() {
+
         Player currentPlayer = gameState.getCurrentPlayer();
         System.out.println("Current player: " + gameState.getCurrentPlayerId()); // Debug, var nödvändig.
 
@@ -236,12 +237,9 @@ public class GameController {
      * Så kommer de andra checks (som kollar vilken "Phase" det är) stoppa dem från att göra det tills endTurn är klar.
      * Har skapat en ytterligare metod, "wakeUpCardsForPlayer" som väcker korten av den spelare som klickat endTurn.
      *
-     * OBS, behövs callback eller GUI uppdateringen här igen mot slutet!
-     * @author Jim Ström
+     * @author Jim, Erik
      */
     public void endTurn(){
-        gameState.setPhase(GamePhase.END_TURN);
-
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
@@ -249,8 +247,44 @@ public class GameController {
         board.wakeUpCardsForPlayer(currentPlayerID);
 
         gameState.switchTurn();
-        gameState.setPhase(GamePhase.PLAY);
+
+        if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
+            enemyTurn();
+        }
     }
+
+
+    /**
+     * Metoden för att simulera single-player motståndarens omgång.
+     * Samma metoder som när vi vill lägga kort men med en while-loop som kontrollerar att där motståndaren vill lägga kort är en gilltig plats.
+     *
+     * @author Erik
+     */
+    private void enemyTurn() {
+        if (playerTwo.getHand().isEmpty()) {
+            playerTwo.drawUntilHandIsFull();
+        }
+
+        if (playerTwo.getHand().isEmpty()) {
+            return;
+        }
+
+        int handIndex = (int) (Math.random() * playerTwo.getHand().size());
+        Card card = playerTwo.getHand().get(handIndex);
+        int boardIndex = (int) (Math.random() * 4);
+
+        while(!board.placeCard(PlayerID.PLAYER_TWO, boardIndex, card)){
+            boardIndex = (int) (Math.random() * 4);
+        }
+
+        playerTwo.getHand().remove(handIndex);
+
+        card.setAsleep(true);
+
+        guiManager.renderCard(Zone.OPPONENT_BOARD, boardIndex, card.getImagePath());
+        //endTurn();       // Som det är nu måste vi enda motståndarens omgång, vi gör det för att kontrollera flödet lite mer men kan ändras i framtiden.
+    }
+
 
 
     public void gameOver(){

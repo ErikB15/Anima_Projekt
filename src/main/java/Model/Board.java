@@ -104,5 +104,10 @@ public class Board {
     public Card getCard(PlayerID player, int boardIndex) {
         return getSlotsForPlayer(player)[boardIndex];
     }
+
+    public Card getSlot(PlayerID player, int index) {
+        return getSlotsForPlayer(player)[index];
+    }
+
 }
 
