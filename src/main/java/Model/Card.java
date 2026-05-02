@@ -1,5 +1,7 @@
 package Model;
 
+import Model.CardEffects.Effect;
+
 public class Card {
     private String cardName;
     private int cardAD;

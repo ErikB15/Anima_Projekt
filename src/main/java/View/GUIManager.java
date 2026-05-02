@@ -343,8 +343,6 @@ public class GUIManager {
      * @author: Erik, Elna
      */
     public void pickedCard(MouseEvent event) {
-        System.out.println("I have clicked the card!");
-
         ImageView clickedCard = (ImageView) event.getSource();
         Card card = (Card) clickedCard.getUserData();
 

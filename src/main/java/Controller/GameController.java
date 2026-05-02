@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import Model.*;
+import Model.CardEffects.*;
 import View.*;
 import javafx.scene.image.ImageView;
 
@@ -28,6 +29,12 @@ public class GameController {
     private GUIManager guiManager;
     private Card testCard; //ENDAST FÖR TESTNING
     private GameState gameState;
+    private DubbelHit dubbelHit;
+    private Taunt taunt;
+    private Heal heal;
+    private Shield shield;
+    private Poison poison;
+    private Buff buff;
 
     /**
      * Skapar en ny GameController och initierar spelets grunddata.
@@ -44,6 +51,13 @@ public class GameController {
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
         addAllCards();
+
+        dubbelHit = new DubbelHit();
+        heal = new Heal();
+        taunt = new Taunt();
+        shield = new Shield();
+        poison = new Poison();
+        buff = new Buff();
     }
 
 
@@ -55,12 +69,12 @@ public class GameController {
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        allCards.add(new Card("Test1", 1,50,1,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test2", 5,25,2,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test3", 13,34,3,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test4", 30,20,4,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test5", 10,30,5,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test6", 2,40,6,null, "/CardFRONT.png"));
+        allCards.add(new Card("Test1", 1,50,1,taunt, "/CardFRONT.png"));
+        allCards.add(new Card("Test2", 5,25,2,buff, "/CardFRONT.png"));
+        allCards.add(new Card("Test3", 13,34,3,dubbelHit, "/CardFRONT.png"));
+        allCards.add(new Card("Test4", 30,20,4,heal, "/CardFRONT.png"));
+        allCards.add(new Card("Test5", 10,30,5,shield, "/CardFRONT.png"));
+        allCards.add(new Card("Test6", 2,40,6,poison, "/CardFRONT.png"));
     }
 
     /**
