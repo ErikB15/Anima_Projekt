@@ -53,6 +53,27 @@ public class Board {
     }
 
     /**
+     * Kollar vilken spelare det är, så att rutorna inte är tomma och gör sedan så att boolean i kortet är false.
+     * @param player - Vilken spelare är det vi ska väcka korten på.
+     * @author Jim Ström
+     */
+    public void wakeUpCardsForPlayer(PlayerID player){
+        if(player == PlayerID.PLAYER_ONE){
+            for (int i = 0; i < playerOneSlots.length; i++){
+                if(playerOneSlots[i] != null){
+                    playerOneSlots[i].setAsleep(false);
+                }
+            }
+        }else{
+            for (int i = 0; i < playerTwoSlots.length; i++){
+                if(playerTwoSlots[i] != null){
+                    playerTwoSlots[i].setAsleep(false);
+                }
+            }
+        }
+    }
+
+    /**
      * Hämtar den sidan som spelaren äger, genom att använda enum:et "PlayerID" så blir det rätt lättläsligt.
      * @param player - Enum:et som säger vilken spelare är spelare 1 och vilken är spelare 2.
      * @return - Ger tillbaka Card array:en som har dem olika korten på plan.
@@ -83,5 +104,10 @@ public class Board {
     public Card getCard(PlayerID player, int boardIndex) {
         return getSlotsForPlayer(player)[boardIndex];
     }
+
+    public Card getSlot(PlayerID player, int index) {
+        return getSlotsForPlayer(player)[index];
+    }
+
 }
 

@@ -36,10 +36,9 @@ public class Player {
      * Den har några safety checks, är spelarens kortlek tom så reshuffle vi den genom en metod.
      * Sen kollar vi igen, detta är en safety check för att se till att allt funkade som det skulle.
      * Sedan drar vi kortet från kortleken.
-     * @param nbrOfCardsToDraw - Hur många kort som ska dras, ändras beroende på antalet rundor.
      */
-    public void drawCard(int nbrOfCardsToDraw) {
-        for (int i = 0; i < nbrOfCardsToDraw; i++) {
+    public void drawUntilHandIsFull() {
+        for (int i = hand.size(); i < 3; i++) {
 
             if (deck.isEmpty()) {
                 reshuffleDeck();
@@ -76,7 +75,15 @@ public class Player {
         deck.addAll(graveyard);
         graveyard.clear();
         Collections.shuffle(deck);
-        drawInitialHand(3);
+    }
+
+
+    public void takeDamage(int damage) {
+        if ((hp - damage) <= 0) {
+            this.hp = 0;
+        } else {
+            this.hp = (hp - damage);
+        }
     }
 
     /**
@@ -127,16 +134,6 @@ public class Player {
      */
     public ArrayList<Card> getGraveyard() {
         return graveyard;
-    }
-
-    public void drawInitialHand(int amount) {
-        for (int i = 0; i < amount; i++) {
-            if (deck.isEmpty()) return;
-
-            int randomIndex = (int)(Math.random() * deck.size());
-            Card drawn = deck.remove(randomIndex);
-            hand.add(drawn);
-        }
     }
 
 

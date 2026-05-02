@@ -1,4 +1,4 @@
-package Model;
+package Model.CardEffects;
 
 /**
  * Rent krast kommer klassen antagligen inte användas så där jätte jätte mycket. Men den är här för att-
