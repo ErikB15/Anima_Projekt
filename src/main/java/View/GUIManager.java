@@ -1,7 +1,6 @@
 package View;
 
 import Controller.GameController;
-import Model.PlayerID;
 import Model.Zone;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -51,6 +50,7 @@ public class GUIManager {
 
     //Array för att lägga till alla Image View i
     private ArrayList<ImageView> boardImageViews = new ArrayList<ImageView>();
+    private ArrayList selectedCardsInPickCardphase = new ArrayList();
 
     @FXML private ImageView p1board_0;
     @FXML private ImageView p1board_1;
@@ -335,6 +335,9 @@ public class GUIManager {
     /**
      * Hanterar klick på kort i pick-fasen.
      * Hämtar kort från gui och skickar det till GameController för att läggas i spelarens deck.
+     * Vi kontrollerar också om kortet redan är valt, detta uppnås genom att vi lägger in dett klickade imageview objektet
+     * i en array. Vi går igenom array innan vi lägger till kortet i decket och skulle kortet redan ha avrit valt så retunerar vi.
+     * Om kort-valet är gilltig så gör vi dessutom om bilden till bakssidan så man ser att den är vald.
      *
      * @Param: event - MouseEvent från ImageView
      * @author: Erik, Elna
@@ -342,8 +345,18 @@ public class GUIManager {
     public void pickedCard(MouseEvent event) {
         System.out.println("I have clicked the card!");
 
-        ImageView clicked = (ImageView) event.getSource();
-        Card card = (Card) clicked.getUserData();
+        ImageView clickedCard = (ImageView) event.getSource();
+        Card card = (Card) clickedCard.getUserData();
+
+        for (int i = 0; i < selectedCardsInPickCardphase.size(); i++){
+            if (selectedCardsInPickCardphase.get(i) == clickedCard) {
+                System.out.println("Card already chosen! Pick another card.");
+                return;
+            }
+        }
+
+        selectedCardsInPickCardphase.add(clickedCard);
+        clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
 
         if (playerOnesTurn == true){
             gameController.addCardToPlayerOne(card);
@@ -354,14 +367,8 @@ public class GUIManager {
             System.out.println("card added to player 2 deck");
             playerOnesTurn = true;
         }
-
-        //Försöker få bilden att ändras till kortets baksida. INTE KLAR
-       // Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
-
-       /* if(cardIDInt == 25){
-            card_25.setImage(backsideCard);
-        }*/
     }
+
 
     /**
      * TESTMETOD för sammankoppling med GUI

@@ -355,9 +355,6 @@ public class GameController {
      * @author Erik
      */
     public void addCardToPlayerOne(Card card){
-        System.out.println(card);
-        System.out.println(card != null ? card.getImagePath() : "NULL CARD");
-
         playerOne.addCardToDeck(card);
         allCards.remove(card);
     }
@@ -372,9 +369,6 @@ public class GameController {
      * @author Erik
      */
     public void addCardToOpponent(Card card){
-        System.out.println(card);
-        System.out.println(card != null ? card.getImagePath() : "NULL CARD");
-
         playerTwo.addCardToDeck(card);
         allCards.remove(card);
     }
