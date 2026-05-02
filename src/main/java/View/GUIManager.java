@@ -593,21 +593,66 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Visar att spelaren väntar på att motståndaren ska ansluta.
+     * Anropas av GameController när WAITING meddelande tas emot från servern.
+     * @author Leo
+     */
     public void showWaiting()             {
         System.out.println("Väntar...");
     }
+
+    /**
+     * Aktiverar spelarens möjlighet att interagera med spelbrädet.
+     * Sätter isYourTurn till true så att knapptrycken registreras.
+     * Anropas av GameController när YOUR_TURN tas emot från servern.
+     * @author Leo
+     */
     public void enableCardButtons()       {
         isYourTurn = true;
     }
+
+    /**
+     * Tar emot ett uppdaterat spelläge från servern som JSON sträng.
+     * Fylls i med riktig GUI uppdatering när spellägets struktur är klar.
+     * Anropas av GameController när GAME_STATE tas emot från servern.
+     *
+     * @param json det uppdaterade spelläget serialiserat som JSON
+     * @author Leo
+     */
     public void updateBoard(String json)  {
         System.out.println("Spelläge: " + json);
     }
+
+    /**
+     * Visar vem som vann när spelet är slut.
+     * Anropas av GameController när GAME_OVER tas emot från servern.
+     *
+     * @param name namnet på spelaren som vann
+     * @author Leo
+     */
     public void showGameOver(String name) {
         sendMessageThroughGUI("Vinnare: " + name);
     }
+
+    /**
+     * Visar ett felmeddelande från servern i GUI.
+     * Anropas av GameController när ERROR tas emot från servern.
+     *
+     * @param msg felmeddelandet som ska visas
+     * @author Leo
+     */
     public void showError(String msg)     {
         sendMessageThroughGUI(msg);
     }
+
+    /**
+     * Visar ett chattmeddelande i GUI.
+     * Anropas av GameController när CHAT tas emot från servern.
+     *
+     * @param msg chattmeddelandets text
+     * @author Leo
+     */
     public void showChat(String msg)      {
         System.out.println("Chatt: " + msg);
     }

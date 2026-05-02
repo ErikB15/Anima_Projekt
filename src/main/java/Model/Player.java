@@ -23,6 +23,7 @@ public class Player {
         this.deck = new ArrayList<>();
         this.hand = new ArrayList<>();
         this.graveyard = new ArrayList<>();
+        this.name = name;
     }
 
     /**

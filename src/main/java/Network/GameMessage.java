@@ -2,9 +2,13 @@ package Network;
 
 
 /**
- * Sjölva "kuveret som skickas mellan server och klient med data
- * Alla meddelande mellan server och klient har detta format,
- * vilken typ av enum bestämmer payload innehåller
+ * Representerar ett meddelande som skickas mellan server och klient.
+ * Fungerar som ett "kuvert" där type beskriver vad meddelandet handlar om
+ * och payload innehåller den faktiska datan som en JSON sträng.
+ *
+ * Alla kommunikation i nätverket sker via denna klass.
+ *
+ * @author Leo
  */
 public class GameMessage {
 
@@ -31,20 +35,37 @@ public class GameMessage {
 
         public GameMessage() {}
 
+    /**
+     * Skapar ett nytt meddelande med typ, data och avsändare.
+     *
+     * @param type    vilken typ av meddelande det är
+     * @param payload data som medföljer, JSON sträng eller tom sträng
+     * @param steamId namnet på den som skickar
+     * @author Leo
+     */
         public GameMessage(Type type, String payload, String steamId){
             this.type = type;
             this.payload = payload;
             this.steamId = steamId;
         }
 
+    /**
+     * @return meddelandets typ
+     */
     public Type getType() {
             return type;
     }
 
+    /**
+     * @return payload-strängen, kan vara JSON eller tom
+     */
     public String getPayload() {
             return payload;
     }
 
+    /**
+     * @return namnet på den som skickade meddelandet
+     */
     public String getSteamId() {
             return steamId;
     }

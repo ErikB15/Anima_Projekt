@@ -384,9 +384,13 @@ public class GameController implements GameStateListener {
     }
 
     /**
-     * Så vi kan connecta till server, skapar gameclient, samt sätter igång listeern och conectar till server
-     * @param playerName
-     * @throws Exception
+     * Ansluter spelaren till spelservern via nätverket.
+     * Skapar en GameClient, registrerar GameController som lyssnare
+     * för nätverkshändelser och skickar ett JOIN meddelande till servern.
+     *
+     * @param playerName spelarens namn som används för identifiering på servern
+     * @throws Exception om anslutningen till servern misslyckas
+     * @author Leo
      */
     public void connectToServer(String playerName) throws Exception {
         gameClient = new GameClient("localhost", 5555);
@@ -394,22 +398,69 @@ public class GameController implements GameStateListener {
         gameClient.connect(playerName, playerName);
     }
 
-    @Override public void onWaiting()                 {
+    /**
+     * Anropas av nätverket när spelaren väntar på motståndaren.
+     * Körs via Platform.runLater() för att säkert uppdatera JavaFX tråden.
+     * @author Leo
+     */
+    @Override
+    public void onWaiting()                 {
         Platform.runLater(() -> guiManager.showWaiting());
     }
-    @Override public void onYourTurn()                {
+
+    /**
+     * Anropas av nätverket när det är spelarens tur.
+     * Aktiverar spelarens knappar i GUI via GUIManager.
+     * @author Leo
+     */
+    @Override
+    public void onYourTurn()                {
         Platform.runLater(() -> guiManager.enableCardButtons());
     }
-    @Override public void onGameStateUpdate(String j) {
+
+    /**
+     * Anropas av nätverket när spelläget uppdaterats.
+     * Vidarebefordrar JSON strängen till GUIManager som ritar om brädet.
+     *
+     * @param j det uppdaterade spelläget som JSON sträng
+     * @author Leo
+     */
+    @Override
+    public void onGameStateUpdate(String j) {
         Platform.runLater(() -> guiManager.updateBoard(j));
     }
-    @Override public void onGameOver(String winner)   {
+
+    /**
+     * Anropas av nätverket när spelet är slut.
+     * Vidarebefordrar vinnarens namn till GUIManager.
+     *
+     * @param winner namnet på spelaren som vann
+     * @author Leo
+     */
+    @Override
+    public void onGameOver(String winner)   {
         Platform.runLater(() -> guiManager.showGameOver(winner));
     }
-    @Override public void onError(String msg)         {
+
+    /**
+     * Anropas av nätverket när ett felmeddelande tas emot.
+     *
+     * @param msg felmeddelandet från servern
+     * @author Leo
+     */
+    @Override
+    public void onError(String msg)         {
         Platform.runLater(() -> guiManager.showError(msg));
     }
-    @Override public void onChat(String msg)          {
+
+    /**
+     * Anropas av nätverket när ett chattmeddelande tas emot.
+     *
+     * @param msg chattmeddelandets text
+     * @author Leo
+     */
+    @Override
+    public void onChat(String msg)          {
         Platform.runLater(() -> guiManager.showChat(msg));
     }
 

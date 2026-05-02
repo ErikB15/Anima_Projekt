@@ -5,9 +5,12 @@ import java.io.*;
 import java.net.Socket;
 
 /**
- * imports som måste göra så vi kan skicka json stränar plus ha sockets
- * Varje spelare har en instans av denna klass, den öppnar en socket till servern
- * lyssanr i bakgrunden och anropar GameStateListenr när något händer
+ * Representerar en spelares anslutning till spelservern.
+ * Varje spelare skapar en instans av denna klass för att ansluta.
+ * Klassen öppnar en socket, lyssnar på servern i en bakgrundstråd
+ * och anropar GameStateListener när något händer i spelet.
+ *
+ * @author Leo
  */
 public class GameClient {
 
@@ -21,12 +24,28 @@ public class GameClient {
     private String displayName;
     private GameStateListener listener;
 
+    /**
+     * Skapar en ny GameClient som är redo att ansluta till en server.
+     *
+     * @param serverHost serverns IP adress, "localhost" för samma dator
+     * @param serverPort porten servern lyssnar på
+     * @author Leo
+     */
     public GameClient(String serverHost, int serverPort){
         this.serverHost = serverHost;
         this.serverPort = serverPort;
     }
 
-    //Metod som Ansluter till servern, steamId och displayname sätts här
+    /**
+     * Ansluter till spelservern och identifierar spelaren.
+     * Öppnar en socket, startar en bakgrundstråd som lyssnar på servern
+     * och skickar ett JOIN meddelande så servern vet vem som anslutit.
+     *
+     * @param steamId     spelarens unika namn som identifierar dem på servern
+     * @param displayName spelarens visningsnamn
+     * @throws Exception om anslutningen till servern misslyckas
+     * @author Leo
+     */
     public void connect(String steamId, String displayName) throws Exception{
         this.steamId = steamId;
         this.displayName = displayName;
@@ -36,6 +55,14 @@ public class GameClient {
         send(new GameMessage(GameMessage.Type.JOIN, displayName, steamId)); //presentera sig för server, vi skickar att vi sa join game med steamid
     }
 
+
+    /**
+     * Lyssnar kontinuerligt på meddelanden från servern.
+     * Körs i en egen bakgrundstråd så att GUI tråden inte blockeras.
+     * Varje rad som tas emot deserialiseras från JSON till ett GameMessage.
+     *
+     * @author Leo
+     */
     private void listenToServer() {
         try (BufferedReader in = new BufferedReader(
                 new InputStreamReader((socket.getInputStream())))) {
@@ -49,6 +76,15 @@ public class GameClient {
         }
     }
 
+
+    /**
+     * Hanterar inkommande meddelanden från servern.
+     * Vidarebefordrar händelsen till GameStateListener som GameController
+     * implementerar, vilket håller nätverkskoden separerad från GUI-koden.
+     *
+     * @param msg meddelandet som tagits emot från servern
+     * @author Leo
+     */
     private void handleMessage(GameMessage msg){
         if (listener == null)
             return;
@@ -62,30 +98,68 @@ public class GameClient {
         }
     }
 
-    //metoder nedan är handlingar en spelare kan utföra
+    //metoder nedan är handlingar en spelare kan
+
+    /**
+     * Skickar ett meddelande om att spelaren vill spela ett kort.
+     *
+     * @param cardId id på kortet som spelas
+     * @author Leo
+     */
     public void playCard(String cardId) {
         send(new GameMessage(GameMessage.Type.PLAY_CARD, cardId, steamId));
     }
 
+    /**
+     * Skickar ett meddelande om att spelaren avslutar sin tur.
+     *
+     * @author Leo
+     */
     public void endTurn() {
         send(new GameMessage(GameMessage.Type.END_TURN, " ", steamId));
     }
 
+    /**
+     * Skickar ett chattmeddelande till alla spelare.
+     *
+     * @param message texten som ska skickas
+     * @author Leo
+     */
     public void sendChat(String message) {
         send(new GameMessage(GameMessage.Type.CHAT, message, steamId));
     }
 
+    /**
+     * Serialiserar ett GameMessage till JSON och skickar det till servern.
+     *
+     * @param msg meddelandet som ska skickas
+     * @author Leo
+     */
     private void send(GameMessage msg){
         out.println(gson.toJson(msg));
     }
 
+    /**
+     * Registrerar en lyssnare som får speluppdateringar från servern.
+     * GameController implementerar detta interface och kopplas hit.
+     *
+     * @param listener instansen som ska ta emot nätverkshändelser
+     * @author Leo
+     */
     public void setListener(GameStateListener listener){
         this.listener = listener;
     }
 
+    /**
+     * @return spelarens namn som används för identifiering på servern
+     */
     public String getSteamId() {
         return steamId;
     }
+
+    /**
+     * @return spelarens visningsnamn
+     */
     public String getDisplayName() {
         return displayName;
     }
