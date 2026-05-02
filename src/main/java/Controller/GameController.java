@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import Model.*;
+import Network.GameClient;
+import Network.GameStateListener;
 import View.*;
+import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 
 
@@ -12,9 +15,10 @@ import javafx.scene.image.ImageView;
  * Game Controller klassen, syftet är att kontroller flödet av information från view och Model under matchens gång.
  * När matchens avslutas stängs även game controllern, då den endast är nödvändig när matchen är aktiv.
  */
-public class GameController {
+public class GameController implements GameStateListener {
     private ArrayList<Card> allCards;
     private ArrayList<Effect> allEffects;
+    private GameClient gameClient; // nytt fält så vi kan snacka med gameclient
 
     //Mekanik för att byta plats på kort i playerOneActiveCards
     private int indexCardOnHandToMove;
@@ -39,8 +43,8 @@ public class GameController {
     public GameController(){
         allCards = new ArrayList<>();
         allEffects = new ArrayList<>();
-        playerOne = new Player();
-        playerTwo = new Player();
+        playerOne = new Player("Player1");
+        playerTwo = new Player("Player2"); //identifera spelare för servern såd e har ett namn
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
         addAllCards();
@@ -236,6 +240,8 @@ public class GameController {
 
         gameState.switchTurn();
         gameState.setPhase(GamePhase.PLAY);
+
+        if (gameClient != null) gameClient.endTurn(); //ny här, detta så vi säger till gameclient att det är endtrun
     }
 
 
@@ -376,4 +382,35 @@ public class GameController {
         // Ska settas på ett annat ställe sen.
         guiManager.renderHand(playerOne.getHand());
     }
+
+    /**
+     * Så vi kan connecta till server, skapar gameclient, samt sätter igång listeern och conectar till server
+     * @param playerName
+     * @throws Exception
+     */
+    public void connectToServer(String playerName) throws Exception {
+        gameClient = new GameClient("localhost", 5555);
+        gameClient.setListener(this);
+        gameClient.connect(playerName, playerName);
+    }
+
+    @Override public void onWaiting()                 {
+        Platform.runLater(() -> guiManager.showWaiting());
+    }
+    @Override public void onYourTurn()                {
+        Platform.runLater(() -> guiManager.enableCardButtons());
+    }
+    @Override public void onGameStateUpdate(String j) {
+        Platform.runLater(() -> guiManager.updateBoard(j));
+    }
+    @Override public void onGameOver(String winner)   {
+        Platform.runLater(() -> guiManager.showGameOver(winner));
+    }
+    @Override public void onError(String msg)         {
+        Platform.runLater(() -> guiManager.showError(msg));
+    }
+    @Override public void onChat(String msg)          {
+        Platform.runLater(() -> guiManager.showChat(msg));
+    }
+
 }

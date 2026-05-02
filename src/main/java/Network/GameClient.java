@@ -30,15 +30,10 @@ public class GameClient {
     public void connect(String steamId, String displayName) throws Exception{
         this.steamId = steamId;
         this.displayName = displayName;
-
         socket = new Socket(serverHost, serverPort);
         out = new PrintWriter(socket.getOutputStream(), true);
-
-        //En bakgrundtråd som lyssnar på servern
-        new Thread(this::listenerToServer).start();
-
-        //presentera sig för server, vi skickar att vi sa join game med steamid
-        send(new GameMessage(GameMessage.Type.JOIN, displayName, steamId));
+        new Thread(this::listenToServer).start();           //En bakgrundtråd som lyssnar på servern
+        send(new GameMessage(GameMessage.Type.JOIN, displayName, steamId)); //presentera sig för server, vi skickar att vi sa join game med steamid
     }
 
     private void listenToServer() {

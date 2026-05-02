@@ -14,5 +14,7 @@ module com.example.anima_projekt {
     requires com.google.gson;
 
     opens View to javafx.fxml;
+    opens Model to com.google.gson;
+    opens Network to com.google.gson;
     exports View;
 }

@@ -31,7 +31,6 @@ public class GameMessage {
 
         public GameMessage() {}
 
-
         public GameMessage(Type type, String payload, String steamId){
             this.type = type;
             this.payload = payload;
@@ -39,14 +38,14 @@ public class GameMessage {
         }
 
     public Type getType() {
-        return type;
+            return type;
     }
 
     public String getPayload() {
-        return payload;
+            return payload;
     }
 
     public String getSteamId() {
-        return steamId;
+            return steamId;
     }
 }

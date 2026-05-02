@@ -592,4 +592,23 @@ public class GUIManager {
             }
         }
     }
+
+    public void showWaiting()             {
+        System.out.println("Väntar...");
+    }
+    public void enableCardButtons()       {
+        isYourTurn = true;
+    }
+    public void updateBoard(String json)  {
+        System.out.println("Spelläge: " + json);
+    }
+    public void showGameOver(String name) {
+        sendMessageThroughGUI("Vinnare: " + name);
+    }
+    public void showError(String msg)     {
+        sendMessageThroughGUI(msg);
+    }
+    public void showChat(String msg)      {
+        System.out.println("Chatt: " + msg);
+    }
 }

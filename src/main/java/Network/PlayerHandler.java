@@ -44,16 +44,12 @@ public class PlayerHandler implements Runnable {
                 server.registerPlayer(steamId, out);
             }
             case PLAY_CARD -> {
-                /**
-                 * spellogik ska komma in här
-                 */
+                server.handlePlayCard(steamId, msg.getPayload());
                 server.broadcast(new GameMessage(
                         GameMessage.Type.GAME_STATE, msg.getPayload(), steamId));
             }
             case END_TURN -> {
-                /**
-                 * spellogik här ocksp
-                 */
+                server.handleEndTurn(steamId);
                 server.broadcast(new GameMessage(
                         GameMessage.Type.YOUR_TURN, "", "server"));
             }
