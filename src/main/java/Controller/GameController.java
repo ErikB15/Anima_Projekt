@@ -197,6 +197,7 @@ public class GameController {
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
 
+        System.out.println("player 1 " + playerOne.getHp() + "player 2" + playerTwo.getHp());
         if(gameState.isGameOver()){
             gameOver();
         }
@@ -229,6 +230,8 @@ public class GameController {
 
         guiManager.renderHand(currentPlayer.getHand());
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
+
+
 
         cardPicked = false;
         spotPicked = false;
@@ -278,14 +281,21 @@ public class GameController {
 
         while(!board.placeCard(PlayerID.PLAYER_TWO, boardIndex, card)){
             boardIndex = (int) (Math.random() * 4);
-        }
 
+
+        }
         playerTwo.getHand().remove(handIndex);
+        playerTwo.takeDamage(card.getCardCost());
 
         card.setAsleep(true);
 
         guiManager.renderCard(Zone.OPPONENT_BOARD, boardIndex, card.getImagePath());
         //endTurn();       // Som det är nu måste vi enda motståndarens omgång, vi gör det för att kontrollera flödet lite mer men kan ändras i framtiden.
+
+        gameState.checkGameOver();
+        if(gameState.isGameOver()){
+            gameOver();
+        }
     }
 
     /**
