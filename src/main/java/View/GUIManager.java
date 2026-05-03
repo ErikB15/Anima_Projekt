@@ -240,6 +240,27 @@ public class GUIManager {
         }
     }
 
+
+    public void switchToGameOverScreen(){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
+            root = loader.load();
+
+            GUIManager controller = loader.getController();
+
+            controller.setGameController(gameController);
+            gameController.setGuiManager(controller);
+
+            Stage stage = new Stage();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Stänger applikationen helt.
      *
@@ -496,12 +517,26 @@ public class GUIManager {
      * Anropas av FXML-filen "GameBoard".
      * @author Erik
      */
-    public void endTurnInGui(){
+    public void endTurnInGuiInSinglePLayer(){
         System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
         if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
             isYourTurn=true;
         }
-        gameController.endTurn();
+        gameController.endTurnSinglePLayer();
+    }
+
+    /**
+     * Metoden existerar för att begränsa vem som kan samtala med gui och skickar endast vidare ansvaret av logiken till gameControllern.
+     * Anropas av FXML-filen "GameBoard".
+     *
+     * @author Erik
+     */
+    public void endTurnInGuiInMultiPLayer(){
+        System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
+        if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
+            isYourTurn=true;
+        }
+        gameController.endTurnMultiPLayer();
     }
 
     /**
@@ -632,6 +667,8 @@ public class GUIManager {
      * @author Erik
      */
     public void addMessageToEventLog(String message) {
+        if (textArea == null) return;
         textArea.appendText(message + "\n");
     }
+
 }

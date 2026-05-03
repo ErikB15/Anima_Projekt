@@ -7,6 +7,8 @@ import Model.*;
 import Model.CardEffects.*;
 import View.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+
 
 
 /**
@@ -35,6 +37,7 @@ public class GameController {
     private Shield shield;
     private Poison poison;
     private Buff buff;
+
 
     /**
      * Skapar en ny GameController och initierar spelets grunddata.
@@ -239,7 +242,7 @@ public class GameController {
      *
      * @author Jim, Erik
      */
-    public void endTurn(){
+    public void endTurnSinglePLayer(){
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
@@ -249,11 +252,10 @@ public class GameController {
         gameState.switchTurn();
 
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
-            enemyTurn();
+            enemyTurnInSinglePLayer();
         }
         addMassageInGui();
     }
-
 
     /**
      * Metoden för att simulera single-player motståndarens omgång.
@@ -261,7 +263,7 @@ public class GameController {
      *
      * @author Erik
      */
-    private void enemyTurn() {
+    private void enemyTurnInSinglePLayer() {
         if (playerTwo.getHand().isEmpty()) {
             playerTwo.drawUntilHandIsFull();
         }
@@ -286,13 +288,35 @@ public class GameController {
         //endTurn();       // Som det är nu måste vi enda motståndarens omgång, vi gör det för att kontrollera flödet lite mer men kan ändras i framtiden.
     }
 
+    /**
+     * Metod för att hantera end-turn och turbyte mellan spelare i mulitplayer.
+     * Ska fungera likannde som för singleplayer med små modifikationer.
+     *
+     * @author Erik
+     */
+    public void endTurnMultiPLayer(){
 
+        enemyTurnInMultiPlayer();
+    }
+
+    /**
+     * Metoden för att starta multi-player motståndarens omgång.
+     *
+     * @author Erik
+     */
+    public void enemyTurnInMultiPlayer(){
+
+    }
 
     public void gameOver(){
 
         // TODO.. Här ska det fixas game over, mest troligen blir det bara att gameState resettas samt GUI:n
         // Om jag inte hunnit och ni redan kollar på detta, så kan ni göra en GUI metod som bara resettar allt.
         // Och sedan kalla den här inne, så ska jag fixa att uppdaterra klasserna och all den delen strax.
+
+        guiManager.switchToGameOverScreen(); //visar just nu endast ett tumt fönster som inte säger ngt mer än gamover.
+        // gameover metoden borde beräkna resultat av matchen och sedan visa det i giut via guimanager.
+
     }
 
     /**
