@@ -197,7 +197,6 @@ public class GameController {
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
 
-        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         if(gameState.isGameOver()){
             gameOver();
         }
@@ -246,6 +245,7 @@ public class GameController {
      * @author Jim, Erik
      */
     public void endTurnSinglePLayer(){
+        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
