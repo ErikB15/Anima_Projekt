@@ -1,6 +1,12 @@
 package Model.CardEffects;
 
+import Controller.GameController;
+import Model.Player;
+import Model.PlayerID;
+
 public class Shield extends Effect{
+    private GameController gameController;
+    private PlayerID playerID;
 
     /**
      * Effekten gör så att kortet tar mindra skada när motståndarens kort attackerar detta kort.
@@ -11,7 +17,7 @@ public class Shield extends Effect{
 
     }
     @Override
-    public void activateEffekt() {
+    public void activateEffekt(GameController gameController, PlayerID owner, Player player, boolean isPlayersTurn) {
 
     }
 }

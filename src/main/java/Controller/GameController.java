@@ -197,7 +197,7 @@ public class GameController {
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
 
-        System.out.println("player 1 " + playerOne.getHp() + "player 2" + playerTwo.getHp());
+        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         if(gameState.isGameOver()){
             gameOver();
         }
@@ -485,4 +485,24 @@ public class GameController {
         String message = "hejsan svejsan detta är ett temporärt meddelande";
         guiManager.addMessageToEventLog(message);
     }
+
+    /**
+     * getter för att hämta alla korten på sin sida av spelbrädan.
+     * @param player
+     * @return ArrayList av kort objekt
+     * @author Erik
+     */
+    public ArrayList<Card> getCardsOnSide(PlayerID player) {
+        Card[] slots = board.getSlotsForPlayer(player);
+        ArrayList<Card> result = new ArrayList<>();
+
+        for (Card c : slots) {
+            if (c != null) {
+                result.add(c);
+            }
+        }
+
+        return result;
+    }
+
 }
