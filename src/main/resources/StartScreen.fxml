@@ -4,7 +4,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="545.0" prefWidth="588.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIManager">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="545.0" prefWidth="588.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIManager">
    <children>
       <ImageView fitHeight="545.0" fitWidth="602.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -16,19 +16,24 @@
             <Image url="@Title.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="199.0" fitWidth="433.0" layoutX="77.0" layoutY="195.0" onMouseClicked="#switchToConnectScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="122.0" fitWidth="347.0" layoutX="124.0" layoutY="286.0" onMouseClicked="#switchToPickCardScreen" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@startGameButton.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="167.0" fitWidth="433.0" layoutX="78.0" layoutY="305.0" onMouseClicked="#switchToGameRulesScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="122.0" fitWidth="377.0" layoutX="124.0" layoutY="358.0" onMouseClicked="#switchToGameRulesScreen" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@gameRulesButton.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="167.0" fitWidth="433.0" layoutX="78.0" layoutY="416.0" onMouseClicked="#exitApplication" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="122.0" fitWidth="339.0" layoutX="124.0" layoutY="432.0" onMouseClicked="#exitApplication" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@exitGameButtonLarge.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="122.0" fitWidth="339.0" layoutX="124.0" layoutY="212.0" onMouseClicked="#switchToConnectScreen" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@startGameButton.png" />
          </image>
       </ImageView>
    </children>

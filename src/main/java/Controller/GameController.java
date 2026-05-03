@@ -251,6 +251,7 @@ public class GameController {
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             enemyTurn();
         }
+        addMassageInGui();
     }
 
 
@@ -437,5 +438,17 @@ public class GameController {
     }
     public PlayerID getCurrentPlayerId(){
         return gameState.getCurrentPlayerId();
+    }
+
+
+    /**
+     * Metod för att lägga in ett meddelande i eventloggen i gameboard.
+     * Anropas efter varje endTurn änsålänge men borde anropas såfort något har hänt, t.ex attack, kortplacering etc.
+     *
+     * @author Erik
+     */
+    public void addMassageInGui(){
+        String message = "hejsan svejsan detta är ett temporärt meddelande";
+        guiManager.addMessageToEventLog(message);
     }
 }

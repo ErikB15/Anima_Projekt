@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -70,6 +71,9 @@ public class GUIManager {
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
+    @FXML
+    private TextArea textArea;
+    private String message;
 
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
@@ -177,7 +181,7 @@ public class GUIManager {
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, Elna
      */
-    public void switchToPickCardScreen(ActionEvent event){
+    public void switchToPickCardScreen(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("PickCardScreen.fxml"));
             root = loader.load();
@@ -618,5 +622,16 @@ public class GUIManager {
                 views[i].setImage(null);
             }
         }
+
+    }
+
+    /**
+     * Printar ut meddelandet i eventLog i gameboard. Ska berätta vad som precis har hänt på spelbrädan.
+     *
+     * @param message - Meddelandet som skrivs ut
+     * @author Erik
+     */
+    public void addMessageToEventLog(String message) {
+        textArea.appendText(message + "\n");
     }
 }
