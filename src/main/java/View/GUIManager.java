@@ -1,5 +1,6 @@
 package View;
 
+import Controller.ApiController;
 import Controller.GameController;
 import Controller.MainMenuController;
 import javafx.application.Platform;
@@ -247,6 +248,11 @@ public class GUIManager {
         return views;
     }
 
+
+    // Calls ApiController method to host lobby when called
+    public void hostGameButtonClicked(ActionEvent event) {
+        ApiController.hostLobby();
+    }
 
 
     public void setGameController(GameController gameController) {

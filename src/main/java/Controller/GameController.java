@@ -83,6 +83,9 @@ public class GameController {
         }
     }
 
+
+    // metod för att 
+
     public void bindCardsToView(ArrayList<ImageView> cardImageView) {
         if (allCards == null || allCards.size() < cardImageView.size()) {
             throw new IllegalStateException("Not enough cards");

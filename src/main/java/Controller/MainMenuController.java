@@ -49,7 +49,10 @@ public class MainMenuController {
             apiController.initSteam();
             isSteamInitialized = true;
         }
+
+
     }
+
 
     //TESTMETOD FÖR IHOPKOPPLING MED GUI
     public void sendMessageToConsole(){
