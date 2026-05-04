@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="428.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIManager">
+   <children>
+      <ImageView fitHeight="400.0" fitWidth="434.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@startMenuBackground.png" />
+         </image>
+      </ImageView>
+      <Label layoutX="115.0" layoutY="49.0" prefHeight="90.0" prefWidth="202.0" text="Game Over">
+         <font>
+            <Font size="40.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

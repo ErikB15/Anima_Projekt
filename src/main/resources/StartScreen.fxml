@@ -16,19 +16,24 @@
             <Image url="@Title.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="199.0" fitWidth="433.0" layoutX="77.0" layoutY="195.0" onMouseClicked="#switchToConnectScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="110.0" fitWidth="360.0" layoutX="281.0" layoutY="238.0" onMouseClicked="#switchToPickCardScreen" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@startGameButton.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="167.0" fitWidth="433.0" layoutX="78.0" layoutY="305.0" onMouseClicked="#switchToGameRulesScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="110.0" fitWidth="360.0" layoutY="360.0" onMouseClicked="#switchToGameRulesScreen" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@gameRulesButton.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="167.0" fitWidth="433.0" layoutX="78.0" layoutY="416.0" onMouseClicked="#exitApplication" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="110.0" fitWidth="360.0" layoutX="281.0" layoutY="360.0" onMouseClicked="#exitApplication" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@exitGameButtonLarge.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="110.0" fitWidth="360.0" layoutY="238.0" onMouseClicked="#switchToConnectScreen" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@startGameButton.png" />
          </image>
       </ImageView>
    </children>
