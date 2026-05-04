@@ -178,7 +178,7 @@ public class GameController {
      * @return - Returnerar en boolean för ifall att det lyckades eller inte.
      */
     public boolean placeCard(int handIndex, int boardIndex){
-        //if(gameState.getPhase() != GamePhase.PLAY){return false;}
+        if(gameState.getPhase() != GamePhase.PLAY){return false;}
         // Avkommenoterad för att kunna testa olika grejer, kommer finnas när allting puzzlat samman.
 
         Player currentPlayer = gameState.getCurrentPlayer();
@@ -245,19 +245,70 @@ public class GameController {
      * @author Jim, Erik
      */
     public void endTurnSinglePLayer(){
+        gameState.setPhase(GamePhase.END_TURN);
         System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
         currentPlayer.drawUntilHandIsFull();
         board.wakeUpCardsForPlayer(currentPlayerID);
+        board.resetAttacksForPlayer(currentPlayerID);
 
         gameState.switchTurn();
 
+        gameState.setPhase(GamePhase.PLAY);
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             enemyTurnInSinglePLayer();
         }
         addMassageInGui();
+    }
+
+    public boolean attackCard(int attackerIndex, int defenderIndex) {
+        if (gameState.getPhase() != GamePhase.PLAY) return false;
+
+        PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
+        Player attackerPlayer = gameState.getCurrentPlayer();
+
+        PlayerID defenderPlayerID = attackerPlayerID == PlayerID.PLAYER_ONE
+                ? PlayerID.PLAYER_TWO
+                : PlayerID.PLAYER_ONE;
+
+        Player defenderPlayer = gameState.getOpponentPlayer();
+
+        if (attackerIndex < 0 || attackerIndex >= board.getSlotsForPlayer(attackerPlayerID).length) return false;
+        if (defenderIndex < 0 || defenderIndex >= board.getSlotsForPlayer(defenderPlayerID).length) return false;
+
+        Card attacker = board.getCard(attackerPlayerID, attackerIndex);
+        Card defender = board.getCard(defenderPlayerID, defenderIndex);
+
+        if (attacker == null) return false;
+        if (defender == null) return false;
+
+        if (attacker.getAsleep()) return false;
+        if (attacker.getHasAttackedThisTurn()) return false;
+
+        defender.takeDamage(attacker.getCardAD());
+        attacker.takeDamage(defender.getCardAD());
+
+        attacker.setHasAttackedThisTurn(true);
+
+        if (defender.isDead()) {
+            Card deadCard = board.removeCard(defenderPlayerID, defenderIndex);
+            defenderPlayer.sendCardToGraveyard(deadCard);
+        }
+
+        if (attacker.isDead()) {
+            Card deadCard = board.removeCard(attackerPlayerID, attackerIndex);
+            attackerPlayer.sendCardToGraveyard(deadCard);
+        }
+
+        gameState.checkGameOver();
+
+        if (gameState.isGameOver()) {
+            gameOver();
+        }
+
+        return true;
     }
 
     /**
