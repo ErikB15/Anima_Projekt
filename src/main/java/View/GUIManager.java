@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -71,9 +72,6 @@ public class GUIManager {
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
-    @FXML
-    private TextArea textArea;
-    private String message;
 
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
@@ -181,7 +179,7 @@ public class GUIManager {
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, Elna
      */
-    public void switchToPickCardScreen(MouseEvent event){
+    public void switchToPickCardScreen(ActionEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("PickCardScreen.fxml"));
             root = loader.load();
@@ -235,27 +233,6 @@ public class GUIManager {
 
 
 
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-
-    public void switchToGameOverScreen(){
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
-            root = loader.load();
-
-            GUIManager controller = loader.getController();
-
-            controller.setGameController(gameController);
-            gameController.setGuiManager(controller);
-
-            Stage stage = new Stage();
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setResizable(false);
-            stage.show();
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -517,26 +494,12 @@ public class GUIManager {
      * Anropas av FXML-filen "GameBoard".
      * @author Erik
      */
-    public void endTurnInGuiInSinglePLayer(){
+    public void endTurnInGui(){
         System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
         if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
             isYourTurn=true;
         }
-        gameController.endTurnSinglePLayer();
-    }
-
-    /**
-     * Metoden existerar för att begränsa vem som kan samtala med gui och skickar endast vidare ansvaret av logiken till gameControllern.
-     * Anropas av FXML-filen "GameBoard".
-     *
-     * @author Erik
-     */
-    public void endTurnInGuiInMultiPLayer(){
-        System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
-        if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
-            isYourTurn=true;
-        }
-        gameController.endTurnMultiPLayer();
+        gameController.endTurn();
     }
 
     /**
@@ -657,18 +620,5 @@ public class GUIManager {
                 views[i].setImage(null);
             }
         }
-
     }
-
-    /**
-     * Printar ut meddelandet i eventLog i gameboard. Ska berätta vad som precis har hänt på spelbrädan.
-     *
-     * @param message - Meddelandet som skrivs ut
-     * @author Erik
-     */
-    public void addMessageToEventLog(String message) {
-        if (textArea == null) return;
-        textArea.appendText(message + "\n");
-    }
-
 }
