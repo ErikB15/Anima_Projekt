@@ -100,6 +100,17 @@ public class GUIManager {
      * @Param: event - MouseEvent från knapptryck i gui
      * @author: Erik, Elna
      */
+
+
+
+    
+    // Calls ApiController method to host lobby when called
+    public void hostGameButtonClicked(ActionEvent event) {
+        ApiController.hostLobby();
+    }
+
+
+    
     public void switchToStartScreen(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("StartScreen.fxml"));
