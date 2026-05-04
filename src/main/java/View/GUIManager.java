@@ -499,7 +499,7 @@ public class GUIManager {
         if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
             isYourTurn=true;
         }
-        gameController.endTurn();
+        //gameController.endTurn();
     }
 
     /**
