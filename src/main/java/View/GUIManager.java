@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -67,6 +68,9 @@ public class GUIManager {
     @FXML private Pane cardRules;
     @FXML private Pane playerRules;
     @FXML private Pane effectsRules;
+
+    @FXML private Label pickCardTurn;
+
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
@@ -207,7 +211,7 @@ public class GUIManager {
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, ELna
      */
-    public void switchToGameBoard(ActionEvent event){
+    public void switchToGameBoard(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameBoard.fxml"));
             root = loader.load();
@@ -363,10 +367,26 @@ public class GUIManager {
             gameController.addCardToPlayerOne(card);
             System.out.println("card added to player 1 deck");
             playerOnesTurn = false;
+            switchTurnLabelInPickCard();
         } else {
             gameController.addCardToOpponent(card);
             System.out.println("card added to player 2 deck");
             playerOnesTurn = true;
+            switchTurnLabelInPickCard();
+        }
+    }
+
+    /**
+     * Metod för att byta text i Label i Picked Cards.
+     * @author Elna
+     */
+    public void switchTurnLabelInPickCard(){
+
+        if(playerOnesTurn == true){
+            pickCardTurn.setText("Player 1");
+
+        } else{
+            pickCardTurn.setText("Player 2");
         }
     }
 
