@@ -1,6 +1,7 @@
 package View;
 
 import Controller.GameController;
+import Model.PlayerID;
 import Model.Zone;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -8,13 +9,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import Model.Card;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +53,9 @@ public class GUIManager {
 
     //Array för att lägga till alla Image View i
     private ArrayList<ImageView> boardImageViews = new ArrayList<ImageView>();
+    private ArrayList selectedCardsInPickCardphase = new ArrayList();
+
+    @FXML private Label pickCardTurn;
 
     @FXML private ImageView p1board_0;
     @FXML private ImageView p1board_1;
@@ -66,10 +71,9 @@ public class GUIManager {
     @FXML private Pane cardRules;
     @FXML private Pane playerRules;
     @FXML private Pane effectsRules;
-
-
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
+    private boolean playerOnesTurn = true;
 
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
@@ -177,7 +181,7 @@ public class GUIManager {
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, Elna
      */
-    public void switchToPickCardScreen(ActionEvent event){
+    public void switchToPickCardScreen(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("PickCardScreen.fxml"));
             root = loader.load();
@@ -207,7 +211,7 @@ public class GUIManager {
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, ELna
      */
-    public void switchToGameBoard(ActionEvent event){
+    public void switchToGameBoard(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameBoard.fxml"));
             root = loader.load();
@@ -293,8 +297,6 @@ public class GUIManager {
     public void pickedSpotToPlaceCardIndexPoint(MouseEvent event){
 
         if(isYourTurn == true) {
-
-
             if (cardFromHandPicked == false) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Warning!");
@@ -336,26 +338,44 @@ public class GUIManager {
     /**
      * Hanterar klick på kort i pick-fasen.
      * Hämtar kort från gui och skickar det till GameController för att läggas i spelarens deck.
+     * Vi kontrollerar också om kortet redan är valt, detta uppnås genom att vi lägger in dett klickade imageview objektet
+     * i en array. Vi går igenom array innan vi lägger till kortet i decket och skulle kortet redan ha avrit valt så retunerar vi.
+     * Om kort-valet är gilltig så gör vi dessutom om bilden till bakssidan så man ser att den är vald.
      *
      * @Param: event - MouseEvent från ImageView
      * @author: Erik, Elna
      */
+
+    //Något jag vill lägga till i framtiden är att "moståndaren" i singleplayer-match ska välja sitt eget kort.
+    // För nu väljer du ditt kort, sen väljer du motståndarens kort. Men kan man göra så att moståndarens väljer sitt eget kort hade det varit nice
+    // /Erik
     public void pickedCard(MouseEvent event) {
-        System.out.println("I have clicked the card!");
+        ImageView clickedCard = (ImageView) event.getSource();
+        Card card = (Card) clickedCard.getUserData();
 
-        ImageView clicked = (ImageView) event.getSource();
-        Card card = (Card) clicked.getUserData();
+        for (int i = 0; i < selectedCardsInPickCardphase.size(); i++){
+            if (selectedCardsInPickCardphase.get(i) == clickedCard) {
+                System.out.println("Card already chosen! Pick another card.");
+                return;
+            }
+        }
 
-        gameController.addCardToPlayerOne(card);
-        System.out.println("GUI GC instance: " + gameController);
+        selectedCardsInPickCardphase.add(clickedCard);
+        clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
 
-        //Försöker få bilden att ändras till kortets baksida. INTE KLAR
-       // Image backsideCard = new Image(getClass().getResourceAsStream("CardBACKSIDE.png"));
-
-       /* if(cardIDInt == 25){
-            card_25.setImage(backsideCard);
-        }*/
+        if (playerOnesTurn == true){
+            gameController.addCardToPlayerOne(card);
+            System.out.println("card added to player 1 deck");
+            playerOnesTurn = false;
+            switchTurnLabelInPickCard();
+        } else {
+            gameController.addCardToOpponent(card);
+            System.out.println("card added to player 2 deck");
+            playerOnesTurn = true;
+            switchTurnLabelInPickCard();
+        }
     }
+
 
     /**
      * TESTMETOD för sammankoppling med GUI
@@ -467,10 +487,23 @@ public class GUIManager {
 
     /**
      * Metod för att ta bort bilderna på korten i imageView i gameboard
-     * @auther: Erik
+     * @authe Erik
      */
     public void killCard(){
 
+    }
+
+    /**
+     * Metoden existerar för att begränsa vem som kan samtala med gui och skickar endast vidare ansvaret av logiken till gameControllern.
+     * Anropas av FXML-filen "GameBoard".
+     * @author Erik
+     */
+    public void endTurnInGui(){
+        System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
+        if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
+            isYourTurn=true;
+        }
+        //gameController.endTurn();
     }
 
     /**
@@ -536,7 +569,7 @@ public class GUIManager {
     public void init() {
         zoneMap.put(Zone.HAND, new ImageView[]{hand_0, hand_1, hand_2});
         zoneMap.put(Zone.PLAYER_BOARD, new ImageView[]{p1board_0, p1board_1, p1board_2, p1board_3});
-        //zoneMap.put(Zone.OPPONENT_BOARD, new ImageView[]{card_4, card_5, card_6}); // ändra senare när moståndare är aktuellt.
+        zoneMap.put(Zone.OPPONENT_BOARD, new ImageView[]{p2board_0, p2board_1, p2board_2, p2board_3});
     }
 
     /**
@@ -590,6 +623,20 @@ public class GUIManager {
             } else {
                 views[i].setImage(null);
             }
+        }
+    }
+
+    /**
+     * Metod för att byta text i Label i Picked Cards.
+     * @author Elna
+     */
+    public void switchTurnLabelInPickCard(){
+
+        if(playerOnesTurn == true){
+            pickCardTurn.setText("Player 1");
+
+        } else{
+            pickCardTurn.setText("Player 2");
         }
     }
 

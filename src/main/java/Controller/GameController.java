@@ -6,9 +6,12 @@ import java.util.Collections;
 import Model.*;
 import Network.GameClient;
 import Network.GameStateListener;
+import Model.CardEffects.*;
 import View.*;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+
 
 
 /**
@@ -32,6 +35,13 @@ public class GameController implements GameStateListener {
     private GUIManager guiManager;
     private Card testCard; //ENDAST FÖR TESTNING
     private GameState gameState;
+    private DubbelHit dubbelHit;
+    private Taunt taunt;
+    private Heal heal;
+    private Shield shield;
+    private Poison poison;
+    private Buff buff;
+
 
     /**
      * Skapar en ny GameController och initierar spelets grunddata.
@@ -48,6 +58,13 @@ public class GameController implements GameStateListener {
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
         addAllCards();
+
+        dubbelHit = new DubbelHit();
+        heal = new Heal();
+        taunt = new Taunt();
+        shield = new Shield();
+        poison = new Poison();
+        buff = new Buff();
     }
 
 
@@ -59,12 +76,12 @@ public class GameController implements GameStateListener {
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        allCards.add(new Card("Test1", 1,50,1,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test2", 5,25,2,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test3", 13,34,3,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test4", 30,20,4,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test5", 10,30,5,null, "/CardFRONT.png"));
-        allCards.add(new Card("Test6", 2,40,6,null, "/CardFRONT.png"));
+        allCards.add(new Card("Test1", 1,50,1,taunt, "/CardFRONT.png"));
+        allCards.add(new Card("Test2", 5,25,2,buff, "/CardFRONT.png"));
+        allCards.add(new Card("Test3", 13,34,3,dubbelHit, "/CardFRONT.png"));
+        allCards.add(new Card("Test4", 30,20,4,heal, "/CardFRONT.png"));
+        allCards.add(new Card("Test5", 10,30,5,shield, "/CardFRONT.png"));
+        allCards.add(new Card("Test6", 2,40,6,poison, "/CardFRONT.png"));
     }
 
     /**
@@ -165,7 +182,7 @@ public class GameController implements GameStateListener {
      * @return - Returnerar en boolean för ifall att det lyckades eller inte.
      */
     public boolean placeCard(int handIndex, int boardIndex){
-        //if(gameState.getPhase() != GamePhase.PLAY){return false;}
+        if(gameState.getPhase() != GamePhase.PLAY){return false;}
         // Avkommenoterad för att kunna testa olika grejer, kommer finnas när allting puzzlat samman.
 
         Player currentPlayer = gameState.getCurrentPlayer();
@@ -200,6 +217,7 @@ public class GameController implements GameStateListener {
      * @author Erik, Jim Ström, Elna
      */
     public void moveCardFromHandtoBoard() {
+
         Player currentPlayer = gameState.getCurrentPlayer();
         System.out.println("Current player: " + gameState.getCurrentPlayerId()); // Debug, var nödvändig.
 
@@ -216,6 +234,8 @@ public class GameController implements GameStateListener {
         guiManager.renderHand(currentPlayer.getHand());
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
 
+
+
         cardPicked = false;
         spotPicked = false;
     }
@@ -226,30 +246,142 @@ public class GameController implements GameStateListener {
      * Så kommer de andra checks (som kollar vilken "Phase" det är) stoppa dem från att göra det tills endTurn är klar.
      * Har skapat en ytterligare metod, "wakeUpCardsForPlayer" som väcker korten av den spelare som klickat endTurn.
      *
-     * OBS, behövs callback eller GUI uppdateringen här igen mot slutet!
-     * @author Jim Ström
+     * @author Jim, Erik
      */
-    public void endTurn(){
+    public void endTurnSinglePLayer(){
         gameState.setPhase(GamePhase.END_TURN);
-
+        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
         currentPlayer.drawUntilHandIsFull();
         board.wakeUpCardsForPlayer(currentPlayerID);
+        board.resetAttacksForPlayer(currentPlayerID);
 
         gameState.switchTurn();
-        gameState.setPhase(GamePhase.PLAY);
 
-        if (gameClient != null) gameClient.endTurn(); //ny här, detta så vi säger till gameclient att det är endtrun
+        gameState.setPhase(GamePhase.PLAY);
+        if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
+            enemyTurnInSinglePLayer();
+        }
+        addMassageInGui();
     }
 
+    public boolean attackCard(int attackerIndex, int defenderIndex) {
+        if (gameState.getPhase() != GamePhase.PLAY) return false;
+
+        PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
+        Player attackerPlayer = gameState.getCurrentPlayer();
+
+        PlayerID defenderPlayerID = attackerPlayerID == PlayerID.PLAYER_ONE
+                ? PlayerID.PLAYER_TWO
+                : PlayerID.PLAYER_ONE;
+
+        Player defenderPlayer = gameState.getOpponentPlayer();
+
+        if (attackerIndex < 0 || attackerIndex >= board.getSlotsForPlayer(attackerPlayerID).length) return false;
+        if (defenderIndex < 0 || defenderIndex >= board.getSlotsForPlayer(defenderPlayerID).length) return false;
+
+        Card attacker = board.getCard(attackerPlayerID, attackerIndex);
+        Card defender = board.getCard(defenderPlayerID, defenderIndex);
+
+        if (attacker == null) return false;
+        if (defender == null) return false;
+
+        if (attacker.getAsleep()) return false;
+        if (attacker.getHasAttackedThisTurn()) return false;
+
+        defender.takeDamage(attacker.getCardAD());
+        attacker.takeDamage(defender.getCardAD());
+
+        attacker.setHasAttackedThisTurn(true);
+
+        if (defender.isDead()) {
+            Card deadCard = board.removeCard(defenderPlayerID, defenderIndex);
+            defenderPlayer.sendCardToGraveyard(deadCard);
+        }
+
+        if (attacker.isDead()) {
+            Card deadCard = board.removeCard(attackerPlayerID, attackerIndex);
+            attackerPlayer.sendCardToGraveyard(deadCard);
+        }
+
+        gameState.checkGameOver();
+
+        if (gameState.isGameOver()) {
+            gameOver();
+        }
+
+        return true;
+    }
+
+    /**
+     * Metoden för att simulera single-player motståndarens omgång.
+     * Samma metoder som när vi vill lägga kort men med en while-loop som kontrollerar att där motståndaren vill lägga kort är en gilltig plats.
+     *
+     * @author Erik
+     */
+    private void enemyTurnInSinglePLayer() {
+        if (playerTwo.getHand().isEmpty()) {
+            playerTwo.drawUntilHandIsFull();
+        }
+
+        if (playerTwo.getHand().isEmpty()) {
+            return;
+        }
+
+        int handIndex = (int) (Math.random() * playerTwo.getHand().size());
+        Card card = playerTwo.getHand().get(handIndex);
+        int boardIndex = (int) (Math.random() * 4);
+
+        while(!board.placeCard(PlayerID.PLAYER_TWO, boardIndex, card)){
+            boardIndex = (int) (Math.random() * 4);
+
+
+        }
+        playerTwo.getHand().remove(handIndex);
+        playerTwo.takeDamage(card.getCardCost());
+
+        card.setAsleep(true);
+
+        guiManager.renderCard(Zone.OPPONENT_BOARD, boardIndex, card.getImagePath());
+        //endTurn();       // Som det är nu måste vi enda motståndarens omgång, vi gör det för att kontrollera flödet lite mer men kan ändras i framtiden.
+
+        gameState.checkGameOver();
+        if(gameState.isGameOver()){
+            gameOver();
+        }
+    }
+
+    /**
+     * Metod för att hantera end-turn och turbyte mellan spelare i mulitplayer.
+     * Ska fungera likannde som för singleplayer med små modifikationer.
+     *
+     * @author Erik
+     */
+    public void endTurnMultiPLayer(){
+
+        enemyTurnInMultiPlayer();
+    }
+
+    /**
+     * Metoden för att starta multi-player motståndarens omgång.
+     *
+     * @author Erik
+     */
+    public void enemyTurnInMultiPlayer(){
+
+    }
 
     public void gameOver(){
 
         // TODO.. Här ska det fixas game over, mest troligen blir det bara att gameState resettas samt GUI:n
         // Om jag inte hunnit och ni redan kollar på detta, så kan ni göra en GUI metod som bara resettar allt.
         // Och sedan kalla den här inne, så ska jag fixa att uppdaterra klasserna och all den delen strax.
+
+        //guiManager.switchToGameOverScreen(); //visar just nu endast ett tumt fönster som inte säger ngt mer än gamover.
+        // gameover metoden borde beräkna resultat av matchen och sedan visa det i giut via guimanager.
+
     }
 
     /**
@@ -361,10 +493,21 @@ public class GameController implements GameStateListener {
      * @author Erik
      */
     public void addCardToPlayerOne(Card card){
-        System.out.println(card);
-        System.out.println(card != null ? card.getImagePath() : "NULL CARD");
-
         playerOne.addCardToDeck(card);
+        allCards.remove(card);
+    }
+
+    /**
+     * Metod för att lägga till valt kort i motståndarens hand.
+     * Delen med "NULL CARD" är för att kolla om det finns ett kort eller inte i bildramen.
+     * Detta syns när man spelat en runda, trycker exitGame, sen försöker spela en runda till.
+     * Vi måste lösa så att spelet återställs vid exit-game.
+     *
+     * @param card - kort-objektet
+     * @author Erik
+     */
+    public void addCardToOpponent(Card card){
+        playerTwo.addCardToDeck(card);
         allCards.remove(card);
     }
 
@@ -382,6 +525,41 @@ public class GameController implements GameStateListener {
         // Ska settas på ett annat ställe sen.
         guiManager.renderHand(playerOne.getHand());
     }
+    public PlayerID getCurrentPlayerId(){
+        return gameState.getCurrentPlayerId();
+    }
+
+
+    /**
+     * Metod för att lägga in ett meddelande i eventloggen i gameboard.
+     * Anropas efter varje endTurn änsålänge men borde anropas såfort något har hänt, t.ex attack, kortplacering etc.
+     *
+     * @author Erik
+     */
+    public void addMassageInGui(){
+        String message = "hejsan svejsan detta är ett temporärt meddelande";
+       // guiManager.addMessageToEventLog(message);
+    }
+
+    /**
+     * getter för att hämta alla korten på sin sida av spelbrädan.
+     * @param player
+     * @return ArrayList av kort objekt
+     * @author Erik
+     */
+    public ArrayList<Card> getCardsOnSide(PlayerID player) {
+        Card[] slots = board.getSlotsForPlayer(player);
+        ArrayList<Card> result = new ArrayList<>();
+
+        for (Card c : slots) {
+            if (c != null) {
+                result.add(c);
+            }
+        }
+
+        return result;
+    }
+
 
     /**
      * Ansluter spelaren till spelservern via nätverket.

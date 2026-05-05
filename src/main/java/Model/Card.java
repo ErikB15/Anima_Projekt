@@ -1,5 +1,7 @@
 package Model;
 
+import Model.CardEffects.Effect;
+
 public class Card {
     private String cardName;
     private int cardAD;
@@ -70,7 +72,7 @@ public class Card {
      */
 
 
-    public void setCardCurrentHP(int cardCurrentHP) {this.cardCurrentHP = cardCurrentHP;}
+    public void setCardCurrentHP() {this.cardCurrentHP = cardCurrentHP;}
 
     public void setAsleep(boolean asleep) {this.asleep = asleep;}
 
@@ -84,15 +86,24 @@ public class Card {
         return cardAD;
     }
 
+    public void setCardAD(int cardAD){
+        this.cardAD = cardAD;
+    }
+
     public int getCardMaxHP(){
         return cardMaxHP;
     }
+
 
     public int getCardID() {
         return cardID;
     }
 
     public int getCardCurrentHP() {return cardCurrentHP;}
+
+    public void setCardCurrentHP(int newCurrentHP){
+
+    }
 
     public boolean getAsleep(){return asleep;}
 

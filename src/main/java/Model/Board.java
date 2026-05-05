@@ -73,6 +73,16 @@ public class Board {
         }
     }
 
+    public void resetAttacksForPlayer(PlayerID player) {
+        Card[] slots = getSlotsForPlayer(player);
+
+        for (Card card : slots) {
+            if (card != null) {
+                card.setHasAttackedThisTurn(false);
+            }
+        }
+    }
+
     /**
      * Hämtar den sidan som spelaren äger, genom att använda enum:et "PlayerID" så blir det rätt lättläsligt.
      * @param player - Enum:et som säger vilken spelare är spelare 1 och vilken är spelare 2.
@@ -104,5 +114,10 @@ public class Board {
     public Card getCard(PlayerID player, int boardIndex) {
         return getSlotsForPlayer(player)[boardIndex];
     }
+
+    public Card getSlot(PlayerID player, int index) {
+        return getSlotsForPlayer(player)[index];
+    }
+
 }
 
