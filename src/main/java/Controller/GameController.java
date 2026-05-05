@@ -267,6 +267,13 @@ public class GameController implements GameStateListener {
         addMassageInGui();
     }
 
+
+    /**
+     * 
+     * @param attackerIndex
+     * @param defenderIndex
+     * @return
+     */
     public boolean attackCard(int attackerIndex, int defenderIndex) {
         if (gameState.getPhase() != GamePhase.PLAY) return false;
 
