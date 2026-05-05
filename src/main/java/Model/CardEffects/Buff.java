@@ -12,6 +12,8 @@ public class Buff extends Effect{
 
     /**
      * Denna effekt gör så att alla spelarens kort på brädan gör 1 extra skada varje gång det är spelarens tur.
+     * Effekten kan stacka och resultera i att öka kortes AD med mer än 1.
+     * Exempel, om kortets grund AD är 1, nästa runda har kortet 2 AD, rundan efter har kortet 3 AD och så vidare.
      * Effekten tar slut när kortet dödas. Effekten gäller också på detta kortet.
      */
     public Buff(){
