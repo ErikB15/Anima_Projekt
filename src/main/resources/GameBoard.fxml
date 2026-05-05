@@ -62,7 +62,7 @@
             <Image url="@CardBACKSIDE.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="47.0" fitWidth="140.0" layoutX="634.0" layoutY="395.0" onMouseClicked="#endTurnInGuiInSinglePLayer" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="47.0" fitWidth="140.0" layoutX="634.0" layoutY="395.0" onMouseClicked="#endTurnInGuiInSinglePlayer" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@exitGameSmall.png" />
          </image>

@@ -498,7 +498,7 @@ public class GUIManager {
      * Anropas av FXML-filen "GameBoard".
      * @author Erik
      */
-    public void endTurnInGui(){
+    public void endTurnInGuiInSinglePlayer(){
         System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
         if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
             isYourTurn=true;
