@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import Model.*;
+import Network.GameClient;
+import Network.GameStateListener;
 import Model.CardEffects.*;
 import View.*;
+import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
@@ -15,9 +18,10 @@ import javafx.scene.input.MouseEvent;
  * Game Controller klassen, syftet är att kontroller flödet av information från view och Model under matchens gång.
  * När matchens avslutas stängs även game controllern, då den endast är nödvändig när matchen är aktiv.
  */
-public class GameController {
+public class GameController implements GameStateListener {
     private ArrayList<Card> allCards;
     private ArrayList<Effect> allEffects;
+    private GameClient gameClient; // nytt fält så vi kan snacka med gameclient
 
     //Mekanik för att byta plats på kort i playerOneActiveCards
     private int indexCardOnHandToMove;
@@ -49,8 +53,8 @@ public class GameController {
     public GameController(){
         allCards = new ArrayList<>();
         allEffects = new ArrayList<>();
-        playerOne = new Player();
-        playerTwo = new Player();
+        playerOne = new Player("Player1");
+        playerTwo = new Player("Player2"); //identifera spelare för servern såd e har ett namn
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
         addAllCards();
@@ -554,6 +558,88 @@ public class GameController {
         }
 
         return result;
+    }
+
+
+    /**
+     * Ansluter spelaren till spelservern via nätverket.
+     * Skapar en GameClient, registrerar GameController som lyssnare
+     * för nätverkshändelser och skickar ett JOIN meddelande till servern.
+     *
+     * @param playerName spelarens namn som används för identifiering på servern
+     * @throws Exception om anslutningen till servern misslyckas
+     * @author Leo
+     */
+    public void connectToServer(String playerName) throws Exception {
+        gameClient = new GameClient("localhost", 5555);
+        gameClient.setListener(this);
+        gameClient.connect(playerName, playerName);
+    }
+
+    /**
+     * Anropas av nätverket när spelaren väntar på motståndaren.
+     * Körs via Platform.runLater() för att säkert uppdatera JavaFX tråden.
+     * @author Leo
+     */
+    @Override
+    public void onWaiting()                 {
+        Platform.runLater(() -> guiManager.showWaiting());
+    }
+
+    /**
+     * Anropas av nätverket när det är spelarens tur.
+     * Aktiverar spelarens knappar i GUI via GUIManager.
+     * @author Leo
+     */
+    @Override
+    public void onYourTurn()                {
+        Platform.runLater(() -> guiManager.enableCardButtons());
+    }
+
+    /**
+     * Anropas av nätverket när spelläget uppdaterats.
+     * Vidarebefordrar JSON strängen till GUIManager som ritar om brädet.
+     *
+     * @param j det uppdaterade spelläget som JSON sträng
+     * @author Leo
+     */
+    @Override
+    public void onGameStateUpdate(String j) {
+        Platform.runLater(() -> guiManager.updateBoard(j));
+    }
+
+    /**
+     * Anropas av nätverket när spelet är slut.
+     * Vidarebefordrar vinnarens namn till GUIManager.
+     *
+     * @param winner namnet på spelaren som vann
+     * @author Leo
+     */
+    @Override
+    public void onGameOver(String winner)   {
+        Platform.runLater(() -> guiManager.showGameOver(winner));
+    }
+
+    /**
+     * Anropas av nätverket när ett felmeddelande tas emot.
+     *
+     * @param msg felmeddelandet från servern
+     * @author Leo
+     */
+    @Override
+    public void onError(String msg)         {
+        Platform.runLater(() -> guiManager.showError(msg));
+    }
+
+    /**
+     * Anropas av nätverket när ett chattmeddelande tas emot.
+     *
+     * @param msg chattmeddelandets text
+     * @author Leo
+     */
+    @Override
+    public void onChat(String msg)          {
+        Platform.runLater(() -> guiManager.showChat(msg));
     }
 
 }

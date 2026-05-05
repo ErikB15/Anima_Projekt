@@ -8,6 +8,8 @@ public class Player {
     private ArrayList<Card> deck;
     private ArrayList<Card> hand;
     private ArrayList<Card> graveyard;
+    private String name; //la till detta för konstruktorn för att servenr behöver veta vilket nätverks id som tillhär vilken spelare
+    //annrs leder det till att när vi skcikar json stängar till klienten vet den inte vem det tillhör
 
 
     /**
@@ -16,11 +18,12 @@ public class Player {
      * Hand - De korten en spelare kan spela och har i sin hand varje runda.
      * Graveyard - De korten en spelare har förlorat.
      */
-    public Player(){
+    public Player(String name){
         this.hp = 30; // PS. 30 Är bara test "value" just nu.
         this.deck = new ArrayList<>();
         this.hand = new ArrayList<>();
         this.graveyard = new ArrayList<>();
+        this.name = name;
     }
 
     /**
@@ -75,6 +78,10 @@ public class Player {
         deck.addAll(graveyard);
         graveyard.clear();
         Collections.shuffle(deck);
+    }
+
+    public String getName() {
+        return name;
     }
 
 
