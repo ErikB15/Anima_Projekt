@@ -1,12 +1,7 @@
-/*package Controller;
+package Controller;
 
 
-import com.codedisaster.steamworks.SteamAPI;
-
-import Controller.ApiController;
 import View.GUIManager;
-import View.MainGUILauncher;
-import javafx.application.Application;
 
 public class MainMenuController {
     private static ApiController apiController;
@@ -15,17 +10,6 @@ public class MainMenuController {
     private GameController gameController;
 
 
-    //Networking
-    public void init() throws Exception {
-        System.out.println("Starting pre-flight checks...");
-        apiController = new ApiController();
-        apiController.initSteam();
-    }
-
-
-    public static ApiController getApiController() {
-        return apiController;
-    }
 
     //FÖR IHOPKOPPLING MED GUIMANAGER
    public void setGuiManager (GUIManager guiManager){
@@ -35,22 +19,9 @@ public class MainMenuController {
         this.gameController = gameController;
     }
 
+
     public MainMenuController(){
         
-        if (ApiController.getIsSteamInitialized() == false) {
-            System.out.println("Starting Steam from MainMenuController...");
-            try{
-                SteamAPI.loadLibraries();
-            } catch (Exception e) {
-                System.out.println("Failed to load Steam libraries. Make sure the Steamworks SDK is in project.");
-                e.printStackTrace();
-            }
-            apiController = new ApiController();
-            apiController.initSteam();
-            isSteamInitialized = true;
-        }
-
-
     }
 
 
@@ -65,4 +36,3 @@ public class MainMenuController {
        System.out.println("CardID: " + cardID + ", playerID: " + playerID + ", Card attack damage: " + cardAD + ", Card HitPoints: " +  cardHP);
     }
 }
-*/

@@ -30,17 +30,14 @@ public class ApiController {
     public boolean initSteam() {
         try {
             SteamAPI.loadLibraries();
-            if (getIsSteamInitialized() == false || !SteamAPI.init()) {
+            if (getIsSteamInitialized() == false) {
 
                 try{
                     SteamAPI.init();
                 } catch (Exception e) {
                     System.out.println("SteamAPI failed to initialize. Make sure Steam is running and is signed in to an account.");
                     return false; 
-                }
-
-
-                
+                }           
                 
 
                 System.out.println("Success! SteamAPI initialized.");
@@ -52,8 +49,7 @@ public class ApiController {
                     friends = new SteamFriends(friendsCallback);
                    
                     // Start the background thread to listen for Steam events
-                    startCallbackThread();  // Starts the background thread
-                    ApiController.hostLobby();  // Hosts lobby  
+                    startCallbackThread();  // Starts the background thread 
                     String selfName = friends.getPersonaName();  // Gets the name of the user who is currently logged in
                     System.out.println("Signed in as " + selfName);
 
@@ -117,7 +113,7 @@ public class ApiController {
         public void onLobbyEnter(SteamID steamIDLobby, int chatPermissions, boolean blocked, SteamMatchmaking.ChatRoomEnterResponse response) {
             if (response == SteamMatchmaking.ChatRoomEnterResponse.Success) {
                 System.out.println("Successfully entered lobby: " + steamIDLobby.getAccountID());
-                 // @TODO Transition to game lobby screen in GUI
+                 //TODO Transition to game lobby screen in GUI
             }
         }
 
@@ -192,5 +188,6 @@ public void onFavoritesListAccountsUpdated(SteamResult result) {
 
     public static boolean getIsSteamInitialized() {
         return isSteamInitialized;
+
     }
 }
