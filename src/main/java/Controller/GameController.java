@@ -375,7 +375,7 @@ public class GameController {
         // Om jag inte hunnit och ni redan kollar på detta, så kan ni göra en GUI metod som bara resettar allt.
         // Och sedan kalla den här inne, så ska jag fixa att uppdaterra klasserna och all den delen strax.
 
-        guiManager.switchToGameOverScreen(); //visar just nu endast ett tumt fönster som inte säger ngt mer än gamover.
+        //guiManager.switchToGameOverScreen(); //visar just nu endast ett tumt fönster som inte säger ngt mer än gamover.
         // gameover metoden borde beräkna resultat av matchen och sedan visa det i giut via guimanager.
 
     }
@@ -534,7 +534,7 @@ public class GameController {
      */
     public void addMassageInGui(){
         String message = "hejsan svejsan detta är ett temporärt meddelande";
-        guiManager.addMessageToEventLog(message);
+       // guiManager.addMessageToEventLog(message);
     }
 
     /**

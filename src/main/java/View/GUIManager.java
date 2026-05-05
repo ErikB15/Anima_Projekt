@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -55,6 +56,8 @@ public class GUIManager {
     private ArrayList<ImageView> boardImageViews = new ArrayList<ImageView>();
     private ArrayList selectedCardsInPickCardphase = new ArrayList();
 
+    @FXML private Label pickCardTurn;
+
     @FXML private ImageView p1board_0;
     @FXML private ImageView p1board_1;
     @FXML private ImageView p1board_2;
@@ -72,9 +75,6 @@ public class GUIManager {
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
-    @FXML
-    private TextArea textArea;
-    private String message;
 
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
@@ -223,7 +223,7 @@ public class GUIManager {
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, ELna
      */
-    public void switchToGameBoard(ActionEvent event){
+    public void switchToGameBoard(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameBoard.fxml"));
             root = loader.load();
@@ -247,27 +247,6 @@ public class GUIManager {
 
 
 
-        } catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-
-    public void switchToGameOverScreen(){
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
-            root = loader.load();
-
-            GUIManager controller = loader.getController();
-
-            controller.setGameController(gameController);
-            gameController.setGuiManager(controller);
-
-            Stage stage = new Stage();
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setResizable(false);
-            stage.show();
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -400,10 +379,12 @@ public class GUIManager {
             gameController.addCardToPlayerOne(card);
             System.out.println("card added to player 1 deck");
             playerOnesTurn = false;
+            switchTurnLabelInPickCard();
         } else {
             gameController.addCardToOpponent(card);
             System.out.println("card added to player 2 deck");
             playerOnesTurn = true;
+            switchTurnLabelInPickCard();
         }
     }
 
@@ -529,26 +510,12 @@ public class GUIManager {
      * Anropas av FXML-filen "GameBoard".
      * @author Erik
      */
-    public void endTurnInGuiInSinglePLayer(){
+    public void endTurnInGui(){
         System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
         if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
             isYourTurn=true;
         }
-        gameController.endTurnSinglePLayer();
-    }
-
-    /**
-     * Metoden existerar för att begränsa vem som kan samtala med gui och skickar endast vidare ansvaret av logiken till gameControllern.
-     * Anropas av FXML-filen "GameBoard".
-     *
-     * @author Erik
-     */
-    public void endTurnInGuiInMultiPLayer(){
-        System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
-        if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
-            isYourTurn=true;
-        }
-        gameController.endTurnMultiPLayer();
+        //gameController.endTurn();
     }
 
     /**
@@ -669,18 +636,19 @@ public class GUIManager {
                 views[i].setImage(null);
             }
         }
-
     }
 
     /**
-     * Printar ut meddelandet i eventLog i gameboard. Ska berätta vad som precis har hänt på spelbrädan.
-     *
-     * @param message - Meddelandet som skrivs ut
-     * @author Erik
+     * Metod för att byta text i Label i Picked Cards.
+     * @author Elna
      */
-    public void addMessageToEventLog(String message) {
-        if (textArea == null) return;
-        textArea.appendText(message + "\n");
-    }
+    public void switchTurnLabelInPickCard(){
 
+        if(playerOnesTurn == true){
+            pickCardTurn.setText("Player 1");
+
+        } else{
+            pickCardTurn.setText("Player 2");
+        }
+    }
 }
