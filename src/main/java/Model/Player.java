@@ -53,6 +53,7 @@ public class Player {
 
             int randomIndex = (int)(Math.random() * deck.size());
             hand.add(deck.remove(randomIndex));
+
         }
     }
 

@@ -198,6 +198,7 @@ public class GUIManager {
             stage.show();
 
             gameController.bindCardsToView(controller.getCardImageView(scene));
+            gameController.startDraftPhase();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -231,6 +232,7 @@ public class GUIManager {
             gameController.startGame();
 
             addImageViewToList();
+            gameController.set();
             //enemyPlaceCard(1, "CardBACKSIDE.png");
 
 
@@ -295,7 +297,6 @@ public class GUIManager {
      * @author: Elna
      */
     public void pickedSpotToPlaceCardIndexPoint(MouseEvent event){
-
         if(isYourTurn == true) {
             if (cardFromHandPicked == false) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -397,12 +398,19 @@ public class GUIManager {
 
         ArrayList<ImageView> views = new ArrayList<>();
 
-        views.add((ImageView) scene.lookup("#card_21"));
-        views.add((ImageView) scene.lookup("#card_25"));
-        views.add((ImageView) scene.lookup("#card_12"));
-        views.add((ImageView) scene.lookup("#card_22"));
-        views.add((ImageView) scene.lookup("#card_13"));
-        views.add((ImageView) scene.lookup("#card_23"));
+        views.add((ImageView) scene.lookup("#card_0"));
+        views.add((ImageView) scene.lookup("#card_1"));
+        views.add((ImageView) scene.lookup("#card_2"));
+        views.add((ImageView) scene.lookup("#card_3"));
+        views.add((ImageView) scene.lookup("#card_4"));
+        views.add((ImageView) scene.lookup("#card_5"));
+        views.add((ImageView) scene.lookup("#card_6"));
+        views.add((ImageView) scene.lookup("#card_7"));
+        views.add((ImageView) scene.lookup("#card_8"));
+        views.add((ImageView) scene.lookup("#card_9"));
+        views.add((ImageView) scene.lookup("#card_10"));
+        views.add((ImageView) scene.lookup("#card_11"));
+
 
         return views;
     }
@@ -503,7 +511,7 @@ public class GUIManager {
         if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
             isYourTurn=true;
         }
-        //gameController.endTurn();
+        gameController.endTurnSinglePLayer();
     }
 
     /**
@@ -611,14 +619,13 @@ public class GUIManager {
         views = zoneMap.get(Zone.HAND);
 
         for (int i = 0; i < views.length; i++) {
-            if (i < hand.size()) {
+            if (i < hand.size()){
                 InputStream stream = getClass().getResourceAsStream(hand.get(i).getImagePath());
 
                 if (stream == null) {
                     System.out.println("Missing image: " + hand.get(i).getImagePath());
                     continue;
                 }
-
                 views[i].setImage(new Image(stream));
             } else {
                 views[i].setImage(null);

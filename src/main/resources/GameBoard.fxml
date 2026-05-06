@@ -16,21 +16,9 @@
       <ImageView fx:id="p1board_0" fitHeight="110.0" fitWidth="65.0" layoutX="85.0" layoutY="257.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="p1board_1" fitHeight="110.0" fitWidth="65.0" layoutX="179.0" layoutY="257.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="p1board_2" fitHeight="110.0" fitWidth="65.0" layoutX="275.0" layoutY="257.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="hand_0" fitHeight="175.0" fitWidth="119.0" layoutX="159.0" layoutY="373.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="-10.0">
-         <image>
-            <Image url="@CardFRONT.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="hand_1" fitHeight="175.0" fitWidth="137.0" layoutX="260.0" layoutY="364.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@CardFRONT.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="hand_2" fitHeight="175.0" fitWidth="128.0" layoutX="356.0" layoutY="373.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="10.0">
-         <image>
-            <Image url="@CardFRONT.png" />
-         </image>
-      </ImageView>
+      <ImageView fx:id="hand_0" fitHeight="175.0" fitWidth="119.0" layoutX="159.0" layoutY="373.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="-10.0" />
+      <ImageView fx:id="hand_1" fitHeight="175.0" fitWidth="137.0" layoutX="260.0" layoutY="364.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="hand_2" fitHeight="175.0" fitWidth="128.0" layoutX="356.0" layoutY="373.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="10.0" />
       <ImageView fitHeight="153.0" fitWidth="117.0" layoutX="490.0" layoutY="375.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardBACKSIDE.png" />

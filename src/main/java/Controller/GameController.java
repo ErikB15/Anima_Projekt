@@ -76,12 +76,18 @@ public class GameController implements GameStateListener {
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        allCards.add(new Card("Test1", 1,50,1,taunt, "/CardFRONT.png"));
-        allCards.add(new Card("Test2", 5,25,2,buff, "/CardFRONT.png"));
-        allCards.add(new Card("Test3", 13,34,3,dubbelHit, "/CardFRONT.png"));
-        allCards.add(new Card("Test4", 30,20,4,heal, "/CardFRONT.png"));
-        allCards.add(new Card("Test5", 10,30,5,shield, "/CardFRONT.png"));
-        allCards.add(new Card("Test6", 2,40,6,poison, "/CardFRONT.png"));
+        allCards.add(new Card("Monkey", 1,50,1,taunt, "/CardPictures/Card5.png"));
+        allCards.add(new Card("Bob", 5,25,2,buff, "/CardPictures/Card10.png"));
+        allCards.add(new Card("Twins", 13,34,3,dubbelHit, "/CardPictures/Card8.png"));
+        allCards.add(new Card("ChillGuy", 30,20,4,heal, "/CardPictures/Card9.png"));
+        allCards.add(new Card("blockHead", 10,30,5,shield, "/CardPictures/Card7.png"));
+        allCards.add(new Card("Wizard", 2,40,6,poison, "/CardPictures/Card6.png"));
+        allCards.add(new Card("Pernilla", 2,40,6,poison, "/CardPictures/Card12.png"));
+        allCards.add(new Card("Kick", 2,40,6,poison, "/CardPictures/Card11.png"));
+        allCards.add(new Card("George", 2,40,6,poison, "/CardPictures/Card4.png"));
+        allCards.add(new Card("Harrold", 2,40,6,poison, "/CardPictures/Card3.png"));
+        allCards.add(new Card("KnifeGuy", 2,40,6,poison, "/CardPictures/Card2.png"));
+        allCards.add(new Card("Kenneth", 2,40,6,poison, "/CardPictures/Card1.png"));
     }
 
     /**
@@ -182,6 +188,8 @@ public class GameController implements GameStateListener {
      * @return - Returnerar en boolean för ifall att det lyckades eller inte.
      */
     public boolean placeCard(int handIndex, int boardIndex){
+        System.out.println("gamestate innan");
+
         if(gameState.getPhase() != GamePhase.PLAY){return false;}
         // Avkommenoterad för att kunna testa olika grejer, kommer finnas när allting puzzlat samman.
 
@@ -190,13 +198,18 @@ public class GameController implements GameStateListener {
 
         Card playedCard = currentPlayer.getHand().get(handIndex);
 
+        System.out.println("innan");
         if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){return false;}
         if(gameState.getCardsPlayedThisTurn() == gameState.getMaxCardsToPlayPerTurn()) {return false;}
+
+        System.out.println("efter");
 
         currentPlayer.getHand().remove(handIndex);
         currentPlayer.takeDamage(playedCard.getCardCost());
 
         playedCard.setAsleep(true);
+
+        System.out.println("innan checkgameover");
 
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
@@ -217,7 +230,6 @@ public class GameController implements GameStateListener {
      * @author Erik, Jim Ström, Elna
      */
     public void moveCardFromHandtoBoard() {
-
         Player currentPlayer = gameState.getCurrentPlayer();
         System.out.println("Current player: " + gameState.getCurrentPlayerId()); // Debug, var nödvändig.
 
@@ -228,13 +240,13 @@ public class GameController implements GameStateListener {
         Card cardMoved = currentPlayer.getHand().get(indexCardOnHandToMove);
 
         // Det är här jag slängt in denna metoden. Istället för att sätta den på board här direkt.
-        if(!placeCard(indexCardOnHandToMove, indexSpotToPlaceCard)){return;}
+        if(!placeCard(indexCardOnHandToMove, indexSpotToPlaceCard)){
+            return;
+        }
         // Själva metoden kommer skicka tillbaka om det inte gått, och då går det ännu längre bak.
 
         guiManager.renderHand(currentPlayer.getHand());
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
-
-
 
         cardPicked = false;
         spotPicked = false;
@@ -257,6 +269,8 @@ public class GameController implements GameStateListener {
         currentPlayer.drawUntilHandIsFull();
         board.wakeUpCardsForPlayer(currentPlayerID);
         board.resetAttacksForPlayer(currentPlayerID);
+
+        guiManager.renderHand(playerOne.getHand());
 
         gameState.switchTurn();
 
@@ -649,4 +663,7 @@ public class GameController implements GameStateListener {
         Platform.runLater(() -> guiManager.showChat(msg));
     }
 
+    public void set(){
+        gameState.setPhase(GamePhase.PLAY);
+    }
 }
