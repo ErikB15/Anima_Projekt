@@ -21,7 +21,7 @@ public class Buff extends Effect{
     }
 
     @Override
-    public void activateEffekt(GameController gameController, PlayerID playerID, Player player, boolean isPlayersTurn) {
+    public void activateEffect(GameController gameController, PlayerID playerID, Player player, boolean isPlayersTurn) {
 
         while(isPlayersTurn) {
 
