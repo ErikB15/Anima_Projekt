@@ -10,8 +10,6 @@ import Model.CardEffects.*;
 import View.*;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-
 
 
 /**
@@ -32,8 +30,8 @@ public class GameController implements GameStateListener {
     private int indexToCardToAttackWith = -1;
     private int indexToCardToAttack = -1;
 
-    private boolean attackAttackerPicked = false;
-    private boolean attackDefenderPicked = false;
+    private boolean attackerPicked = false;
+    private boolean defenderPicked = false;
 
     private Player playerOne;
     private Player playerTwo;
@@ -481,12 +479,12 @@ public class GameController implements GameStateListener {
      */
     public void setIndexOfCardOnMyBoardToAttackWith(int index){
         indexToCardToAttackWith = index;
-        attackAttackerPicked = true;
+        attackerPicked = true;
     }
 
     public void setIndexToCardToAttack(int index){
         indexToCardToAttack = index;
-        attackDefenderPicked = true;
+        defenderPicked = true;
     }
 
     public int getIndexToCardToAttackWith(){
@@ -718,8 +716,8 @@ public class GameController implements GameStateListener {
 
         attackTargetPicked = false;
 
-        attackAttackerPicked = false;
-        attackDefenderPicked = false;
+        attackerPicked = false;
+        defenderPicked = false;
     }
 
     public void resetPlacementState() {
@@ -742,15 +740,11 @@ public class GameController implements GameStateListener {
         return cardPicked;
     }
 
-    public boolean isSpotPicked() {
-        return spotPicked;
+    public boolean isAttackerPicked() {
+        return attackerPicked;
     }
 
-    public boolean isAttackAttackerPicked() {
-        return attackAttackerPicked;
-    }
-
-    public boolean isAttackDefenderPicked() {
-        return attackDefenderPicked;
+    public boolean isDefenderPicked() {
+        return defenderPicked;
     }
 }

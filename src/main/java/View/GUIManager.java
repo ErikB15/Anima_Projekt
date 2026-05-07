@@ -235,9 +235,6 @@ public class GUIManager {
 
             addImageViewToList();
             gameController.set();
-            //enemyPlaceCard(1, "CardBACKSIDE.png");
-
-
 
         } catch(Exception e){
             e.printStackTrace();
@@ -262,14 +259,11 @@ public class GUIManager {
      * @author: Elna
      */
     public void pickedCardIndexPoint(MouseEvent event){
-
         if (!isYourTurn) {
             return;
         }
 
-
         if(isYourTurn == true) {
-
             if (gameController.isCardPicked()) {
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -489,8 +483,6 @@ public class GUIManager {
         }
 
         gameController.endTurnSinglePLayer();
-
-
     }
 
     public void enemyPlaceCard(int index, String imagePath){
@@ -599,12 +591,16 @@ public class GUIManager {
         System.out.println("Chatt: " + msg);
     }
 
+    /**
+     * Här hanterar vi valet av kort på motståndaren bräda. Om allt går bra så anropar vi attack metoden. Och uppdaterar gui
+     *
+     * @param event - eventtypen som skickas från guit.
+     * @author Erik
+     */
     public void pickedCardToAttack(MouseEvent event){
-        System.out.println("i början av pcikedcardtoattack metode");
         if(isYourTurn == true) {
-            System.out.println("efter ifsats i samma emtod");
 
-            if (!gameController.isAttackAttackerPicked()) {
+            if (!gameController.isAttackerPicked()) {
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Warning!");
@@ -632,23 +628,15 @@ public class GUIManager {
                 cardToAttackWith = board.getCard(PlayerID.PLAYER_ONE, attackerIndex);
                 cardToAttack = board.getCard(PlayerID.PLAYER_TWO, defenderIndex);
 
-                boolean success = gameController.attackCard(attackerIndex, defenderIndex);
-
-                if (!success) {
-                    gameController.resetAttackState();
-                    return;
-                }
+                gameController.attackCard(attackerIndex, defenderIndex);
 
                 if (cardToAttackWith != null && !cardToAttackWith.isDead()) {
                     renderCard(Zone.PLAYER_BOARD, attackerIndex, cardToAttackWith.getImagePath());
-
                 } else {
                     renderCard(Zone.PLAYER_BOARD, attackerIndex, null);
                 }
-
                 if (cardToAttack != null && !cardToAttack.isDead()) {
                     renderCard(Zone.OPPONENT_BOARD, defenderIndex, cardToAttack.getImagePath());
-
                 } else {
                     renderCard(Zone.OPPONENT_BOARD, defenderIndex, null);
                 }
@@ -660,11 +648,19 @@ public class GUIManager {
                 alert.setContentText("INVALID NUMBER");
                 alert.show();
             }
-
             gameController.resetAttackState();
         }
     }
 
+    /**
+     * Hanterar klick på spelarens bräde. Metoden avgör om klicket ska resultera i att ett kort placeras från handen eller att ett kort väljs för attack.
+     * Om rutan är tom och ett kort från handen tidigare valts så placeras kortet på den platsen.
+     * Om rutan innehåller ett kort så markeras det som attackkort beroende på tidigare val i GameController.
+     * Så metoden är basiclly bara en mega if-sats om vad det är för typ av klick.
+     *
+     * @Param event - typen av event som skickas från gui.
+     * @author Erik
+     */
     public void handleBoardClick(MouseEvent event) {
         if (!isYourTurn) {
             return;
@@ -679,17 +675,12 @@ public class GUIManager {
         String id = view.getId();
         String[] splitID = id.split("_");
 
-        if (splitID.length < 2) {
-            return;
-        }
-
         int index = Integer.parseInt(splitID[1]);
 
         GameState gameState = gameController.getGameState();
         Board board = gameState.getBoard();
 
         PlayerID currentPlayer = gameState.getCurrentPlayerId();
-
         Card cardOnBoard = board.getCard(currentPlayer, index);
 
         if (cardOnBoard == null) {
@@ -701,11 +692,8 @@ public class GUIManager {
             cardFromHandPicked = false;
             return;
         }
-
-
-
-            gameController.setIndexOfCardOnMyBoardToAttackWith(index);
-        }
+        gameController.setIndexOfCardOnMyBoardToAttackWith(index);
+    }
 
     public Card getCardToAttack(){
         return cardToAttack;
