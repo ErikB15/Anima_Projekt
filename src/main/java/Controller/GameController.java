@@ -28,6 +28,12 @@ public class GameController implements GameStateListener {
     private int indexSpotToPlaceCard;
     private boolean cardPicked = false;
     private boolean spotPicked = false;
+    private boolean attackTargetPicked = false;
+    private int indexToCardToAttackWith = -1;
+    private int indexToCardToAttack = -1;
+
+    private boolean attackAttackerPicked = false;
+    private boolean attackDefenderPicked = false;
 
     private Player playerOne;
     private Player playerTwo;
@@ -188,7 +194,6 @@ public class GameController implements GameStateListener {
      * @return - Returnerar en boolean för ifall att det lyckades eller inte.
      */
     public boolean placeCard(int handIndex, int boardIndex){
-        System.out.println("gamestate innan");
 
         if(gameState.getPhase() != GamePhase.PLAY){return false;}
         // Avkommenoterad för att kunna testa olika grejer, kommer finnas när allting puzzlat samman.
@@ -198,18 +203,14 @@ public class GameController implements GameStateListener {
 
         Card playedCard = currentPlayer.getHand().get(handIndex);
 
-        System.out.println("innan");
         if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){return false;}
         if(gameState.getCardsPlayedThisTurn() == gameState.getMaxCardsToPlayPerTurn()) {return false;}
 
-        System.out.println("efter");
 
         currentPlayer.getHand().remove(handIndex);
         currentPlayer.takeDamage(playedCard.getCardCost());
 
         playedCard.setAsleep(true);
-
-        System.out.println("innan checkgameover");
 
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
@@ -230,26 +231,32 @@ public class GameController implements GameStateListener {
      * @author Erik, Jim Ström, Elna
      */
     public void moveCardFromHandtoBoard() {
+
         Player currentPlayer = gameState.getCurrentPlayer();
-        System.out.println("Current player: " + gameState.getCurrentPlayerId()); // Debug, var nödvändig.
 
-        if (!cardPicked || !spotPicked) return;
+        System.out.println("Current player: " + gameState.getCurrentPlayerId());
 
-        if (currentPlayer.getHand().size() <= indexCardOnHandToMove) return;
+        if (!cardPicked || !spotPicked) {
+            return;
+        }
+
+        if (currentPlayer.getHand().size() <= indexCardOnHandToMove) {
+            resetPlacementState();
+            return;
+        }
 
         Card cardMoved = currentPlayer.getHand().get(indexCardOnHandToMove);
 
-        // Det är här jag slängt in denna metoden. Istället för att sätta den på board här direkt.
         if(!placeCard(indexCardOnHandToMove, indexSpotToPlaceCard)){
+            resetPlacementState();
             return;
         }
-        // Själva metoden kommer skicka tillbaka om det inte gått, och då går det ännu längre bak.
 
         guiManager.renderHand(currentPlayer.getHand());
+
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
 
-        cardPicked = false;
-        spotPicked = false;
+        resetPlacementState();
     }
 
     /**
@@ -283,20 +290,22 @@ public class GameController implements GameStateListener {
 
 
     /**
-     * 
+     *
      * @param attackerIndex
      * @param defenderIndex
      * @return
      */
     public boolean attackCard(int attackerIndex, int defenderIndex) {
+        System.out.println("HP of card that will be attacked before attack logic: " + guiManager.getCardToAttack().getCardCurrentHP());
+        System.out.println("HP of card that will attack before attack logic: " + guiManager.getCardToAttackWith().getCardCurrentHP());
+
         if (gameState.getPhase() != GamePhase.PLAY) return false;
 
         PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
         Player attackerPlayer = gameState.getCurrentPlayer();
 
-        PlayerID defenderPlayerID = attackerPlayerID == PlayerID.PLAYER_ONE
-                ? PlayerID.PLAYER_TWO
-                : PlayerID.PLAYER_ONE;
+
+        PlayerID defenderPlayerID = attackerPlayerID == PlayerID.PLAYER_ONE ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
 
         Player defenderPlayer = gameState.getOpponentPlayer();
 
@@ -332,7 +341,9 @@ public class GameController implements GameStateListener {
         if (gameState.isGameOver()) {
             gameOver();
         }
-
+        System.out.println("HP of card that will be attacked after attack logic: " + guiManager.getCardToAttack().getCardCurrentHP());
+        System.out.println("HP of card that will attack after attack logic: " + guiManager.getCardToAttackWith().getCardCurrentHP());
+        System.out.println("attack färdig");
         return true;
     }
 
@@ -343,6 +354,7 @@ public class GameController implements GameStateListener {
      * @author Erik
      */
     private void enemyTurnInSinglePLayer() {
+
         if (playerTwo.getHand().isEmpty()) {
             playerTwo.drawUntilHandIsFull();
         }
@@ -351,25 +363,34 @@ public class GameController implements GameStateListener {
             return;
         }
 
-        int handIndex = (int) (Math.random() * playerTwo.getHand().size());
+        int handIndex =
+                (int) (Math.random() * playerTwo.getHand().size());
+
         Card card = playerTwo.getHand().get(handIndex);
-        int boardIndex = (int) (Math.random() * 4);
 
-        while(!board.placeCard(PlayerID.PLAYER_TWO, boardIndex, card)){
+        int boardIndex =
+                (int) (Math.random() * 4);
+
+        while(!board.placeCard(PlayerID.PLAYER_TWO, boardIndex, card)) {
+
             boardIndex = (int) (Math.random() * 4);
-
-
         }
+
         playerTwo.getHand().remove(handIndex);
+
         playerTwo.takeDamage(card.getCardCost());
 
         card.setAsleep(true);
 
-        guiManager.renderCard(Zone.OPPONENT_BOARD, boardIndex, card.getImagePath());
-        //endTurn();       // Som det är nu måste vi enda motståndarens omgång, vi gör det för att kontrollera flödet lite mer men kan ändras i framtiden.
+        guiManager.renderCard(
+                Zone.OPPONENT_BOARD,
+                boardIndex,
+                card.getImagePath()
+        );
 
         gameState.checkGameOver();
-        if(gameState.isGameOver()){
+
+        if(gameState.isGameOver()) {
             gameOver();
         }
     }
@@ -453,6 +474,24 @@ public class GameController implements GameStateListener {
         moveCardFromHandtoBoard();
     }
 
+    /**
+     * Metod för att sätta index för det kortet man vill attacckera med
+     * @param index
+     * @author Erik
+     */
+    public void setIndexOfCardOnMyBoardToAttackWith(int index){
+        indexToCardToAttackWith = index;
+        attackAttackerPicked = true;
+    }
+
+    public void setIndexToCardToAttack(int index){
+        indexToCardToAttack = index;
+        attackDefenderPicked = true;
+    }
+
+    public int getIndexToCardToAttackWith(){
+        return indexToCardToAttackWith;
+    }
 
 
     /**
@@ -542,6 +581,7 @@ public class GameController implements GameStateListener {
         playerOne.drawUntilHandIsFull();
         playerTwo.drawUntilHandIsFull();
 
+        guiManager.setYourTurn(true);
         gameState.setCurrentPlayer(PlayerID.PLAYER_ONE); // Behövs för annars vet inte gameState vem det är.
         // Ska settas på ett annat ställe sen.
         guiManager.renderHand(playerOne.getHand());
@@ -665,5 +705,52 @@ public class GameController implements GameStateListener {
 
     public void set(){
         gameState.setPhase(GamePhase.PLAY);
+    }
+
+    public GameState getGameState(){
+        return gameState;
+    }
+    public void resetAttackState() {
+        System.out.println("RESET ATTACK STATE CALLED");
+
+        indexToCardToAttackWith = -1;
+        indexToCardToAttack = -1;
+
+        attackTargetPicked = false;
+
+        attackAttackerPicked = false;
+        attackDefenderPicked = false;
+    }
+
+    public void resetPlacementState() {
+
+        System.out.println("RESET PLACEMENT STATE CALLED");
+
+        indexCardOnHandToMove = -1;
+        indexSpotToPlaceCard = -1;
+
+        cardPicked = false;
+        spotPicked = false;
+    }
+
+    public void resetAllSelectionStates() {
+        resetPlacementState();
+        resetAttackState();
+    }
+
+    public boolean isCardPicked() {
+        return cardPicked;
+    }
+
+    public boolean isSpotPicked() {
+        return spotPicked;
+    }
+
+    public boolean isAttackAttackerPicked() {
+        return attackAttackerPicked;
+    }
+
+    public boolean isAttackDefenderPicked() {
+        return attackDefenderPicked;
     }
 }

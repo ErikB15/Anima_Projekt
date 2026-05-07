@@ -1,22 +1,22 @@
 package View;
 
 import Controller.GameController;
-import Model.PlayerID;
-import Model.Zone;
+import Model.*;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import Model.GameState;
+import Model.Board;
 import Model.Card;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +44,6 @@ public class GUIManager {
     private GameController gameController;
 
     //boolean för att kontrollera ordningen av knapptryck i spelfas
-    private boolean cardFromHandPicked = false;
 
     //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta på
     @FXML private ImageView hand_0;
@@ -74,6 +73,9 @@ public class GUIManager {
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
+    private Card cardToAttack;
+    private Card cardToAttackWith;
+    private boolean cardFromHandPicked = false;
 
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
@@ -165,7 +167,7 @@ public class GUIManager {
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
-           // stage.setFullScreen(true);
+            // stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -261,25 +263,39 @@ public class GUIManager {
      */
     public void pickedCardIndexPoint(MouseEvent event){
 
+        if (!isYourTurn) {
+            return;
+        }
+
+
         if(isYourTurn == true) {
 
-            if (cardFromHandPicked == true) {
+            if (gameController.isCardPicked()) {
+
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Warning!");
                 alert.setContentText("You have already chose a card!");
                 alert.show();
+
             } else {
 
                 String cardID = event.getPickResult().getIntersectedNode().getId();
+
                 String[] splitID;
+
                 splitID = cardID.split("_");
+
                 int cardIDInt = Integer.parseInt(splitID[1]);
+
                 System.out.println(cardIDInt);
 
                 if ((cardIDInt < 3) && (cardIDInt >= 0)) {
+
                     gameController.setIndexCardOnHandToMove(cardIDInt);
                     cardFromHandPicked = true;
+
                 } else {
+
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Warning!");
                     alert.setContentText("INVALID NUMBER");
@@ -295,7 +311,11 @@ public class GUIManager {
      *
      * @Param: event - MouseEvent från klick på brädets UI
      * @author: Elna
+     *
+     *
+     * ANVÄNDS EJ LÄNGRE FÖR ATT DET NU FINNS EN "HANDLEBOARDCLICK" METOD LÄNGRE NER SOM HANTERAR OM DET SKA PLACERAS KORT ELLER KORT SOM SKA ATTACKERA. //ERIK
      */
+    /*
     public void pickedSpotToPlaceCardIndexPoint(MouseEvent event){
         if(isYourTurn == true) {
             if (cardFromHandPicked == false) {
@@ -324,6 +344,8 @@ public class GUIManager {
             isYourTurn = false;
         }
     }
+
+     */
     /**
      * Skickar varning till gui, används ej.
      * @param message
@@ -347,9 +369,6 @@ public class GUIManager {
      * @author: Erik, Elna
      */
 
-    //Något jag vill lägga till i framtiden är att "moståndaren" i singleplayer-match ska välja sitt eget kort.
-    // För nu väljer du ditt kort, sen väljer du motståndarens kort. Men kan man göra så att moståndarens väljer sitt eget kort hade det varit nice
-    // /Erik
     public void pickedCard(MouseEvent event) {
         ImageView clickedCard = (ImageView) event.getSource();
         Card card = (Card) clickedCard.getUserData();
@@ -411,27 +430,13 @@ public class GUIManager {
         views.add((ImageView) scene.lookup("#card_10"));
         views.add((ImageView) scene.lookup("#card_11"));
 
-
         return views;
     }
 
-
-    /**
-     * Kopplar GameController till GUIManager.
-     * Används för att möjliggöra kommunikation mellan gui och spel-logik.
-     *
-     * @Param: gameController - instans av GameController
-     * @author: Erik
-     */
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
     }
 
-    /**
-     * I gameRules guit kan man välja olika tabbar av information, alla dessa Show-metoder visar bara den specifika panen i gameRules guit.
-     * @param pane
-     * @author: Erik
-     */
     private void showPane(Pane pane) {
         generalRules.setVisible(false);
         generalRules.setManaged(false);
@@ -449,76 +454,45 @@ public class GUIManager {
         pane.setManaged(true);
     }
 
-
-    /**
-     * Visar allmänna spelregler i gui.
-     * @author: Erik
-     */
-    @FXML
-    private void showGeneralRules() {
+    @FXML private void showGeneralRules() {
         showPane(generalRules);
     }
-    /**
-     * Visar allmänna kort-regler i gui.
-     * @author: Erik
-     */
-    @FXML
-    private void showCardRules() {
+
+    @FXML private void showCardRules() {
         showPane(cardRules);
     }
-    /**
-     * Visar allmänna spelareregler gällande spelare i gui.
-     * @author: Erik
-     */
-    @FXML
-    private void showPlayerRules() {
+
+    @FXML private void showPlayerRules() {
         showPane(playerRules);
     }
 
-    /**
-     * Visar allmänna regler för effekter i gui.
-     * @author: Erik
-     */
-    @FXML
-    private void showEffectsRules(){
+    @FXML private void showEffectsRules(){
         showPane(effectsRules);
     }
 
-    /**
-     * Ska göra komponenter draggable, om vi vill ha det sen
-     * @param image
-     * @author Elna
-     */
     private void makeDraggable(Image image){
 
     }
 
-    /**
-     * Metod för att ta bort bilderna på korten i imageView i gameboard
-     * @authe Erik
-     */
     public void killCard(){
 
     }
 
-    /**
-     * Metoden existerar för att begränsa vem som kan samtala med gui och skickar endast vidare ansvaret av logiken till gameControllern.
-     * Anropas av FXML-filen "GameBoard".
-     * @author Erik
-     */
     public void endTurnInGuiInSinglePlayer(){
+
         System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
-        if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO){
-            isYourTurn=true;
+
+        if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
+            isYourTurn = true;
+        } else {
+            isYourTurn = false;
         }
+
         gameController.endTurnSinglePLayer();
+
+
     }
 
-    /**
-     * Metod för att visa bilden när ett kort ska placeras på en imageview.
-     * BORDE ANROPAS FRÅN GAMECONTROLLER NÄR MOTSTÅNDARE LÄGGER KORT
-     * @author: Elna, Erik
-     */
     public void enemyPlaceCard(int index, String imagePath){
         String fxID = ("p2board_" + index);
         Image newImage = new Image(imagePath);
@@ -533,62 +507,28 @@ public class GUIManager {
 
     }
 
-    /**
-     * Metod för att lägga till alla ImageView som representerar board i en array.
-     * Det förenklar när man ska lägga ut bilder på plan att kunna loopa igenom alla ImageView.
-     * @author Elna
-     */
     public void addImageViewToList(){
-         boardImageViews.add(p2board_0);
-         boardImageViews.add(p2board_1);
-         boardImageViews.add(p2board_2);
-         boardImageViews.add(p2board_3);
+        boardImageViews.add(p2board_0);
+        boardImageViews.add(p2board_1);
+        boardImageViews.add(p2board_2);
+        boardImageViews.add(p2board_3);
 
-         boardImageViews.add(p1board_0);
-         boardImageViews.add(p1board_1);
-         boardImageViews.add(p1board_2);
-         boardImageViews.add(p1board_3);
+        boardImageViews.add(p1board_0);
+        boardImageViews.add(p1board_1);
+        boardImageViews.add(p1board_2);
+        boardImageViews.add(p1board_3);
     }
 
-
-    /**
-     * Metod för att visuelt representera en attack i spelet. Om det är animation, smårörelse eller vad bestäms senare.
-     * @auther: Erik
-     */
-    public void attack(){
-
-    }
-
-    /**
-     * Metod för att skriva meddelande i eventlog. Ska skriva ut allt som händer på brädan.
-     * @auther: Erik
-     */
     public void sendMessageToEventLog(){
 
     }
 
-
-    /**
-     * Initierar kopplingen mellan spelzoner (t.ex. hand och bräda) och deras motsvarande ImageView-komponenter i Gui.
-     * Måste anropas efter att FXML har laddats, eftersom alla @FXML-fält annars är null.
-     * Används som intern mapping för att kunna uppdatera rätt UI-komponent baserat på spelstatus.
-     * @author: Erik
-     */
     public void init() {
         zoneMap.put(Zone.HAND, new ImageView[]{hand_0, hand_1, hand_2});
         zoneMap.put(Zone.PLAYER_BOARD, new ImageView[]{p1board_0, p1board_1, p1board_2, p1board_3});
         zoneMap.put(Zone.OPPONENT_BOARD, new ImageView[]{p2board_0, p2board_1, p2board_2, p2board_3});
     }
 
-    /**
-     * Uppdaterar den visuella representationen av ett kort i Gui.
-     * Metoden hittar rätt ImageView utifrån given zon och position, och sätter eller tar bort bild beroende på imagePath.
-     * Om imagePath är null rensas platsen, annars laddas och visar bilden.
-     * @param zone - vilken zon det är, hand, deck, brädan
-     * @param index - vilket specifikt index vi pratar om
-     * @param imagePath - bilden på kortet
-     * @auther: Erik
-     */
     public void renderCard(Zone zone, int index, String imagePath) {
         ImageView[] views = zoneMap.get(zone);
 
@@ -606,14 +546,6 @@ public class GUIManager {
         Image image = new Image(getClass().getResourceAsStream(imagePath));
         view.setImage(image);
     }
-
-    /**
-     * Renderar spelarens hand visuellt i gui.
-     * Uppdaterar ImageView-komponenter baserat på kort i handen.
-     *
-     * @Param: hand - lista av kort som spelaren har i handen
-     * @auther: Erik
-     */
 
     public void renderHand(ArrayList<Card> hand) {
         views = zoneMap.get(Zone.HAND);
@@ -633,10 +565,6 @@ public class GUIManager {
         }
     }
 
-    /**
-     * Metod för att byta text i Label i Picked Cards.
-     * @author Elna
-     */
     public void switchTurnLabelInPickCard(){
 
         if(playerOnesTurn == true){
@@ -647,67 +575,147 @@ public class GUIManager {
         }
     }
 
-    /**
-     * Visar att spelaren väntar på att motståndaren ska ansluta.
-     * Anropas av GameController när WAITING meddelande tas emot från servern.
-     * @author Leo
-     */
     public void showWaiting()             {
         System.out.println("Väntar...");
     }
 
-    /**
-     * Aktiverar spelarens möjlighet att interagera med spelbrädet.
-     * Sätter isYourTurn till true så att knapptrycken registreras.
-     * Anropas av GameController när YOUR_TURN tas emot från servern.
-     * @author Leo
-     */
     public void enableCardButtons()       {
         isYourTurn = true;
     }
 
-    /**
-     * Tar emot ett uppdaterat spelläge från servern som JSON sträng.
-     * Fylls i med riktig GUI uppdatering när spellägets struktur är klar.
-     * Anropas av GameController när GAME_STATE tas emot från servern.
-     *
-     * @param json det uppdaterade spelläget serialiserat som JSON
-     * @author Leo
-     */
     public void updateBoard(String json)  {
         System.out.println("Spelläge: " + json);
     }
 
-    /**
-     * Visar vem som vann när spelet är slut.
-     * Anropas av GameController när GAME_OVER tas emot från servern.
-     *
-     * @param name namnet på spelaren som vann
-     * @author Leo
-     */
     public void showGameOver(String name) {
         sendMessageThroughGUI("Vinnare: " + name);
     }
 
-    /**
-     * Visar ett felmeddelande från servern i GUI.
-     * Anropas av GameController när ERROR tas emot från servern.
-     *
-     * @param msg felmeddelandet som ska visas
-     * @author Leo
-     */
     public void showError(String msg)     {
         sendMessageThroughGUI(msg);
     }
 
-    /**
-     * Visar ett chattmeddelande i GUI.
-     * Anropas av GameController när CHAT tas emot från servern.
-     *
-     * @param msg chattmeddelandets text
-     * @author Leo
-     */
     public void showChat(String msg)      {
         System.out.println("Chatt: " + msg);
+    }
+
+    public void pickedCardToAttack(MouseEvent event){
+        System.out.println("i början av pcikedcardtoattack metode");
+        if(isYourTurn == true) {
+            System.out.println("efter ifsats i samma emtod");
+
+            if (!gameController.isAttackAttackerPicked()) {
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("Pick a card on your board first!");
+                alert.show();
+
+                return;
+            }
+
+            String cardID = event.getPickResult().getIntersectedNode().getId();
+
+            String[] splitID = cardID.split("_");
+
+            int defenderIndex = Integer.parseInt(splitID[1]);
+
+            if ((defenderIndex <= 4) && (defenderIndex >= 0)) {
+
+                gameController.setIndexToCardToAttack(defenderIndex);
+
+                int attackerIndex = gameController.getIndexToCardToAttackWith();
+
+                GameState gameState = gameController.getGameState();
+                Board board = gameState.getBoard();
+
+                cardToAttackWith = board.getCard(PlayerID.PLAYER_ONE, attackerIndex);
+                cardToAttack = board.getCard(PlayerID.PLAYER_TWO, defenderIndex);
+
+                boolean success = gameController.attackCard(attackerIndex, defenderIndex);
+
+                if (!success) {
+                    gameController.resetAttackState();
+                    return;
+                }
+
+                if (cardToAttackWith != null && !cardToAttackWith.isDead()) {
+                    renderCard(Zone.PLAYER_BOARD, attackerIndex, cardToAttackWith.getImagePath());
+
+                } else {
+                    renderCard(Zone.PLAYER_BOARD, attackerIndex, null);
+                }
+
+                if (cardToAttack != null && !cardToAttack.isDead()) {
+                    renderCard(Zone.OPPONENT_BOARD, defenderIndex, cardToAttack.getImagePath());
+
+                } else {
+                    renderCard(Zone.OPPONENT_BOARD, defenderIndex, null);
+                }
+
+            } else {
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("INVALID NUMBER");
+                alert.show();
+            }
+
+            gameController.resetAttackState();
+        }
+    }
+
+    public void handleBoardClick(MouseEvent event) {
+        if (!isYourTurn) {
+            return;
+        }
+
+        ImageView view = (ImageView) event.getPickResult().getIntersectedNode();
+
+        if (view == null || view.getId() == null) {
+            return;
+        }
+
+        String id = view.getId();
+        String[] splitID = id.split("_");
+
+        if (splitID.length < 2) {
+            return;
+        }
+
+        int index = Integer.parseInt(splitID[1]);
+
+        GameState gameState = gameController.getGameState();
+        Board board = gameState.getBoard();
+
+        PlayerID currentPlayer = gameState.getCurrentPlayerId();
+
+        Card cardOnBoard = board.getCard(currentPlayer, index);
+
+        if (cardOnBoard == null) {
+            if (!cardFromHandPicked) {
+                return;
+            }
+
+            gameController.setIndexSpotToPlaceCard(index);
+            cardFromHandPicked = false;
+            return;
+        }
+
+
+
+            gameController.setIndexOfCardOnMyBoardToAttackWith(index);
+        }
+
+    public Card getCardToAttack(){
+        return cardToAttack;
+    }
+
+    public Card getCardToAttackWith(){
+        return cardToAttackWith;
+    }
+
+    public void setYourTurn(boolean yourTurn) {
+        isYourTurn = yourTurn;
     }
 }
