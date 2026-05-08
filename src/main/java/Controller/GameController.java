@@ -345,6 +345,32 @@ public class GameController implements GameStateListener {
         return true;
     }
 
+    public boolean attackPlayer(int attackCard){
+        if (gameState.getPhase() != GamePhase.PLAY) return false;
+
+        PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
+        Player defenderPlayer = gameState.getOpponentPlayer();
+
+        if (defenderPlayer == null) return false;
+        if (attackCard < 0 || attackCard >= board.getSlotsForPlayer(attackerPlayerID).length) return false;
+
+        Card attacker = board.getCard(attackerPlayerID, attackCard);
+
+        if (attacker == null) return false;
+        if (attacker.getAsleep()) return false;
+        if (attacker.getHasAttackedThisTurn()) return false;
+
+        defenderPlayer.takeDamage(attacker.getCardAD());
+        attacker.setHasAttackedThisTurn(true);
+
+        gameState.checkGameOver();
+
+        if (gameState.isGameOver()) {
+            gameOver();
+        }
+        return true;
+    }
+
     /**
      * Metoden för att simulera single-player motståndarens omgång.
      * Samma metoder som när vi vill lägga kort men med en while-loop som kontrollerar att där motståndaren vill lägga kort är en gilltig plats.
