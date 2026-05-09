@@ -50,7 +50,23 @@ public class GUIManager {
     @FXML private ImageView hand_1;
     @FXML private ImageView hand_2;
 
-    //Array för att lägga till alla Image View i
+    //Detta är labels för Hp i spelet. //Elna
+    @FXML private Label hp_0;
+    @FXML private Label hp_1;
+    @FXML private Label hp_2;
+    @FXML private Label hp_3;
+    @FXML private Label hp_4;
+    @FXML private Label hp_5;
+    @FXML private Label hp_6;
+    @FXML private Label hp_7;
+    @FXML private Label hp_8;
+    @FXML private Label hp_9;
+    @FXML private Label hp_10;
+    @FXML private Label hp_11;
+
+    private Label[] labelsHP = new Label[12];
+
+    //Array för att lägga till alla Labels för Hp i i
     private ArrayList<ImageView> boardImageViews = new ArrayList<ImageView>();
     private ArrayList selectedCardsInPickCardphase = new ArrayList();
 
@@ -76,6 +92,12 @@ public class GUIManager {
     private Card cardToAttack;
     private Card cardToAttackWith;
     private boolean cardFromHandPicked = false;
+
+    @FXML
+    public void initialize(){
+        System.out.println("hej");
+        addLabelsToArray();
+    }
 
     /**
      * Konstruktor som initialiserar GUIManager och skapar en koppling till GameController.
@@ -369,13 +391,18 @@ public class GUIManager {
 
         for (int i = 0; i < selectedCardsInPickCardphase.size(); i++){
             if (selectedCardsInPickCardphase.get(i) == clickedCard) {
+                sendMessageThroughGUI("Card already chosen! Pick another card.");
                 System.out.println("Card already chosen! Pick another card.");
                 return;
             }
         }
+        String hpID = event.getPickResult().getIntersectedNode().getId();
+        String[] splitID = hpID.split("_");
+        int hpIDInt = Integer.parseInt(splitID[1]);
 
         selectedCardsInPickCardphase.add(clickedCard);
         clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+        changeHP(hpIDInt, " ");
 
         if (playerOnesTurn == true){
             gameController.addCardToPlayerOne(card);
@@ -705,5 +732,37 @@ public class GUIManager {
 
     public void setYourTurn(boolean yourTurn) {
         isYourTurn = yourTurn;
+    }
+
+    public void changeHP(int index, String newValue){
+        String hpID = ("hp_" + index);
+
+
+        for(int i = 0; i < labelsHP.length; i++){
+
+            String id = labelsHP[i].getId();
+
+            if(labelsHP[i].getId() == hpID){
+
+                    labelsHP[i].setText(newValue);
+            }
+        }
+
+
+    }
+
+    public void addLabelsToArray(){
+        labelsHP[0] = hp_0;
+        labelsHP[1] = hp_1;
+        labelsHP[2] = hp_2;
+        labelsHP[3] = hp_3;
+        labelsHP[4] = hp_4;
+        labelsHP[5] = hp_5;
+        labelsHP[6] = hp_6;
+        labelsHP[7] = hp_7;
+        labelsHP[8] = hp_8;
+        labelsHP[9] = hp_9;
+        labelsHP[10] = hp_10;
+        labelsHP[11] = hp_11;
     }
 }
