@@ -7,6 +7,8 @@ import com.codedisaster.steamworks.SteamFriendsCallback;
 import com.codedisaster.steamworks.SteamID;
 import com.codedisaster.steamworks.SteamMatchmaking;
 import com.codedisaster.steamworks.SteamMatchmakingCallback;
+import com.codedisaster.steamworks.SteamNetworking;
+import com.codedisaster.steamworks.SteamNetworkingCallback;
 import com.codedisaster.steamworks.SteamResult;
 
 /**
@@ -21,6 +23,10 @@ public class ApiController {
 
     private Thread callbackThread;
     private volatile boolean running;
+
+    private static SteamNetworking networking;
+    private static SteamID opponentSteamID = null;
+    private static boolean isHost = false;
 
     public ApiController() {
         // Empty constructor 
@@ -47,6 +53,8 @@ public class ApiController {
                     // Initialize Steam Interfaces
                     matchmaking = new SteamMatchmaking(matchmakingCallback);
                     friends = new SteamFriends(friendsCallback);
+
+                    networking = new SteamNetworking(networkingCallback);
                    
                     // Start the background thread to listen for Steam events
                     startCallbackThread();  // Starts the background thread 
@@ -70,6 +78,7 @@ public class ApiController {
     private void startCallbackThread() {
         running = true;
         callbackThread = new Thread(() -> {
+            // Loop until the game closes
             while (running && SteamAPI.isSteamRunning()) {
                 SteamAPI.runCallbacks();
                 try {
@@ -86,6 +95,7 @@ public class ApiController {
     public static void hostLobby() {
         if (isSteamInitialized && matchmaking != null) {
             System.out.println("Creating Steam Lobby...");
+            isHost = true;
             matchmaking.createLobby(SteamMatchmaking.LobbyType.FriendsOnly, 2);
         }
     }
@@ -114,6 +124,14 @@ public class ApiController {
             if (response == SteamMatchmaking.ChatRoomEnterResponse.Success) {
                 System.out.println("Successfully entered lobby: " + steamIDLobby.getAccountID());
                  //TODO Transition to game lobby screen in GUI
+
+                 if (!isHost) {
+                    //TODO Notify player that they have joined the game
+                    opponentSteamID = opponentSteamID = matchmaking.getLobbyOwner(steamIDLobby);
+                    System.out.println("Joined host's lobby. Found opponent: " + opponentSteamID.getAccountID());;
+                    System.out.println("Friend on ID "+ steamIDLobby.getAccountID() + " joined");
+                }
+
             }
         }
 
@@ -122,7 +140,19 @@ public class ApiController {
             System.out.println("Invite received from " + steamIDUser.getAccountID() + " to join lobby");
         }
         public void onLobbyDataUpdate(SteamID steamIDLobby, SteamID steamIDMember, boolean success) {}
-        public void onLobbyChatUpdate(SteamID steamIDLobby, SteamID steamIDUserChanged, SteamID steamIDMakingChange, SteamMatchmaking.ChatMemberStateChange stateChange) {}
+        @Override
+        public void onLobbyChatUpdate(SteamID steamIDLobby, SteamID steamIDUserChanged, SteamID steamIDMakingChange, SteamMatchmaking.ChatMemberStateChange stateChange) {
+            // FIX FOR HOST: 
+            // This triggers specifically when a new member enters the room.
+            if (isHost && stateChange == SteamMatchmaking.ChatMemberStateChange.Entered) {
+                // The 'steamIDUserChanged' parameter is provided by this method automatically
+                opponentSteamID = steamIDUserChanged;
+                System.out.println("Friend entered the lobby! Found opponent: " + opponentSteamID.getAccountID());
+                
+                // Trigger the transition to the next screen
+                onConnectionHandshakeComplete();
+            }
+        }
         public void onLobbyChatMessage(SteamID steamIDLobby, SteamID steamIDUser, SteamMatchmaking.ChatEntryType entryType, int chatID) {}
         public void onLobbyGameCreated(SteamID steamIDLobby, SteamID steamIDGameServer, int ip, short port) {
             System.out.println("Game created in lobby");
@@ -161,6 +191,7 @@ public void onFavoritesListAccountsUpdated(SteamResult result) {
         @Override
         public void onGameLobbyJoinRequested(SteamID steamIDLobby, SteamID steamIDFriend) {
             System.out.println("Friend accepted the invite! Joining lobby...");
+            isHost = false;
    
             if (matchmaking != null) {
                 matchmaking.joinLobby(steamIDLobby);
@@ -178,10 +209,37 @@ public void onFavoritesListAccountsUpdated(SteamResult result) {
     };
     
 
+
+    private void onConnectionHandshakeComplete() {
+        System.out.println("HANDSHAKE COMPLETE");
+  
+    }
+
+
+    // STEAM NETWORKING CALLBACKS 
+    private SteamNetworkingCallback networkingCallback = new SteamNetworkingCallback() {
+        @Override
+        public void onP2PSessionRequest(SteamID steamIDRemote) {
+            System.out.println("Incoming network request from: " + steamIDRemote.getAccountID());
+            
+            // If the request comes from the opponent we met in the lobby, let them in!
+            if (opponentSteamID != null && steamIDRemote.equals(opponentSteamID)) {
+                networking.acceptP2PSessionWithUser(steamIDRemote);
+                System.out.println("Accepted P2P pipe connection with opponent!");
+            }
+        }
+
+        @Override
+        public void onP2PSessionConnectFail(SteamID steamIDRemote, SteamNetworking.P2PSessionError sessionError) {
+            System.out.println("Failed to connect pipe to: " + steamIDRemote.getAccountID() + ". Error: " + sessionError);
+        }
+    };
+
     // Safely disconnects from Steam when the game closes
     public void shutdownSteam() {
         if (SteamAPI.isSteamRunning()) {
             SteamAPI.shutdown();
+            running = false;
             System.out.println("SteamAPI shut down cleanly.");
         }
     }

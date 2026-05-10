@@ -9,9 +9,15 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.setProperty("prism.order", "sw");
+       // System.setProperty("prism.order", "es3"); // Hardware accellerated graphics api, "es2" for OpenGL
+       //System.setProperty("prism.order", "d3d,sw");
 
-        ApiController apiController = new ApiController();
+       // Force hardware acceleration 
+       //System.setProperty("prism.order", "d3d,es2,sw");
+      // System.setProperty("prism.forceGPU", "true");
+
+
+        apiController = new ApiController();
         apiController.initSteam();
 
 

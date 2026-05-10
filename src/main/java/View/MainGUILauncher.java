@@ -22,6 +22,7 @@ public class MainGUILauncher extends Application {
            stage.setResizable(false);
            stage.show();
 
+
         } catch(Exception e){
             System.out.println("nu är jag i MainGUILauncher");
             e.printStackTrace();
