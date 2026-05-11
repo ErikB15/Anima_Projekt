@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 
+import static java.lang.String.valueOf;
+
 
 /**
  * GUIManager fungerar som kopplingslager mellan gui:t (JavaFX) och spel-logik (GameController).
@@ -64,7 +66,6 @@ public class GUIManager {
     @FXML private Label hp_10;
     @FXML private Label hp_11;
 
-    private Label[] labelsHP = new Label[12];
 
     //Array för att lägga till alla Labels för Hp i i
     private ArrayList<ImageView> boardImageViews = new ArrayList<ImageView>();
@@ -95,8 +96,7 @@ public class GUIManager {
 
     @FXML
     public void initialize(){
-        System.out.println("hej");
-        addLabelsToArray();
+
     }
 
     /**
@@ -220,6 +220,7 @@ public class GUIManager {
             //stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
+
 
             gameController.bindCardsToView(controller.getCardImageView(scene));
             gameController.startDraftPhase();
@@ -363,7 +364,7 @@ public class GUIManager {
 
      */
     /**
-     * Skickar varning till gui, används ej.
+     * Skickar varning till gui.
      * @param message
      * @author: Elna
      */
@@ -402,7 +403,7 @@ public class GUIManager {
 
         selectedCardsInPickCardphase.add(clickedCard);
         clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
-        changeHP(hpIDInt, " ");
+        changeHP(hpIDInt, " ", null);
 
         if (playerOnesTurn == true){
             gameController.addCardToPlayerOne(card);
@@ -564,6 +565,8 @@ public class GUIManager {
 
         Image image = new Image(getClass().getResourceAsStream(imagePath));
         view.setImage(image);
+        String hp = valueOf(getHPForCardHand(index));
+        changeHP(index, hp, zone);
     }
 
     public void renderHand(ArrayList<Card> hand) {
@@ -578,6 +581,8 @@ public class GUIManager {
                     continue;
                 }
                 views[i].setImage(new Image(stream));
+                String hp = valueOf(getHPForCardHand(i));
+                changeHP(i, hp, Zone.HAND);
             } else {
                 views[i].setImage(null);
             }
@@ -734,35 +739,111 @@ public class GUIManager {
         isYourTurn = yourTurn;
     }
 
-    public void changeHP(int index, String newValue){
-        String hpID = ("hp_" + index);
+    public void changeHP(int index, String newValue, Zone zone){
 
+        if(gameController.getGameState().getPhase() == GamePhase.DRAFT){
 
-        for(int i = 0; i < labelsHP.length; i++){
-
-            String id = labelsHP[i].getId();
-
-            if(labelsHP[i].getId() == hpID){
-
-                    labelsHP[i].setText(newValue);
+            switch(index){
+                case 0:
+                    hp_0.setText(newValue);
+                    break;
+                case 1:
+                    hp_1.setText(newValue);
+                    break;
+                case 2:
+                    hp_2.setText(newValue);
+                    break;
+                case 3:
+                    hp_3.setText(newValue);
+                    break;
+                case 4:
+                    hp_4.setText(newValue);
+                    break;
+                case 5:
+                    hp_5.setText(newValue);
+                    break;
+                case 6:
+                    hp_6.setText(newValue);
+                    break;
+                case 7:
+                    hp_7.setText(newValue);
+                    break;
+                case 8:
+                    hp_8.setText(newValue);
+                    break;
+                case 9:
+                    hp_9.setText(newValue);
+                    break;
+                case 10:
+                    hp_10.setText(newValue);
+                    break;
+                case 11:
+                    hp_11.setText(newValue);
+                    break;
+                default: sendMessageThroughGUI("ERROR");
             }
-        }
+        } else {
+           if(zone == Zone.HAND){
 
+               switch(index){
+                   case 0:
+                       hp_0.setText(newValue);
+                       break;
+                   case 1:
+                       hp_1.setText(newValue);
+                       break;
+                   case 2:
+                       hp_2.setText(newValue);
+                       break;
+                   default: sendMessageThroughGUI("ERROR");
+               }
+
+           } else if (zone == Zone.PLAYER_BOARD){
+
+               switch(index){
+                   case 0:
+                       hp_3.setText(newValue);
+                       break;
+                   case 1:
+                       hp_4.setText(newValue);
+                       break;
+                   case 2:
+                       hp_5.setText(newValue);
+                       break;
+                   case 3:
+                       hp_6.setText(newValue);
+                       break;
+                   default: sendMessageThroughGUI("ERROR");
+               }
+
+           } else {
+
+               switch(index){
+                   case 0:
+                       hp_7.setText(newValue);
+                       break;
+                   case 1:
+                       hp_8.setText(newValue);
+                       break;
+                   case 2:
+                       hp_9.setText(newValue);
+                       break;
+                   case 3:
+                       hp_10.setText(newValue);
+                       break;
+                   default: sendMessageThroughGUI("ERROR");
+               }
+
+           }
+        }
 
     }
 
-    public void addLabelsToArray(){
-        labelsHP[0] = hp_0;
-        labelsHP[1] = hp_1;
-        labelsHP[2] = hp_2;
-        labelsHP[3] = hp_3;
-        labelsHP[4] = hp_4;
-        labelsHP[5] = hp_5;
-        labelsHP[6] = hp_6;
-        labelsHP[7] = hp_7;
-        labelsHP[8] = hp_8;
-        labelsHP[9] = hp_9;
-        labelsHP[10] = hp_10;
-        labelsHP[11] = hp_11;
+    public int getHPForCardHand(int index){
+       if((index >= 0) && (index < 3)){
+           return gameController.getHPforCardHand(index);
+       } else{
+           return 0;
+       }
     }
 }

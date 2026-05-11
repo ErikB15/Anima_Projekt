@@ -747,4 +747,8 @@ public class GameController implements GameStateListener {
     public boolean isDefenderPicked() {
         return defenderPicked;
     }
+
+    public int getHPforCardHand(int index){
+        return playerOne.getHand().get(index).getCardCurrentHP();
+    }
 }
