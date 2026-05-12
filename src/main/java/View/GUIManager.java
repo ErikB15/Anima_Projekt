@@ -151,6 +151,35 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Den ska byta menyn till game over menyn. Tror jag saknar något, för stage blir lika med null.
+     * Antog att ni sätter stagen någonstans för att vi ska kunna byta senare men variabeln verkar alltid vara null?
+     * Om jag fattat rätt efter typ 15 minuter av läsning så ska stage följa med de olika stages vi bytar till.
+     * Så varje stage vi bytar till ska sparas i variabeln stage så vi inte alltid behöver en mouse event för att byta stage
+     *
+     * @author Jim Ström
+     */
+    public void switchToGameOverMenu() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getClassLoader().getResource("GameOverScreen.fxml")
+            );
+
+            Parent root = loader.load();
+
+            GUIManager controller = loader.getController();
+            controller.setGameController(gameController);
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     /**
@@ -491,7 +520,7 @@ public class GUIManager {
 
         for(ImageView img : boardImageViews){
 
-            if(fxID == img.getId()){
+            if(fxID.equals(img.getId())){
                 img.setImage(newImage);
             }
 
@@ -511,7 +540,7 @@ public class GUIManager {
         boardImageViews.add(p1board_3);
     }
 
-    public void sendMessageToEventLog(){
+    public void sendMessageToEventLog(String message){
 
     }
 
@@ -616,7 +645,7 @@ public class GUIManager {
 
             int defenderIndex = Integer.parseInt(splitID[1]);
 
-            if ((defenderIndex <= 4) && (defenderIndex >= 0)) {
+            if ((defenderIndex < 4) && (defenderIndex >= 0)) {
 
                 gameController.setIndexToCardToAttack(defenderIndex);
 
@@ -630,16 +659,17 @@ public class GUIManager {
 
                 gameController.attackCard(attackerIndex, defenderIndex);
 
-                if (cardToAttackWith != null && !cardToAttackWith.isDead()) {
-                    renderCard(Zone.PLAYER_BOARD, attackerIndex, cardToAttackWith.getImagePath());
-                } else {
-                    renderCard(Zone.PLAYER_BOARD, attackerIndex, null);
-                }
-                if (cardToAttack != null && !cardToAttack.isDead()) {
-                    renderCard(Zone.OPPONENT_BOARD, defenderIndex, cardToAttack.getImagePath());
-                } else {
-                    renderCard(Zone.OPPONENT_BOARD, defenderIndex, null);
-                }
+                // Dessa checks är onödiga och görs istället i GameControllern. Sen anropar gameControllern GUI:et.
+                //if (cardToAttackWith != null && !cardToAttackWith.isDead()) {
+                //    renderCard(Zone.PLAYER_BOARD, attackerIndex, cardToAttackWith.getImagePath());
+                //} else {
+                //    renderCard(Zone.PLAYER_BOARD, attackerIndex, null);
+                //}
+                //if (cardToAttack != null && !cardToAttack.isDead()) {
+                //    renderCard(Zone.OPPONENT_BOARD, defenderIndex, cardToAttack.getImagePath());
+                //} else {
+                //    renderCard(Zone.OPPONENT_BOARD, defenderIndex, null);
+                //}
 
             } else {
 

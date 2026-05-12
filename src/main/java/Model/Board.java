@@ -83,6 +83,26 @@ public class Board {
         }
     }
 
+
+    /**
+     * Denna metoden kollar om där finns tomma platser för kort att läggas på med given spelar ID.
+     * Mest nödvändig för AI beteendet.
+     * @param player - Spelaren som försöker lägga kort.
+     * @return - En boolean som säger ifall det finns tomma rutor eller inte.
+     * @author Jim Ström
+     */
+    public boolean hasEmptySlot(PlayerID player) {
+        Card[] slots = getSlotsForPlayer(player);
+
+        for (Card card : slots) {
+            if (card == null) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Hämtar den sidan som spelaren äger, genom att använda enum:et "PlayerID" så blir det rätt lättläsligt.
      * @param player - Enum:et som säger vilken spelare är spelare 1 och vilken är spelare 2.
@@ -113,10 +133,6 @@ public class Board {
      */
     public Card getCard(PlayerID player, int boardIndex) {
         return getSlotsForPlayer(player)[boardIndex];
-    }
-
-    public Card getSlot(PlayerID player, int index) {
-        return getSlotsForPlayer(player)[index];
     }
 
 }
