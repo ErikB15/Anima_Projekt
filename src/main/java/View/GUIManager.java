@@ -589,6 +589,7 @@ public class GUIManager {
 
         if (imagePath == null) {
             view.setImage(null);
+            changeHP(index, " ", zone);
             return;
         }
 
