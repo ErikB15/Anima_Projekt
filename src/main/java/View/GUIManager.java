@@ -610,8 +610,12 @@ public class GUIManager {
                     continue;
                 }
                 views[i].setImage(new Image(stream));
-                String hp = valueOf(getHPForCardHand(i));
-                changeHP(i, hp, Zone.HAND);
+
+                if(hand.size() >= i){
+                    String hp = valueOf(getHPForCardHand(i));
+                    changeHP(i, hp, Zone.HAND);
+                }
+
             } else {
                 views[i].setImage(null);
             }

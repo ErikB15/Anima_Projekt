@@ -333,7 +333,8 @@ public class GameController implements GameStateListener {
         attacker.setHasAttackedThisTurn(true);
 
         addMassageInGui(2, attackerPlayer, attacker, defender);
-
+        guiManager.renderCard(getBoardZone(defenderPlayerID),defenderIndex,defender.getImagePath());
+        guiManager.renderCard(getBoardZone(attackerPlayerID),attackerIndex,attacker.getImagePath());
 
         if (defender.isDead()) {
             Card deadCard = board.removeCard(defenderPlayerID, defenderIndex);
@@ -715,6 +716,7 @@ public class GameController implements GameStateListener {
         Platform.runLater(() -> guiManager.showChat(msg));
     }
 
+    //Borde tas bort!
     public void set(){
         gameState.setPhase(GamePhase.PLAY);
     }
