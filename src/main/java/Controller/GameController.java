@@ -252,8 +252,14 @@ public class GameController implements GameStateListener {
             resetPlacementState();
             return;
         }
+        guiManager.renderCard(Zone.HAND,2,null);
 
-        guiManager.renderHand(currentPlayer.getHand());
+        //guiManager.renderHand(currentPlayer.getHand());
+
+        for(int i = 0; i < playerOne.getHand().size(); i++){
+            guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
+            System.out.println();
+        }
 
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
 
@@ -278,7 +284,11 @@ public class GameController implements GameStateListener {
         board.wakeUpCardsForPlayer(currentPlayerID);
         board.resetAttacksForPlayer(currentPlayerID);
 
-        guiManager.renderHand(playerOne.getHand());
+        //guiManager.renderHand(playerOne.getHand());
+
+        for(int i = 0; i < playerOne.getHand().size(); i++){
+            guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
+        }
 
         gameState.switchTurn();
 
@@ -481,7 +491,7 @@ public class GameController implements GameStateListener {
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
 
-        //guiManager.switchToGameOverMenu();
+        guiManager.switchToGameOverMenu();
 
         System.out.println("THE GAME HAS ENDED!");
         System.out.println("THE GAME HAS ENDED!");
@@ -570,7 +580,11 @@ public class GameController implements GameStateListener {
         guiManager.setYourTurn(true);
         gameState.setCurrentPlayer(PlayerID.PLAYER_ONE); // Behövs för annars vet inte gameState vem det är.
         // Ska settas på ett annat ställe sen.
-        guiManager.renderHand(playerOne.getHand());
+
+        for(int i = 0; i < playerOne.getHand().size(); i++){
+            guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
+        }
+        //guiManager.renderHand(playerOne.getHand());
     }
     public PlayerID getCurrentPlayerId(){
         return gameState.getCurrentPlayerId();
