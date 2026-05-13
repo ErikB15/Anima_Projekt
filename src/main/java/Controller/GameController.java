@@ -80,18 +80,18 @@ public class GameController implements GameStateListener {
      */
     public void addAllCards(){
         // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        allCards.add(new Card("Monkey", 1,50,1,taunt, "/CardPictures/Card5.png"));
-        allCards.add(new Card("Bob", 5,25,2,buff, "/CardPictures/Card10.png"));
-        allCards.add(new Card("Twins", 13,34,3,dubbelHit, "/CardPictures/Card8.png"));
-        allCards.add(new Card("ChillGuy", 30,20,4,heal, "/CardPictures/Card9.png"));
-        allCards.add(new Card("blockHead", 10,30,5,shield, "/CardPictures/Card7.png"));
-        allCards.add(new Card("Wizard", 2,40,6,poison, "/CardPictures/Card6.png"));
-        allCards.add(new Card("Pernilla", 2,40,6,poison, "/CardPictures/Card12.png"));
-        allCards.add(new Card("Kick", 2,40,6,poison, "/CardPictures/Card11.png"));
-        allCards.add(new Card("George", 2,40,6,poison, "/CardPictures/Card4.png"));
-        allCards.add(new Card("Harrold", 2,40,6,poison, "/CardPictures/Card3.png"));
-        allCards.add(new Card("KnifeGuy", 2,40,6,poison, "/CardPictures/Card2.png"));
-        allCards.add(new Card("Kenneth", 2,40,6,poison, "/CardPictures/Card1.png"));
+        allCards.add(new Card("Monkey", 40,50,1,taunt, "/CardPictures/Card5.png"));
+        allCards.add(new Card("Bob", 40,25,2,buff, "/CardPictures/Card10.png"));
+        allCards.add(new Card("Twins", 40,34,3,dubbelHit, "/CardPictures/Card8.png"));
+        allCards.add(new Card("ChillGuy", 40,20,4,heal, "/CardPictures/Card9.png"));
+        allCards.add(new Card("blockHead", 40,30,5,shield, "/CardPictures/Card7.png"));
+        allCards.add(new Card("Wizard", 40,40,6,poison, "/CardPictures/Card6.png"));
+        allCards.add(new Card("Pernilla", 40,40,6,poison, "/CardPictures/Card12.png"));
+        allCards.add(new Card("Kick", 40,40,6,poison, "/CardPictures/Card11.png"));
+        allCards.add(new Card("George", 40,40,6,poison, "/CardPictures/Card4.png"));
+        allCards.add(new Card("Harrold", 40,40,6,poison, "/CardPictures/Card3.png"));
+        allCards.add(new Card("KnifeGuy", 40,40,6,poison, "/CardPictures/Card2.png"));
+        allCards.add(new Card("Kenneth", 40,40,6,poison, "/CardPictures/Card1.png"));
     }
 
     /**
@@ -194,15 +194,15 @@ public class GameController implements GameStateListener {
     public boolean placeCard(int handIndex, int boardIndex){
 
         if(gameState.getPhase() != GamePhase.PLAY){return false;}
-        // Avkommenoterad för att kunna testa olika grejer, kommer finnas när allting puzzlat samman.
 
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
         Card playedCard = currentPlayer.getHand().get(handIndex);
 
-        if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){return false;}
+        if (handIndex < 0 || handIndex >= currentPlayer.getHand().size()) {return false;}
         if(gameState.getCardsPlayedThisTurn() == gameState.getMaxCardsToPlayPerTurn()) {return false;}
+        if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){return false;}
 
 
         currentPlayer.getHand().remove(handIndex);
@@ -213,8 +213,11 @@ public class GameController implements GameStateListener {
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
 
+        addMassageInGui(1, currentPlayer, playedCard, null);
+
         if(gameState.isGameOver()){
             gameOver();
+            return true;
         }
 
         return true;
@@ -283,7 +286,7 @@ public class GameController implements GameStateListener {
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             enemyTurnInSinglePLayer();
         }
-        addMassageInGui();
+        addMassageInGui(3, currentPlayer, null, null);
     }
 
 
@@ -294,9 +297,7 @@ public class GameController implements GameStateListener {
      * @return
      */
     public boolean attackCard(int attackerIndex, int defenderIndex) {
-        System.out.println("HP of card that will be attacked before attack logic: " + guiManager.getCardToAttack().getCardCurrentHP());
-        System.out.println("HP of card that will attack before attack logic: " + guiManager.getCardToAttackWith().getCardCurrentHP());
-
+        System.out.println("Innan gamestate Checken");
         if (gameState.getPhase() != GamePhase.PLAY) return false;
 
         PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
@@ -307,40 +308,56 @@ public class GameController implements GameStateListener {
 
         Player defenderPlayer = gameState.getOpponentPlayer();
 
+        System.out.println("Innan index checkarna");
         if (attackerIndex < 0 || attackerIndex >= board.getSlotsForPlayer(attackerPlayerID).length) return false;
         if (defenderIndex < 0 || defenderIndex >= board.getSlotsForPlayer(defenderPlayerID).length) return false;
 
         Card attacker = board.getCard(attackerPlayerID, attackerIndex);
         Card defender = board.getCard(defenderPlayerID, defenderIndex);
 
+        System.out.println("Innan null checkarna");
         if (attacker == null) return false;
         if (defender == null) return false;
 
+        System.out.println("Innan Asleep checken");
         if (attacker.getAsleep()) return false;
+        System.out.println("Innan HasAttacked This turn checken");
         if (attacker.getHasAttackedThisTurn()) return false;
+
+        System.out.println("Defender HP before: " + defender.getCardCurrentHP());
+        System.out.println("Attacker HP before: " + attacker.getCardCurrentHP());
 
         defender.takeDamage(attacker.getCardAD());
         attacker.takeDamage(defender.getCardAD());
 
         attacker.setHasAttackedThisTurn(true);
 
+        addMassageInGui(2, attackerPlayer, attacker, defender);
+
+
         if (defender.isDead()) {
             Card deadCard = board.removeCard(defenderPlayerID, defenderIndex);
             defenderPlayer.sendCardToGraveyard(deadCard);
+            guiManager.renderCard(getBoardZone(defenderPlayerID),defenderIndex,null);
+
         }
 
         if (attacker.isDead()) {
             Card deadCard = board.removeCard(attackerPlayerID, attackerIndex);
             attackerPlayer.sendCardToGraveyard(deadCard);
+            guiManager.renderCard(getBoardZone(attackerPlayerID),attackerIndex,null);
         }
 
         gameState.checkGameOver();
 
         if (gameState.isGameOver()) {
             gameOver();
+            return true;
+
         }
-        System.out.println("HP of card that will be attacked after attack logic: " + guiManager.getCardToAttack().getCardCurrentHP());
-        System.out.println("HP of card that will attack after attack logic: " + guiManager.getCardToAttackWith().getCardCurrentHP());
+
+        System.out.println("Defender HP after: " + defender.getCardCurrentHP());
+        System.out.println("Attacker HP after: " + attacker.getCardCurrentHP());
         System.out.println("attack färdig");
         return true;
     }
@@ -365,8 +382,11 @@ public class GameController implements GameStateListener {
 
         gameState.checkGameOver();
 
+
+        addMassageInGui(4, defenderPlayer, attacker, null);
         if (gameState.isGameOver()) {
             gameOver();
+            return true;
         }
         return true;
     }
@@ -375,7 +395,7 @@ public class GameController implements GameStateListener {
      * Metoden för att simulera single-player motståndarens omgång.
      * Samma metoder som när vi vill lägga kort men med en while-loop som kontrollerar att där motståndaren vill lägga kort är en gilltig plats.
      *
-     * @author Erik
+     * @author Erik, Jim
      */
     private void enemyTurnInSinglePLayer() {
 
@@ -387,17 +407,28 @@ public class GameController implements GameStateListener {
             return;
         }
 
+        if (!board.hasEmptySlot(PlayerID.PLAYER_TWO)) {
+            return;
+        }
+
         int handIndex =
                 (int) (Math.random() * playerTwo.getHand().size());
 
         Card card = playerTwo.getHand().get(handIndex);
 
-        int boardIndex =
-                (int) (Math.random() * 4);
 
-        while(!board.placeCard(PlayerID.PLAYER_TWO, boardIndex, card)) {
-
-            boardIndex = (int) (Math.random() * 4);
+        int boardIndex = 0;
+        for(int i = 0; i < board.getSlotsForPlayer(PlayerID.PLAYER_TWO).length; i++){
+            if (board.getSlotsForPlayer(PlayerID.PLAYER_TWO)[i] == null){
+                board.placeCard(PlayerID.PLAYER_TWO, i, card);
+                boardIndex = i;
+                guiManager.renderCard(
+                        Zone.OPPONENT_BOARD,
+                        boardIndex,
+                        card.getImagePath()
+                );
+                break;
+            }
         }
 
         playerTwo.getHand().remove(handIndex);
@@ -406,16 +437,12 @@ public class GameController implements GameStateListener {
 
         card.setAsleep(true);
 
-        guiManager.renderCard(
-                Zone.OPPONENT_BOARD,
-                boardIndex,
-                card.getImagePath()
-        );
 
         gameState.checkGameOver();
 
         if(gameState.isGameOver()) {
             gameOver();
+            return;
         }
     }
 
@@ -439,7 +466,34 @@ public class GameController implements GameStateListener {
 
     }
 
+    /**
+     * Skapar nya objekt för nästa spel som användaren kan försöka gå in i.
+     * Skiftar även menyn från spel menyn till main menyn.
+     * Det är även här kopplingen mellan spelarna bryts.
+     *
+     * @author Jim
+     */
     public void gameOver(){
+        // BORDE FINNAS NÅGOT SOM TAR OSS TILL MAIN MENYN HÄR.
+        playerOne = new Player("Player 1");
+        playerTwo = new Player("Player 2");
+        board = new Board();
+        gameState = new GameState(playerOne, playerTwo, board);
+
+        //guiManager.switchToGameOverMenu();
+
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
+        System.out.println("THE GAME HAS ENDED!");
 
         // TODO.. Här ska det fixas game over, mest troligen blir det bara att gameState resettas samt GUI:n
         // Om jag inte hunnit och ni redan kollar på detta, så kan ni göra en GUI metod som bara resettar allt.
@@ -447,7 +501,6 @@ public class GameController implements GameStateListener {
 
         //guiManager.switchToGameOverScreen(); //visar just nu endast ett tumt fönster som inte säger ngt mer än gamover.
         // gameover metoden borde beräkna resultat av matchen och sedan visa det i giut via guimanager.
-
     }
 
     /**
@@ -474,98 +527,6 @@ public class GameController implements GameStateListener {
         view.setUserData(card);
     }
 
-    /**
-     * Sätter index för vilket kort i handen som ska flyttas.
-     *
-     * @param index - positionen i spelarens hand
-     * @author Elna
-     */
-    public void setIndexCardOnHandToMove(int index){
-        indexCardOnHandToMove = index;
-        cardPicked = true;
-    }
-
-    /**
-     * Sätter index för vilken plats på brädet kortet ska placeras på.
-     * Triggar sedan flytt av kort från hand till bräde.
-     *
-     * @param index - position på spelbrädet
-     * @author Erik
-     */
-    public void setIndexSpotToPlaceCard(int index){
-        indexSpotToPlaceCard = index;
-        spotPicked = true;
-        moveCardFromHandtoBoard();
-    }
-
-    /**
-     * Metod för att sätta index för det kortet man vill attacckera med
-     * @param index
-     * @author Erik
-     */
-    public void setIndexOfCardOnMyBoardToAttackWith(int index){
-        indexToCardToAttackWith = index;
-        attackerPicked = true;
-    }
-
-    public void setIndexToCardToAttack(int index){
-        indexToCardToAttack = index;
-        defenderPicked = true;
-    }
-
-    public int getIndexToCardToAttackWith(){
-        return indexToCardToAttackWith;
-    }
-
-
-    /**
-     * Radera? Tänker att vi inte ska ha event listeners i controller -Elna
-     *
-     * @param event
-     * @author
-     */
-    //public void handleCardClick(MouseEvent event) {
-    //    ImageView clicked = (ImageView) event.getSource();
-    //    Card card = (Card) clicked.getUserData();
-    //    pickCard(card);
-    //}
-
-    /**
-     * Sätter guiManager instans.
-     *
-     * @param guiManager -
-     * @author Erik
-     */
-    public void setGuiManager(GUIManager guiManager){
-        this.guiManager=guiManager;
-    }
-
-
-    /**
-     * IGNORERA DETTA, JAG SKREV LOGIK FÖR ATTACK I BOARD KLASSEN.
-     * INSÅG ATT DET ÄR BÄTTRE ATT HA DEN I CONTROLLERN DÅ DEN RÖR FLERA OBJEKT SAMTIDIGT.
-     * DET HÄR ÄR BARA KVAR SÅ JAG KAN ANVÄNDA DET SOM PROTOTYP FÖR NÄR JAG EVENTUELLT GÖR ATTACK
-     * FUNKTIONEN HÄR INNE.
-     *
-     * public void attack(int attackingCard, int defendingCard){
-     *         int defCardHP = playerTwoSlots[defendingCard].getCardCurrentHP();
-     *         int atkCardHP = playerOneSlots[attackingCard].getCardCurrentHP();
-     *         int defCardNewHP = (defCardHP - playerOneSlots[attackingCard].getCardAD());
-     *         int atkCardNewHP = (atkCardHP - playerTwoSlots[defendingCard].getCardAD());
-     *         playerTwoSlots[defendingCard].setCardCurrentHP(defCardNewHP);
-     *         playerOneSlots[attackingCard].setCardCurrentHP(atkCardNewHP);
-     *         playerOneSlots[attackingCard].setHasAttackedThisTurn(true);
-     *
-     *         if(defCardNewHP <= 0){
-     *             playerTwo.sendCardToGraveyard(playerTwoSlots[defendingCard]);
-     *             playerTwoSlots[defendingCard] = null;
-     *         }
-     *         if(atkCardNewHP <= 0){
-     *             playerOne.sendCardToGraveyard(playerOneSlots[attackingCard]);
-     *             playerOneSlots[attackingCard] = null;
-     *         }
-     *     }
-     */
 
     /**
      * Metod för att lägga till valt kort i spelarens hand.
@@ -619,11 +580,38 @@ public class GameController implements GameStateListener {
      * Metod för att lägga in ett meddelande i eventloggen i gameboard.
      * Anropas efter varje endTurn änsålänge men borde anropas såfort något har hänt, t.ex attack, kortplacering etc.
      *
-     * @author Erik
+     * @author Erik, Jim
      */
-    public void addMassageInGui(){
-        String message = "hejsan svejsan detta är ett temporärt meddelande";
-       // guiManager.addMessageToEventLog(message);
+    public void addMassageInGui(int eventNumber, Player player, Card firstCard, Card secondCard){
+        // guiManager.addMessageToEventLog(message);
+        // Finns ingen metod som lägger till meddelandet till Event log. Metoden ovan funkar ej.
+        switch (eventNumber){
+            case 1:
+                // Om någon placerar ett kort
+
+                guiManager.sendMessageToEventLog(player.getName() + " has placed down " + firstCard.getCardName());
+                guiManager.sendMessageToEventLog("___________________________");
+                break;
+                // För att få ett tomt utrymme under.
+            case 2:
+                // Om någon attackerat ett kort.
+
+                guiManager.sendMessageToEventLog(firstCard.getCardName() + " has attacked " + secondCard.getCardName() + " for " + firstCard.getCardAD());
+                guiManager.sendMessageToEventLog("___________________________");
+                break;
+            case 3:
+                // Om någon har avslutat sin tur.
+
+                guiManager.sendMessageToEventLog(player.getName() + " has ended their turn!");
+                guiManager.sendMessageToEventLog("___________________________");
+                break;
+
+            case 4:
+                // Om någon direkt attackerat en spelare.
+                guiManager.sendMessageToEventLog(firstCard.getCardName() + " has attacked " + player.getName() + " straight to the face for " + firstCard.getCardAD() + " damage!");
+                guiManager.sendMessageToEventLog("___________________________");
+                break;
+        }
     }
 
     /**
@@ -772,6 +760,76 @@ public class GameController implements GameStateListener {
 
     public boolean isDefenderPicked() {
         return defenderPicked;
+    }
+
+
+
+
+    /**
+     * Sätter index för vilket kort i handen som ska flyttas.
+     *
+     * @param index - positionen i spelarens hand
+     * @author Elna
+     */
+    public void setIndexCardOnHandToMove(int index){
+        indexCardOnHandToMove = index;
+        cardPicked = true;
+    }
+
+    /**
+     * Sätter index för vilken plats på brädet kortet ska placeras på.
+     * Triggar sedan flytt av kort från hand till bräde.
+     *
+     * @param index - position på spelbrädet
+     * @author Erik
+     */
+    public void setIndexSpotToPlaceCard(int index){
+        indexSpotToPlaceCard = index;
+        spotPicked = true;
+        moveCardFromHandtoBoard();
+    }
+
+    /**
+     * Metod för att sätta index för det kortet man vill attacckera med
+     * @param index
+     * @author Erik
+     */
+    public void setIndexOfCardOnMyBoardToAttackWith(int index){
+        indexToCardToAttackWith = index;
+        attackerPicked = true;
+    }
+
+    public void setIndexToCardToAttack(int index){
+        indexToCardToAttack = index;
+        defenderPicked = true;
+    }
+
+    public int getIndexToCardToAttackWith(){
+        return indexToCardToAttackWith;
+    }
+
+    /**
+     * Sätter guiManager instans.
+     *
+     * @param guiManager -
+     * @author Erik
+     */
+    public void setGuiManager(GUIManager guiManager){
+        this.guiManager=guiManager;
+    }
+
+    /**
+     * Ger en zone beroende på vilket spelarID det är.
+     * @param playerID - SpelarID:et
+     * @return - Zonen som är kopplad till spelarID:et.
+     * @author Jim Ström
+     */
+    private Zone getBoardZone(PlayerID playerID) {
+        if (playerID == PlayerID.PLAYER_ONE) {
+            return Zone.PLAYER_BOARD;
+        } else {
+            return Zone.OPPONENT_BOARD;
+        }
     }
 
     public int getHPforCardHand(int index){
