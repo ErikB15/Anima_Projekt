@@ -851,4 +851,14 @@ public class GameController implements GameStateListener {
     public int getHPforCardHand(int index){
         return playerOne.getHand().get(index).getCardCurrentHP();
     }
+
+    public int getHPforCardBoard(int index, int whatPlayer){
+
+        if(whatPlayer == 1){
+            return board.getCard(PlayerID.PLAYER_ONE, index).getCardCurrentHP();
+        } else{
+            return board.getCard(PlayerID.PLAYER_TWO, index).getCardCurrentHP();
+        }
+
+    }
 }

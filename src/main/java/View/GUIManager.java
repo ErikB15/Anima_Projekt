@@ -595,7 +595,7 @@ public class GUIManager {
 
         Image image = new Image(getClass().getResourceAsStream(imagePath));
         view.setImage(image);
-        String hp = valueOf(getHPForCardHand(index));
+        String hp = valueOf(getHPForCard(index, zone));
         changeHP(index, hp, zone);
     }
 
@@ -613,7 +613,7 @@ public class GUIManager {
                 views[i].setImage(new Image(stream));
 
                 if(hand.size() >= i){
-                    String hp = valueOf(getHPForCardHand(i));
+                    String hp = valueOf(getHPForCard(i, Zone.HAND));
                     changeHP(i, hp, Zone.HAND);
                 }
 
@@ -874,11 +874,17 @@ public class GUIManager {
 
     }
 
-    public int getHPForCardHand(int index){
-       if((index >= 0) && (index < 3)){
-           return gameController.getHPforCardHand(index);
-       } else{
-           return 0;
-       }
+    public int getHPForCard(int index, Zone zone){
+
+        if(zone == Zone.HAND){
+            return gameController.getHPforCardHand(index);
+        } else if (zone == Zone.PLAYER_BOARD){
+            return gameController.getHPforCardBoard(index, 1);
+        } else{
+            return gameController.getHPforCardBoard(index, 2);
+        }
+
+
+
     }
 }
