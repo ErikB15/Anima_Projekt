@@ -15,7 +15,7 @@ public class DubbelHit extends Effect{
 
     }
     @Override
-    public void activateEffekt(GameController gameController, PlayerID owner, Player player, boolean isPlayersTurn) {
+    public void activateEffect(GameController gameController, PlayerID owner, Player player, boolean isPlayersTurn) {
 
     }
 }

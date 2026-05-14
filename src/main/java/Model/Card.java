@@ -72,7 +72,7 @@ public class Card {
      */
 
 
-    public void setCardCurrentHP() {this.cardCurrentHP = cardCurrentHP;}
+    public void setCardCurrentHP(int cardCurrentHP) {this.cardCurrentHP = cardCurrentHP;}
 
     public void setAsleep(boolean asleep) {this.asleep = asleep;}
 
@@ -100,10 +100,6 @@ public class Card {
     }
 
     public int getCardCurrentHP() {return cardCurrentHP;}
-
-    public void setCardCurrentHP(int newCurrentHP){
-
-    }
 
     public boolean getAsleep(){return asleep;}
 

@@ -128,7 +128,9 @@ public class GameState {
 
     public int getTurnNumber() {return turnNumber;}
 
-    public Board getBoard() {return board;}
+    public Board getBoard() {
+        return board;
+    }
 
     public ArrayList<Card> getDraftPool() {return draftPool;}
 

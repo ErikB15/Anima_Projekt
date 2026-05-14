@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -13,39 +14,28 @@
             <Image url="@gameBoardNewDesign.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="p1board_0" fitHeight="110.0" fitWidth="65.0" layoutX="85.0" layoutY="257.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="p1board_1" fitHeight="110.0" fitWidth="65.0" layoutX="179.0" layoutY="257.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="p1board_2" fitHeight="110.0" fitWidth="65.0" layoutX="275.0" layoutY="257.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="hand_0" fitHeight="175.0" fitWidth="119.0" layoutX="159.0" layoutY="373.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="-10.0">
-         <image>
-            <Image url="@CardFRONT.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="hand_1" fitHeight="175.0" fitWidth="137.0" layoutX="260.0" layoutY="364.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@CardFRONT.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="hand_2" fitHeight="175.0" fitWidth="128.0" layoutX="356.0" layoutY="373.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="10.0">
-         <image>
-            <Image url="@CardFRONT.png" />
-         </image>
-      </ImageView>
+      <ImageView fx:id="p1board_0" fitHeight="152.0" fitWidth="96.0" layoutX="65.0" layoutY="237.0" onMouseClicked="#handleBoardClick" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p1board_1" fitHeight="153.0" fitWidth="96.0" layoutX="166.0" layoutY="237.0" onMouseClicked="#handleBoardClick" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p1board_2" fitHeight="153.0" fitWidth="100.0" layoutX="262.0" layoutY="237.0" onMouseClicked="#handleBoardClick" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="hand_0" fitHeight="204.0" fitWidth="129.0" layoutX="147.0" layoutY="359.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="-10.0" />
+      <ImageView fx:id="hand_1" fitHeight="204.0" fitWidth="139.0" layoutX="243.0" layoutY="349.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="hand_2" fitHeight="204.0" fitWidth="139.0" layoutX="347.0" layoutY="359.0" onMouseClicked="#pickedCardIndexPoint" pickOnBounds="true" preserveRatio="true" rotate="10.0" />
       <ImageView fitHeight="153.0" fitWidth="117.0" layoutX="490.0" layoutY="375.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardBACKSIDE.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="p1board_3" fitHeight="110.0" fitWidth="65.0" layoutX="379.0" layoutY="257.0" onMouseClicked="#pickedSpotToPlaceCardIndexPoint" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p1board_3" fitHeight="153.0" fitWidth="107.0" layoutX="363.0" layoutY="237.0" onMouseClicked="#handleBoardClick" pickOnBounds="true" preserveRatio="true" />
       <ImageView fitHeight="50.0" fitWidth="140.0" layoutX="634.0" layoutY="452.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@exitGameSmall.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="p2board_3" fitHeight="110.0" fitWidth="65.0" layoutX="379.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="p2board_2" fitHeight="110.0" fitWidth="65.0" layoutX="278.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="p2board_1" fitHeight="110.0" fitWidth="65.0" layoutX="179.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="p2board_0" fitHeight="110.0" fitWidth="65.0" layoutX="80.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p2board_3" fitHeight="152.0" fitWidth="118.0" layoutX="361.0" layoutY="110.0" onMouseClicked="#pickedCardToAttack" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p2board_2" fitHeight="152.0" fitWidth="110.0" layoutX="260.0" layoutY="111.0" onMouseClicked="#pickedCardToAttack" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p2board_1" fitHeight="152.0" fitWidth="120.0" layoutX="164.0" layoutY="111.0" onMouseClicked="#pickedCardToAttack" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="p2board_0" fitHeight="152.0" fitWidth="96.0" layoutX="66.0" layoutY="110.0" onMouseClicked="#pickedCardToAttack" pickOnBounds="true" preserveRatio="true" />
+
       <ImageView fitHeight="130.0" fitWidth="90.0" layoutX="121.0" layoutY="-24.0" pickOnBounds="true" preserveRatio="true" rotate="-160.5" />
       <ImageView fitHeight="130.0" fitWidth="90.0" layoutX="217.0" layoutY="-24.0" pickOnBounds="true" preserveRatio="true" rotate="10.5">
          <image>
@@ -62,7 +52,7 @@
             <Image url="@CardBACKSIDE.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="47.0" fitWidth="140.0" layoutX="634.0" layoutY="395.0" onMouseClicked="#endTurnInGuiInSinglePLayer" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="47.0" fitWidth="140.0" layoutX="634.0" layoutY="395.0" onMouseClicked="#endTurnInGuiInSinglePlayer" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@exitGameSmall.png" />
          </image>
@@ -72,5 +62,60 @@
             <Font name="Times New Roman" size="12.0" />
          </font>
       </TextArea>
+      <Label fx:id="hp_0" layoutX="226.0" layoutY="372.0" prefHeight="27.0" prefWidth="26.0" rotate="-10.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_1" layoutX="338.0" layoutY="363.0" prefHeight="40.0" prefWidth="15.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_2" layoutX="455.0" layoutY="390.0" prefHeight="21.0" prefWidth="15.0" rotate="10.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_3" layoutX="135.0" layoutY="251.0" prefHeight="24.0" prefWidth="15.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_4" layoutX="235.0" layoutY="251.0" prefHeight="24.0" prefWidth="15.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_5" layoutX="330.0" layoutY="251.0" prefHeight="24.0" prefWidth="15.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_6" layoutX="432.0" layoutY="251.0" prefHeight="24.0" prefWidth="15.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_7" layoutX="136.0" layoutY="127.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_8" layoutX="232.0" layoutY="127.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_9" layoutX="330.0" layoutY="127.0" prefHeight="17.0" prefWidth="15.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="hp_10" layoutX="430.0" layoutY="127.0" prefHeight="17.0" prefWidth="19.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
