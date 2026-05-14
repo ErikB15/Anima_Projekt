@@ -19,6 +19,7 @@ public class Main {
 
         apiController = new ApiController();
         apiController.initSteam();
+        ApiController.hostLobby();
 
 
        Application.launch(MainGUILauncher.class, args);

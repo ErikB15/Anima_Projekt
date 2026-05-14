@@ -10,6 +10,8 @@ import com.codedisaster.steamworks.SteamMatchmakingCallback;
 import com.codedisaster.steamworks.SteamNetworking;
 import com.codedisaster.steamworks.SteamNetworkingCallback;
 import com.codedisaster.steamworks.SteamResult;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Daniel
@@ -99,6 +101,36 @@ public class ApiController {
             matchmaking.createLobby(SteamMatchmaking.LobbyType.FriendsOnly, 2);
         }
     }
+
+
+    /**
+     * Function to send a packet to the opponent
+     * @param message The message that should be sent to the opponent
+     */
+    public static void sendPacket(String message) {
+        if (networking != null && opponentSteamID != null) {
+            try {
+                byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
+                ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
+                buffer.put(bytes);
+                buffer.flip();
+
+                // Skickar paketet pålitligt (Reliable) så att inga paket tappas bort
+                networking.sendP2PPacket(opponentSteamID, buffer, SteamNetworking.P2PSend.Reliable, 0);
+                
+                if (!message.equals("PING")) {
+                    System.out.println("-> Skickade Paket: " + message);
+                }
+            } catch (SteamException e) {
+                System.out.println("Misslyckades att skicka P2P-paket.");
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Kan inte skicka paket: P2P-anslutning ej etablerad.");
+        }
+    }
+
+    // STEAM CALLBACKS 
 
     // STEAM MATCHMAKING CALLBACKS 
 
@@ -210,9 +242,15 @@ public void onFavoritesListAccountsUpdated(SteamResult result) {
     
 
 
-    private void onConnectionHandshakeComplete() {
-        System.out.println("HANDSHAKE COMPLETE");
-  
+    private static void onConnectionHandshakeComplete() {
+        System.out.println("\n============================================================");
+        System.out.println("SUCCESS: HANDSHAKE COMPLETE!");
+        System.out.println("Enemy id caught: " + opponentSteamID.getAccountID());
+        System.out.println("Both players in lobby now");
+        System.out.println("============================================================\n");
+
+        // Skicka en initial bakgrunds-ping för att öppna P2P-anslutningen
+        sendPacket("PING");
     }
 
 
