@@ -52,12 +52,12 @@
             <Image url="@CardBACKSIDE.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="47.0" fitWidth="140.0" layoutX="634.0" layoutY="395.0" onMouseClicked="#endTurnInGuiInSinglePlayer" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="47.0" fitWidth="140.0" layoutX="634.0" layoutY="366.0" onMouseClicked="#endTurnInGuiInSinglePlayer" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@exitGameSmall.png" />
+            <Image url="@EndTurnButton.png" />
          </image>
       </ImageView>
-      <TextArea fx:id="textArea" editable="false" layoutX="534.0" layoutY="67.0" prefHeight="282.0" prefWidth="195.0">
+      <TextArea fx:id="textArea" editable="false" layoutX="577.0" layoutY="58.0" prefHeight="255.0" prefWidth="195.0">
          <font>
             <Font name="Times New Roman" size="12.0" />
          </font>
