@@ -26,7 +26,7 @@
          </image>
       </ImageView>
       <ImageView fx:id="p1board_3" fitHeight="153.0" fitWidth="107.0" layoutX="363.0" layoutY="237.0" onMouseClicked="#handleBoardClick" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fitHeight="50.0" fitWidth="140.0" layoutX="634.0" layoutY="452.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="50.0" fitWidth="140.0" layoutX="634.0" layoutY="452.0" onMouseClicked="#switchToGameOverBUTTON" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@exitGameSmall.png" />
          </image>
