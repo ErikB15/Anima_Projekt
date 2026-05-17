@@ -87,6 +87,8 @@ public class GUIManager {
     @FXML private Pane cardRules;
     @FXML private Pane playerRules;
     @FXML private Pane effectsRules;
+    @FXML private Pane matchRules;
+    @FXML private Pane startMenu;
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
@@ -489,6 +491,10 @@ public class GUIManager {
     }
 
     private void showPane(Pane pane) {
+
+        startMenu.setVisible(false);
+        startMenu.setManaged(false);
+
         generalRules.setVisible(false);
         generalRules.setManaged(false);
 
@@ -500,6 +506,9 @@ public class GUIManager {
 
         effectsRules.setVisible(false);
         effectsRules.setManaged(false);
+
+        matchRules.setVisible(false);
+        matchRules.setManaged(false);
 
         pane.setVisible(true);
         pane.setManaged(true);
@@ -520,6 +529,7 @@ public class GUIManager {
     @FXML private void showEffectsRules(){
         showPane(effectsRules);
     }
+    @FXML private void showMatchRules(){showPane(matchRules);}
 
     private void makeDraggable(Image image){
 
