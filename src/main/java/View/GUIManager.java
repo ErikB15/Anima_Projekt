@@ -483,14 +483,15 @@ public class GUIManager {
      * Metoden hanterar motståndarens kortval i singleplayer under draft-fasen.
      * Metoden körs efter att spelaren själv har valt ett kort och ansvarar för att simulera att en dator väljer själv.
      *
-     * Processen styrs av två tidsfördröjningar (PauseTransition) som separerar logiken i tre steg:
+     * Processen styrs av två tidsfördröjningar (PauseTransition) som separerar logiken i två steg.
+     *
      * Sidenote om PauseTransition: Jag vill fördröja valet av kort och "animationerna" för att det ska vara lite mer äkta
      * och lättare för användaren att förstå vad som händer så inte allting händer på ett ögonblick.
      * Och man kan inte använde thread.sleep för då hänger hela programmet sig. Skillanden med thread.sleep och pausetransition är att
      * thread.sleep får hela trådan att pause och det vill vi inte. PauseTransition är mer som en fördröjning av en aktivtet på javaFX tråden.
      * Med det kan vi schemalägga upgifter.
      *
-     * 1. beforePick (fördröjning innan motståndaren väljer kort)
+     * 1. Pick (fördröjning innan motståndaren väljer kort)
      *    - Skapar en artificiell paus för att simulera "tänkandet".
      *    - Efter fördröjningen skannas alla kort i pickCardViews.
      *    - En lista av tillgängliga kort byggs genom att filtrera bort redan valda kort
@@ -505,23 +506,19 @@ public class GUIManager {
      *    - Kortobjektet hämtas från ImageView via getUserData och skickas till GameController via addCardToOpponent,
      *      vilket lägger till kortet i motståndarens deck och tar bort det från gemensamma kortpoolen.
      *
-     * 3. afterUpdate (fördröjning efter uppdatering)
-     *    - Ytterligare en PauseTransition används för att skapa en visuell paus efter motståndarens val.
-     *    - När denna är klar återställs turflaggan (yourTurnToPickCard) så att spelaren kan välja nästa kort.
-     *
      * Viktigt:
      * - All faktisk spel-logik (korttilldelning och borttagning från kortpool) hanteras i GameController.
      * - gui-uppdateringar sker stegvis för att undvika att spelaren och motståndaren väljer samtidigt.
-     * - .play() är det som faktiaskt "startar" det som står inom .setOnFinished.
+     * - pick.play() är det som faktiaskt "startar" det som står inom .setOnFinished.
      * Tänk det lite som en run metod, vi skapar tasken sen senare så startar vi den.
      *
      * @author Erik
      */
     private void opponentChooseCardInSinglePayer() {
 
-        PauseTransition beforePick = new PauseTransition(Duration.seconds(1));
+        PauseTransition Pick = new PauseTransition(Duration.seconds(1));
 
-        beforePick.setOnFinished(e -> {
+        Pick.setOnFinished(e -> {
 
             ImageView matchedView = null;
 
@@ -561,16 +558,10 @@ public class GUIManager {
             gameController.addCardToOpponent(card);
 
             switchTurnLabelInPickCard();
-
-            PauseTransition afterUpdate = new PauseTransition(Duration.seconds(1));
-
-            afterUpdate.setOnFinished(ev -> {yourTurnToPickCard = true;
-            });
-
-            afterUpdate.play();
         });
-        beforePick.play();
+        Pick.play();
         System.out.println("Card added to opponents deck");
+        yourTurnToPickCard = true;
     }
 
 
