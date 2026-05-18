@@ -9,56 +9,49 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="652.0"
-            prefWidth="600.0"
-            stylesheets="@Styles.css"
-            xmlns="http://javafx.com/javafx/25"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="View.GUIManager">
+<AnchorPane prefHeight="652.0" prefWidth="600.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIManager">
     <children>
-        <ImageView fitHeight="677.0" fitWidth="588.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ImageView fitHeight="652.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <image>
-                <Image url="@StartMenuNEW.png"/>
+                <Image url="@StartMenuNEW.png" />
             </image>
         </ImageView>
-        <VBox prefHeight="652.0"
-              prefWidth="170.0"
-              spacing="5.0">
+        <VBox prefHeight="652.0" prefWidth="170.0" spacing="5.0">
             <children>
                 <Button mnemonicParsing="false" onAction="#showGeneralRules" prefHeight="120.0" prefWidth="170.0" text="General Rules">
                     <font>
-                        <Font name="Bell MT" size="18.0"/>
+                        <Font name="Bell MT" size="18.0" />
                     </font>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#showPlayerRules" prefHeight="120.0" prefWidth="170.0" text="Player Rules">
                     <font>
-                        <Font name="Bell MT" size="18.0"/>
+                        <Font name="Bell MT" size="18.0" />
                     </font>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#showCardRules" prefHeight="120.0" prefWidth="170.0" text="Card Rules">
                     <font>
-                        <Font name="Bell MT" size="18.0"/>
+                        <Font name="Bell MT" size="18.0" />
                     </font>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#showEffectsRules" prefHeight="120.0" prefWidth="170.0" text="Effects">
                     <font>
-                        <Font name="Bell MT" size="18.0"/>
+                        <Font name="Bell MT" size="18.0" />
                     </font>
                 </Button>
                 <Button mnemonicParsing="false" onAction="#showMatchRules" prefHeight="120.0" prefWidth="170.0" text="How To Play">
                     <font>
-                        <Font name="Bell MT" size="18.0"/>
+                        <Font name="Bell MT" size="18.0" />
                     </font>
                 </Button>
             </children>
         </VBox>
-        <Pane fx:id="startMenu" layoutX="170.0" prefHeight="652.0" prefWidth="430.0" visible="true" managed="true">
+        <Pane fx:id="startMenu" layoutX="170.0" managed="true" prefHeight="652.0" prefWidth="430.0" visible="true">
             <children>
                 <VBox layoutX="25.0" layoutY="120.0" prefWidth="380.0" spacing="25.0">
                     <children>
                         <Label text="Welcome to ANIMA">
                             <font>
-                                <Font name="Bell MT" size="36.0"/>
+                                <Font name="Bell MT" size="36.0" />
                             </font>
                         </Label>
                         <Label prefWidth="380.0" wrapText="true">
@@ -66,117 +59,122 @@
                                 ANIMA is a strategic battlefield where every decision matters. Choose your cards carefully, outplay your opponent, and survive long enough to claim victory. Use the menu to explore the rules, mechanics, cards, effects, and gameplay systems before entering battle.
                             </text>
                             <font>
-                                <Font name="Bell MT" size="20.0"/>
+                                <Font name="Bell MT" size="20.0" />
                             </font>
                         </Label>
                     </children>
                 </VBox>
             </children>
         </Pane>
-        <Pane fx:id="generalRules" layoutX="170.0" prefHeight="652.0" prefWidth="430.0" visible="false" managed="false">
+        <Pane fx:id="generalRules" layoutX="170.0" managed="false" prefHeight="652.0" prefWidth="430.0" visible="false">
             <children>
                 <VBox layoutX="20.0" layoutY="20.0" prefWidth="390.0" spacing="20.0">
                     <children>
                         <Label text="General Rules">
                             <font>
-                                <Font name="Bell MT" size="30.0"/>
+                                <Font name="Bell MT" size="30.0" />
                             </font>
                         </Label>
-                        <Label wrapText="true" prefWidth="390.0">
+                        <Label prefWidth="390.0" wrapText="true">
                             <text>
                                 ANIMA is a strategic card game where every decision can determine the outcome of the entire match. Two players face each other in an intense battle where planning, timing, and calculated risk are the path to victory. In ANIMA, having powerful cards is not enough. Victory belongs to the player who can read their opponent, control the battlefield, and make the right decisions under pressure. The game combines tactical placement, resource management, and fast decision-making in matches where the situation constantly evolves. You must decide when to defend and when to push forward. And finally when to risk everything to deliver the final blow against your opponent’s remaining HP. Every match begins with players building their card decks by taking turns selecting cards from the same pool of cards. This creates unique strategies every game and forces players to think several moves ahead before the battle even begins. The objective is simple: Reduce your opponent’s HP to zero before your own are depleted.
                             </text>
                             <font>
-                                <Font name="Bell MT" size="16.0"/>
+                                <Font name="Bell MT" size="16.0" />
                             </font>
                         </Label>
                     </children>
                 </VBox>
             </children>
         </Pane>
-        <Pane fx:id="cardRules" layoutX="170.0" prefHeight="652.0" prefWidth="430.0" visible="false" managed="false">
+        <Pane fx:id="cardRules" layoutX="170.0" managed="false" prefHeight="652.0" prefWidth="430.0" visible="false">
             <children>
                 <VBox layoutX="20.0" layoutY="20.0" prefWidth="390.0" spacing="20.0">
                     <children>
                         <Label text="Card Rules">
                             <font>
-                                <Font name="Bell MT" size="30.0"/>
+                                <Font name="Bell MT" size="30.0" />
                             </font>
                         </Label>
-                        <Label wrapText="true" prefWidth="390.0">
+                        <Label prefWidth="390.0" wrapText="true">
                             <text>
                                 Every card in ANIMA has its own Health Points (HP) and Attack damage (AD). Cards are separate entities from the player and can attack, take damage, and be destroyed independently from the player. A card’s HP determine how much damage it can withstand before being removed from the battlefield. AD determine how much damage the card deals during combat. Some cards also possess unique effects that can influence combat and create tactical advantages. Effects are designed to function independently and do not combine with each other during attacks. Cards placed onto the battlefield cannot attack during the same round they are played. They become active and ready for combat starting from the following round. Each card can only attack once per round. In the early stages of the match you can only place one card per round, but as the match goes on you can place ore cards on the same round
                             </text>
                             <font>
-                                <Font name="Bell MT" size="16.0"/>
+                                <Font name="Bell MT" size="16.0" />
                             </font>
                         </Label>
                     </children>
                 </VBox>
             </children>
         </Pane>
-        <Pane fx:id="playerRules" layoutX="170.0" prefHeight="652.0" prefWidth="430.0" visible="false" managed="false">
+        <Pane fx:id="playerRules" layoutX="170.0" managed="false" prefHeight="652.0" prefWidth="430.0" visible="false">
             <children>
                 <VBox layoutX="20.0" layoutY="20.0" prefWidth="390.0" spacing="20.0">
                     <children>
                         <Label text="Player Rules">
                             <font>
-                                <Font name="Bell MT" size="30.0"/>
+                                <Font name="Bell MT" size="30.0" />
                             </font>
                         </Label>
-                        <Label wrapText="true" prefWidth="390.0">
+                        <Label prefWidth="390.0" wrapText="true">
                             <text>
                                 Each player begins the match with personal HP. If a player’s HP reaches zero, the match immediately ends. Players must balance aggression and survival throughout the game. Playing cards onto the battlefield costs HP from the player. This creates constant risk versus reward decisions where stronger battlefield presence may weaken personal survivability. Players always maintain a hand of three cards whenever possible. At the end of a turn, empty hand slots are automatically refilled from the player’s deck. Opponent hands remain hidden, forcing players to predict enemy strategies based on battlefield actions and previous plays. All player actions occur under time pressure, including card placement and attack decisions.
                             </text>
                             <font>
-                                <Font name="Bell MT" size="16.0"/>
+                                <Font name="Bell MT" size="16.0" />
                             </font>
                         </Label>
                     </children>
                 </VBox>
             </children>
         </Pane>
-        <Pane fx:id="effectsRules" layoutX="170.0" prefHeight="652.0" prefWidth="430.0" visible="false" managed="false">
+        <Pane fx:id="effectsRules" layoutX="170.0" managed="false" prefHeight="652.0" prefWidth="430.0" visible="false">
             <children>
                 <VBox layoutX="20.0" layoutY="20.0" prefWidth="390.0" spacing="20.0">
                     <children>
                         <Label text="Effect Rules">
                             <font>
-                                <Font name="Bell MT" size="30.0"/>
+                                <Font name="Bell MT" size="30.0" />
                             </font>
                         </Label>
-                        <Label wrapText="true" prefWidth="390.0">
+                        <Label prefWidth="390.0" wrapText="true">
                             <text>
                                 Certain cards contain special effects capable of altering combat situations and battlefield control. Effects can influence attacks, defense, survivability, or tactical positioning depending on the card. Each effect activates independently and is not aware of other active effects. This means effects do not merge, stack together, or create chained combinations during combat. Understanding when to use effect cards is essential for advanced play. A well-timed effect can completely change the pace of a match or create opportunities for direct attacks against the opponent’s HP. Effects introduce unpredictability and force players to constantly adapt their strategies.
                             </text>
                             <font>
-                                <Font name="Bell MT" size="16.0"/>
+                                <Font name="Bell MT" size="16.0" />
                             </font>
                         </Label>
                     </children>
                 </VBox>
             </children>
         </Pane>
-        <Pane fx:id="matchRules" layoutX="170.0" prefHeight="652.0" prefWidth="430.0" visible="false" managed="false">
+        <Pane fx:id="matchRules" layoutX="170.0" managed="false" prefHeight="652.0" prefWidth="430.0" visible="false">
             <children>
                 <VBox layoutX="20.0" layoutY="20.0" prefWidth="390.0" spacing="20.0">
                     <children>
                         <Label text="How To Play">
                             <font>
-                                <Font name="Bell MT" size="30.0"/>
+                                <Font name="Bell MT" size="30.0" />
                             </font>
                         </Label>
-                        <Label wrapText="true" prefWidth="390.0">
+                        <Label prefWidth="390.0" wrapText="true">
                             <text>
                                 Each match begins with a drafting phase where players take turns selecting cards from a shared card-pool. Players continue choosing cards until every card has been claimed. After drafting, the selected cards are shuffled into individual decks. During the match, players place cards onto the battlefield and can command them to attack enemy cards or directly damage the opponent. The battlefield contains limited positions, meaning placement and positioning are critical parts of strategy. As the game progresses, players gain the ability to place more cards during each turn. Players may choose defensive strategies focused on controlling the battlefield or aggressive strategies aimed directly at enemy HP. Every turn is timed, forcing players to think quickly and act under pressure. Victory belongs to the player who survives while reducing the opponent’s HP to zero.
                             </text>
                             <font>
-                                <Font name="Bell MT" size="16.0"/>
+                                <Font name="Bell MT" size="16.0" />
                             </font>
                         </Label>
                     </children>
                 </VBox>
             </children>
         </Pane>
+      <ImageView fx:id="Back_Button" fitHeight="71.0" fitWidth="118.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="10.0">
+         <image>
+            <Image url="@Back.png" />
+         </image>
+      </ImageView>
     </children>
 </AnchorPane>
