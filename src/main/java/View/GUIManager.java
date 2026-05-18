@@ -187,7 +187,7 @@ public class GUIManager {
      * @author Jim Ström
      */
     public void switchToGameOverMenu() {
-        try {
+       /* try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getClassLoader().getResource("GameOverScreen.fxml")
             );
@@ -203,6 +203,34 @@ public class GUIManager {
             stage.show();
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        try{
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public void switchToGameOverBUTTON(MouseEvent event){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
+            root = loader.load();
+            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            // stage.setFullScreen(true);
+            stage.setResizable(false);
+            stage.show();
+
+        } catch(Exception e){
             e.printStackTrace();
         }
     }
