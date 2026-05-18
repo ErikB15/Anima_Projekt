@@ -14,7 +14,6 @@
 <junit.version>5.12.1</junit.version>  </properties>
 
   <dependencies>
-  <dependencies>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>

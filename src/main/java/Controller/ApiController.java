@@ -42,6 +42,7 @@ public class ApiController {
 
                 try{
                     SteamAPI.init();
+                    System.out.println("Steaminit successful unless steam is closed");
                 } catch (Exception e) {
                     System.out.println("SteamAPI failed to initialize. Make sure Steam is running and is signed in to an account.");
                     return false; 
@@ -252,6 +253,46 @@ public void onFavoritesListAccountsUpdated(SteamResult result) {
         // Skicka en initial bakgrunds-ping för att öppna P2P-anslutningen
         sendPacket("PING");
     }
+
+
+    public static void readPackets() {
+    if (networking == null) return;
+
+    try {
+        // Get the size of the next available packet on channel 0.
+        // Returns 0 if no packet is waiting.
+        int packetSize = networking.isP2PPacketAvailable(0);
+        
+        while (packetSize > 0) {
+            // Allocate a buffer of the exact size needed
+            ByteBuffer buffer = ByteBuffer.allocateDirect(packetSize);
+            SteamID senderSteamID = new SteamID();
+
+            // Read the packet into the buffer. 
+            // In steamworks4j, this returns the number of bytes actually read.
+            int bytesRead = networking.readP2PPacket(senderSteamID, buffer, 0);
+            
+            if (bytesRead > 0) {
+                // Convert the ByteBuffer back into a String
+                byte[] bytes = new byte[bytesRead];
+                buffer.get(bytes);
+                String message = new String(bytes, StandardCharsets.UTF_8);
+
+                if (!message.equals("PING")) {
+                    System.out.println("Packet received: " + message);
+                }
+                
+                // TODO: Send this message to GameController to update the game state!
+            }
+
+            // Check if there's another packet waiting in queue before loop repeats
+            packetSize = networking.isP2PPacketAvailable(0);
+        }
+    } catch (SteamException e) {
+        System.out.println("Failed to read packet");
+        e.printStackTrace();
+    }
+}
 
 
     // STEAM NETWORKING CALLBACKS 
