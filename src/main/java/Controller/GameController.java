@@ -36,6 +36,7 @@ public class GameController implements GameStateListener {
     private Player playerOne;
     private Player playerTwo;
     private Board board;
+    private PlayerID localPlayerRole;
     private GUIManager guiManager;
     private Card testCard; //ENDAST FÖR TESTNING
     private GameState gameState;
@@ -670,7 +671,7 @@ public class GameController implements GameStateListener {
      * @author Leo
      */
     @Override
-    public void onWaiting()                 {
+    public void onWaiting() {
         Platform.runLater(() -> guiManager.showWaiting());
     }
 
@@ -680,7 +681,7 @@ public class GameController implements GameStateListener {
      * @author Leo
      */
     @Override
-    public void onYourTurn()                {
+    public void onYourTurn() {
         Platform.runLater(() -> guiManager.enableCardButtons());
     }
 
@@ -704,7 +705,7 @@ public class GameController implements GameStateListener {
      * @author Leo
      */
     @Override
-    public void onGameOver(String winner)   {
+    public void onGameOver(String winner) {
         Platform.runLater(() -> guiManager.showGameOver(winner));
     }
 
@@ -726,8 +727,18 @@ public class GameController implements GameStateListener {
      * @author Leo
      */
     @Override
-    public void onChat(String msg)          {
+    public void onChat(String msg) {
         Platform.runLater(() -> guiManager.showChat(msg));
+    }
+
+    @Override
+    public void onGameStart(String role) {
+
+    }
+
+    @Override
+    public void onDraftTurn() {
+
     }
 
     //Borde tas bort!

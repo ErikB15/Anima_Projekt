@@ -76,6 +76,10 @@ public class PlayerHandler implements Runnable {
                 this.steamId = msg.getSteamId();
                 server.registerPlayer(steamId, out);
             }
+            case DRAFT_PICK -> {
+                // Spelare väljer ett kort i draft-fasen
+                server.handleDraftPick(steamId, msg.getPayload());
+            }
             case PLAY_CARD -> {
                 // Delegera till servern som hanterar spellogik och broadcast
                 server.handlePlayCard(steamId, msg.getPayload());

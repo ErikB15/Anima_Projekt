@@ -11,18 +11,21 @@ package Network;
  * @author Leo
  */
 public class GameMessage {
-
     public enum Type {
         // Från Klient till Server
         JOIN,                       //Spelare anssluter med sitt steam id
         PLAY_CARD,                  //Spelare spelar ett kort
         END_TURN,                   //Spelare avslutar sin tur
 
+        // Från Klient till Server (draft-fas)
+        DRAFT_PICK,                 // Spelare väljer ett kort i draft-fasen
+
         // Från server till klient
         WAITING,                    //Väntar på motståndare
         GAME_START,                 //Spelet börjar, skicka startläge
         GAME_STATE,                 //Uppdaterat spelläge efter ett drag
         YOUR_TURN,                  //Det är din tur
+        DRAFT_TURN,                 //Det är din tur att välja kort i draft-fasen
         GAME_OVER,                  //Spelet är slut
 
         // Båda håll
