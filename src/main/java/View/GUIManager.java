@@ -1021,7 +1021,6 @@ public class GUIManager {
             return gameController.getHPforCardBoard(index, 2);
         }
     }
-    }
 
     //Avgör i updateboard vilken slots som ritas som "min sida"
     public void setLocalRole(PlayerID role) {
