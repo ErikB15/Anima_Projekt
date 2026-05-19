@@ -19,9 +19,11 @@ import Model.Card;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
-
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import static java.lang.String.valueOf;
 
 
@@ -88,16 +90,20 @@ public class GUIManager {
     @FXML private Pane cardRules;
     @FXML private Pane playerRules;
     @FXML private Pane effectsRules;
+    @FXML private Pane matchRules;
+    @FXML private Pane startMenu;
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
     private Card cardToAttack;
     private Card cardToAttackWith;
     private boolean cardFromHandPicked = false;
+    private boolean yourTurnToPickCard = true;
+
+    private ArrayList<ImageView> pickCardViews = new ArrayList<>();
 
     @FXML
     public void initialize(){
-
     }
 
     /**
@@ -109,7 +115,6 @@ public class GUIManager {
     public GUIManager(){
         gameController = new GameController();
         gameController.setGuiManager(this);
-
 
         /*
         mainMenuController = new MainMenuController();
@@ -183,7 +188,7 @@ public class GUIManager {
      * @author Jim Ström
      */
     public void switchToGameOverMenu() {
-        try {
+       /* try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getClassLoader().getResource("GameOverScreen.fxml")
             );
@@ -199,6 +204,34 @@ public class GUIManager {
             stage.show();
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        try{
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public void switchToGameOverBUTTON(MouseEvent event){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
+            root = loader.load();
+            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            // stage.setFullScreen(true);
+            stage.setResizable(false);
+            stage.show();
+
+        } catch(Exception e){
             e.printStackTrace();
         }
     }
@@ -251,6 +284,7 @@ public class GUIManager {
             stage.setResizable(false);
             stage.show();
 
+            controller.addPickCardViews(scene);
 
             gameController.bindCardsToView(controller.getCardImageView(scene));
             gameController.startDraftPhase();
@@ -423,6 +457,7 @@ public class GUIManager {
             //beöver typ samma som nedan så vi har en för single en för multiplayer
         }
         */
+        if (yourTurnToPickCard == false) return;
         ImageView clickedCard = (ImageView) event.getSource();
         Card card = (Card) clickedCard.getUserData();
 
@@ -441,17 +476,99 @@ public class GUIManager {
         clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
         changeHP(hpIDInt, " ", null);
 
-        if (playerOnesTurn == true){
-            gameController.addCardToPlayerOne(card);
-            System.out.println("card added to player 1 deck");
-            playerOnesTurn = false;
-            switchTurnLabelInPickCard();
-        } else {
+        gameController.addCardToPlayerOne(card);
+        System.out.println("card added to player 1 deck");
+        switchTurnLabelInPickCard();
+
+        yourTurnToPickCard = false;
+        opponentChooseCardInSinglePayer();
+    }
+
+    /**
+     * Okej detta blir ett långt javadoc men det behövs nog för att förklara denna metod.
+     *
+     * Metoden hanterar motståndarens kortval i singleplayer under draft-fasen.
+     * Metoden körs efter att spelaren själv har valt ett kort och ansvarar för att simulera att en dator väljer själv.
+     *
+     * Processen styrs av två tidsfördröjningar (PauseTransition) som separerar logiken i två steg.
+     *
+     * Sidenote om PauseTransition: Jag vill fördröja valet av kort och "animationerna" för att det ska vara lite mer äkta
+     * och lättare för användaren att förstå vad som händer så inte allting händer på ett ögonblick.
+     * Och man kan inte använde thread.sleep för då hänger hela programmet sig. Skillanden med thread.sleep och pausetransition är att
+     * thread.sleep får hela trådan att pause och det vill vi inte. PauseTransition är mer som en fördröjning av en aktivtet på javaFX tråden.
+     * Med det kan vi schemalägga upgifter.
+     *
+     * 1. Pick (fördröjning innan motståndaren väljer kort)
+     *    - Skapar en artificiell paus för att simulera "tänkandet".
+     *    - Efter fördröjningen skannas alla kort i pickCardViews.
+     *    - En lista av tillgängliga kort byggs genom att filtrera bort redan valda kort
+     *      (selectedCardsInPickCardphase).
+     *    - Ett slumpmässigt kort väljs från den kvarvarande listan.
+     *    - Om inga kort återstår avslutas metoden och turen återgår till spelaren.
+     *
+     * 2. Kortval och uppdatering av spelstatus
+     *    - Det valda ImageView-objektet markeras som valt och läggs till i selectedCardsInPickCardphase.
+     *    - Kortets visuella representation byts till baksidan (CardBACKSIDE.png) för att indikera att det är taget.
+     *    - Kortets HP-etikett uppdateras via changeHP för att reflektera att kortet inte längre är tillgängligt.
+     *    - Kortobjektet hämtas från ImageView via getUserData och skickas till GameController via addCardToOpponent,
+     *      vilket lägger till kortet i motståndarens deck och tar bort det från gemensamma kortpoolen.
+     *
+     * Viktigt:
+     * - All faktisk spel-logik (korttilldelning och borttagning från kortpool) hanteras i GameController.
+     * - gui-uppdateringar sker stegvis för att undvika att spelaren och motståndaren väljer samtidigt.
+     * - pick.play() är det som faktiaskt "startar" det som står inom .setOnFinished.
+     * Tänk det lite som en run metod, vi skapar tasken sen senare så startar vi den.
+     *
+     * @author Erik
+     */
+    private void opponentChooseCardInSinglePayer() {
+
+        PauseTransition Pick = new PauseTransition(Duration.seconds(1));
+
+        Pick.setOnFinished(e -> {
+
+            ImageView matchedView = null;
+
+            List<ImageView> available = new ArrayList<>();
+
+            for (ImageView view : pickCardViews) {
+                if (!selectedCardsInPickCardphase.contains(view)) {
+                    available.add(view);
+                }
+            }
+
+            if (available.isEmpty()) {
+                yourTurnToPickCard = true;
+                return;
+            }
+
+            int randomIndex = (int) (Math.random() * available.size());
+            matchedView = available.get(randomIndex);
+
+            if (matchedView == null) {
+                yourTurnToPickCard = true;
+                return;
+            }
+
+            Card card = (Card) matchedView.getUserData();
+
+            selectedCardsInPickCardphase.add(matchedView);
+
+            matchedView.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+
+            String cardID = matchedView.getId();
+            String[] splitID = cardID.split("_");
+            int hpIDInt = Integer.parseInt(splitID[1]);
+
+            changeHP(hpIDInt, " ", null);
+
             gameController.addCardToOpponent(card);
-            System.out.println("card added to player 2 deck");
-            playerOnesTurn = true;
+
             switchTurnLabelInPickCard();
-        }
+        });
+        Pick.play();
+        System.out.println("Card added to opponents deck");
+        yourTurnToPickCard = true;
     }
 
 
@@ -496,6 +613,10 @@ public class GUIManager {
     }
 
     private void showPane(Pane pane) {
+
+        startMenu.setVisible(false);
+        startMenu.setManaged(false);
+
         generalRules.setVisible(false);
         generalRules.setManaged(false);
 
@@ -507,6 +628,9 @@ public class GUIManager {
 
         effectsRules.setVisible(false);
         effectsRules.setManaged(false);
+
+        matchRules.setVisible(false);
+        matchRules.setManaged(false);
 
         pane.setVisible(true);
         pane.setManaged(true);
@@ -527,6 +651,7 @@ public class GUIManager {
     @FXML private void showEffectsRules(){
         showPane(effectsRules);
     }
+    @FXML private void showMatchRules(){showPane(matchRules);}
 
     private void makeDraggable(Image image){
 
@@ -896,6 +1021,7 @@ public class GUIManager {
             return gameController.getHPforCardBoard(index, 2);
         }
     }
+    }
 
     //Avgör i updateboard vilken slots som ritas som "min sida"
     public void setLocalRole(PlayerID role) {
@@ -905,6 +1031,21 @@ public class GUIManager {
     // Ska anropas när det är din tur att välja kort i draft. Utan denna kan spelaren aldrig klicka på ett kort
     public void enableDraftPicking() {
         isDraftTurn = true;
+    }
+
+    public void addPickCardViews(Scene scene){
+        pickCardViews.add((ImageView) scene.lookup("#card_0"));
+        pickCardViews.add((ImageView) scene.lookup("#card_1"));
+        pickCardViews.add((ImageView) scene.lookup("#card_2"));
+        pickCardViews.add((ImageView) scene.lookup("#card_3"));
+        pickCardViews.add((ImageView) scene.lookup("#card_4"));
+        pickCardViews.add((ImageView) scene.lookup("#card_5"));
+        pickCardViews.add((ImageView) scene.lookup("#card_6"));
+        pickCardViews.add((ImageView) scene.lookup("#card_7"));
+        pickCardViews.add((ImageView) scene.lookup("#card_8"));
+        pickCardViews.add((ImageView) scene.lookup("#card_9"));
+        pickCardViews.add((ImageView) scene.lookup("#card_10"));
+        pickCardViews.add((ImageView) scene.lookup("#card_11"));
     }
 
     //behöver en hostgame knapp, här skapar vi då servern

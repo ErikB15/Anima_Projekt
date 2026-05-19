@@ -47,7 +47,6 @@ public class GameController implements GameStateListener {
     private Poison poison;
     private Buff buff;
 
-
     /**
      * Skapar en ny GameController och initierar spelets grunddata.
      * Initierar listor för alla kort och effekter samt skapar spelare och spelbräde.
@@ -284,8 +283,6 @@ public class GameController implements GameStateListener {
         currentPlayer.drawUntilHandIsFull();
         board.wakeUpCardsForPlayer(currentPlayerID);
         board.resetAttacksForPlayer(currentPlayerID);
-
-        //guiManager.renderHand(playerOne.getHand());
 
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
@@ -872,4 +869,5 @@ public class GameController implements GameStateListener {
         }
 
     }
+
 }
