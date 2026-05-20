@@ -214,6 +214,129 @@ public class GameServer {
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
     }
 
+
+    /**
+     * Hanterar när en spelare attackerar ett av motståndarens kort.
+     * Payload: "attackerIndex,defenderIndex"
+     *
+     * Kör samma logik som GameController.attackCard() men på serverns gameState:
+     * båda korten tar skada, döda kort skickas till graveyard, GAME_STATE broadcastas.
+     *
+     * @param playerName spelarens namn
+     * @param payload    "attackerIndex,defenderIndex"
+     * @author Leo
+     */
+    public synchronized void handleAttackCard(String playerName, String payload) {
+        if (gameState == null || gameState.getPhase() != GamePhase.PLAY) return;
+
+        String[] parts = payload.split(",");
+        if (parts.length < 2) return;
+
+        int attackerIndex, defenderIndex;
+        try {
+            attackerIndex = Integer.parseInt(parts[0].trim());
+            defenderIndex = Integer.parseInt(parts[1].trim());
+        } catch (NumberFormatException e) { return; }
+
+        PlayerID attackerRole = playerRoles.get(playerName);
+        if (attackerRole == null) return;
+        // Kolla att det faktiskt är denna spelares tur
+        if (gameState.getCurrentPlayerId() != attackerRole) return;
+
+        PlayerID defenderRole = (attackerRole == PlayerID.PLAYER_ONE)
+                ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
+
+        Board board = gameState.getBoard();
+        Card[] attackerSlots = board.getSlotsForPlayer(attackerRole);
+        Card[] defenderSlots = board.getSlotsForPlayer(defenderRole);
+
+        if (attackerIndex < 0 || attackerIndex >= attackerSlots.length) return;
+        if (defenderIndex < 0 || defenderIndex >= defenderSlots.length) return;
+
+        Card attacker = attackerSlots[attackerIndex];
+        Card defender = defenderSlots[defenderIndex];
+
+        if (attacker == null || defender == null) return;
+        if (attacker.getAsleep()) return;
+        if (attacker.getHasAttackedThisTurn()) return;
+
+        // Båda korten tar skada
+        defender.takeDamage(attacker.getCardAD());
+        attacker.takeDamage(defender.getCardAD());
+        attacker.setHasAttackedThisTurn(true);
+
+        // Döda kort hamnar i graveyard
+        Player defenderPlayer = (defenderRole == PlayerID.PLAYER_ONE)
+                ? gameState.getPlayerOne() : gameState.getPlayerTwo();
+        Player attackerPlayer = (attackerRole == PlayerID.PLAYER_ONE)
+                ? gameState.getPlayerOne() : gameState.getPlayerTwo();
+
+        if (defender.isDead()) {
+            Card dead = board.removeCard(defenderRole, defenderIndex);
+            defenderPlayer.sendCardToGraveyard(dead);
+        }
+        if (attacker.isDead()) {
+            Card dead = board.removeCard(attackerRole, attackerIndex);
+            attackerPlayer.sendCardToGraveyard(dead);
+        }
+
+        gameState.checkGameOver();
+        if (gameState.isGameOver()) {
+            String winnerName = gameState.getWinner() != null ? gameState.getWinner().getName() : "Okänd";
+            broadcast(new GameMessage(GameMessage.Type.GAME_OVER, winnerName, ""));
+            return;
+        }
+
+        broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
+    }
+
+    /**
+     * Hanterar när en spelare attackerar motståndaren direkt.
+     * Payload: "attackerIndex"
+     *
+     * Motståndarens HP tar skada. Om HP når 0 slutar spelet.
+     *
+     * @param playerName spelarens namn
+     * @param payload    "attackerIndex"
+     * @author Leo
+     */
+    public synchronized void handleAttackPlayer(String playerName, String payload) {
+        if (gameState == null || gameState.getPhase() != GamePhase.PLAY) return;
+
+        int attackerIndex;
+        try { attackerIndex = Integer.parseInt(payload.trim()); }
+        catch (NumberFormatException e) { return; }
+
+        PlayerID attackerRole = playerRoles.get(playerName);
+        if (attackerRole == null) return;
+        if (gameState.getCurrentPlayerId() != attackerRole) return;
+
+        PlayerID defenderRole = (attackerRole == PlayerID.PLAYER_ONE)
+                ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
+
+        Card[] attackerSlots = gameState.getBoard().getSlotsForPlayer(attackerRole);
+        if (attackerIndex < 0 || attackerIndex >= attackerSlots.length) return;
+
+        Card attacker = attackerSlots[attackerIndex];
+        if (attacker == null) return;
+        if (attacker.getAsleep()) return;
+        if (attacker.getHasAttackedThisTurn()) return;
+
+        Player defenderPlayer = (defenderRole == PlayerID.PLAYER_ONE)
+                ? gameState.getPlayerOne() : gameState.getPlayerTwo();
+
+        defenderPlayer.takeDamage(attacker.getCardAD());
+        attacker.setHasAttackedThisTurn(true);
+
+        gameState.checkGameOver();
+        if (gameState.isGameOver()) {
+            String winnerName = gameState.getWinner() != null ? gameState.getWinner().getName() : "Okänd";
+            broadcast(new GameMessage(GameMessage.Type.GAME_OVER, winnerName, ""));
+            return;
+        }
+
+        broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
+    }
     /**
      * Hanterar när en spelare avslutar sin tur.
      *

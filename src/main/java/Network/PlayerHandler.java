@@ -84,6 +84,14 @@ public class PlayerHandler implements Runnable {
                 // Delegera till servern som hanterar spellogik och broadcast
                 server.handlePlayCard(steamId, msg.getPayload());
             }
+            case ATTACK_CARD -> {
+                // Spelare attackerar motståndarens kort
+                server.handleAttackCard(steamId, msg.getPayload());
+            }
+            case ATTACK_PLAYER -> {
+                // Spelare attackerar motståndaren direkt
+                server.handleAttackPlayer(steamId, msg.getPayload());
+            }
             case END_TURN -> {
                 // Delegera till servern som byter tur och notifierar spelarna
                 server.handleEndTurn(steamId);

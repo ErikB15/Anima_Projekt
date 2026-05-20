@@ -16,9 +16,9 @@ public class GameMessage {
         JOIN,                       //Spelare anssluter med sitt steam id
         PLAY_CARD,                  //Spelare spelar ett kort
         END_TURN,                   //Spelare avslutar sin tur
-
-        // Från Klient till Server (draft-fas)
         DRAFT_PICK,                 // Spelare väljer ett kort i draft-fasen
+        ATTACK_CARD,
+        ATTACK_PLAYER,
 
         // Från server till klient
         WAITING,                    //Väntar på motståndare

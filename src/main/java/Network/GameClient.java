@@ -111,6 +111,30 @@ public class GameClient {
         send(new GameMessage(GameMessage.Type.PLAY_CARD, payload, steamId));
     }
 
+
+    /**
+     * Skickar ett meddelande om att spelaren vill attackera ett av motståndarens kort.
+     * Payload är "attackerIndex,defenderIndex" så att servern vet vilka kort som strider.
+     *
+     * @param attackerIndex platsen på vårt bräde där attackerande kortet står (0–3)
+     * @param defenderIndex platsen på motståndarens bräde där försvarande kortet står (0–3)
+     * @author Leo
+     */
+    public void attackCard(int attackerIndex, int defenderIndex) {
+        String payload = attackerIndex + "," + defenderIndex;
+        send(new GameMessage(GameMessage.Type.ATTACK_CARD, payload, steamId));
+    }
+
+    /**
+     * Skickar ett meddelande om att spelaren vill attackera motståndaren direkt.
+     * Payload är bara attackerIndex eftersom målet alltid är motståndarens HP.
+     *
+     * @param attackerIndex platsen på vårt bräde där attackerande kortet står (0–3)
+     * @author Leo
+     */
+    public void attackPlayer(int attackerIndex) {
+        send(new GameMessage(GameMessage.Type.ATTACK_PLAYER, String.valueOf(attackerIndex), steamId));
+    }
     /**
      * Skickar ett meddelande om att spelaren avslutar sin tur.
      *
