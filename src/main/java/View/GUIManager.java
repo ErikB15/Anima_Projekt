@@ -287,6 +287,7 @@ public class GUIManager {
             controller.addPickCardViews(scene);
 
             gameController.bindCardsToView(controller.getCardImageView(scene));
+            //Denna under ska kunnas ta bort om vi kopplar dem rätt.
             gameController.startDraftPhase();
 
         } catch(Exception e){
@@ -318,7 +319,7 @@ public class GUIManager {
             stage.show();
 
             controller.init();
-            gameController.startGame();
+            gameController.startPlayPhase();
 
             addImageViewToList();
             gameController.set();
@@ -346,11 +347,11 @@ public class GUIManager {
      * @author: Elna
      */
     public void pickedCardIndexPoint(MouseEvent event){
-        if (!isYourTurn) {
+        if (!isLocalPlayersTurn()) {
             return;
         }
 
-        if(isYourTurn == true) {
+        if(isLocalPlayersTurn()) {
             if (gameController.isCardPicked()) {
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -670,8 +671,7 @@ public class GUIManager {
         } else {
             isYourTurn = false;
         }
-
-        gameController.endTurnSinglePLayer();
+        gameController.endTurn();
     }
 
     public void enemyPlaceCard(int index, String imagePath){
@@ -801,7 +801,7 @@ public class GUIManager {
      * @author Erik
      */
     public void pickedCardToAttack(MouseEvent event) {
-        if(isYourTurn == true) {
+        if(isLocalPlayersTurn()) {
 
             if (!gameController.isAttackerPicked()) {
 
@@ -866,7 +866,7 @@ public class GUIManager {
      * @author Erik
      */
     public void handleBoardClick(MouseEvent event) {
-        if (!isYourTurn) {
+        if (!isLocalPlayersTurn()) {
             return;
         }
 
@@ -1025,6 +1025,15 @@ public class GUIManager {
     //Avgör i updateboard vilken slots som ritas som "min sida"
     public void setLocalRole(PlayerID role) {
         this.localRole = role;
+    }
+
+    /**
+     * Metoden ska kunna kolla om det är den lokala (spelaren som kör programmet på sin dator just nu) spelarens tur,
+     * och sedan returnerar den en boolean baserat på om det är deras tur eller inte.
+     * @return En boolean som säger ja eller nej när en spelare klickar och frågar om det är deras tur.
+     */
+    public boolean isLocalPlayersTurn() {
+        return gameController.getGameState().getCurrentPlayerId() == localRole;
     }
 
     // Ska anropas när det är din tur att välja kort i draft. Utan denna kan spelaren aldrig klicka på ett kort
