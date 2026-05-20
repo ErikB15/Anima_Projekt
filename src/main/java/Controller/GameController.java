@@ -241,6 +241,19 @@ public class GameController implements GameStateListener {
             return;
         }
 
+        // NYTT för MULTIPLAYER
+        // I multiplayer skickar vi bara handlingen till servern.
+        // Servern validerar, kör logiken, och broadcastar nya spelläget tillbaka.
+        if (gameClient != null) {
+            if (indexCardOnHandToMove >= 0 && indexCardOnHandToMove < playerOne.getHand().size()) {
+                int cardId = playerOne.getHand().get(indexCardOnHandToMove).getCardID();
+                gameClient.playCard(cardId, indexSpotToPlaceCard);
+            }
+            resetPlacementState();
+            return; // Viktgit här är kör INTE singleplayer logiken nedanför
+        }
+        // SLUT NYTT för multiplayer
+
         if (currentPlayer.getHand().size() <= indexCardOnHandToMove) {
             resetPlacementState();
             return;
@@ -275,6 +288,16 @@ public class GameController implements GameStateListener {
      * @author Jim, Erik
      */
     public void endTurnSinglePLayer(){
+        // Nytt för MULTIPLAYER gren
+        // I multiplayer skickar vi END_TURN till servern.
+        // Servern växlar tur, drar kort åt nästa spelare, och broadcastar nya spelläget.
+        if (gameClient != null) {
+            gameClient.endTurn();
+            gameState.setPhase(GamePhase.END_TURN); // blockera lokala handlingar tills servern svarar
+            return; // Viktigt här, kör INTE singleplayer logiken (AI osv)
+        }
+        // SLUT NYTT för multiplayer
+
         gameState.setPhase(GamePhase.END_TURN);
         System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
@@ -305,6 +328,14 @@ public class GameController implements GameStateListener {
      * @return
      */
     public boolean attackCard(int attackerIndex, int defenderIndex) {
+        // Nytt för MULTIPLAYER gren
+        // I multiplayer skickar vi attacken till servern, som kör logiken och broadcastar resultatet.
+        if (gameClient != null) {
+            gameClient.attackCard(attackerIndex, defenderIndex);
+            return true;
+        }
+        // Slut på nytt
+
         System.out.println("Innan gamestate Checken");
         if (gameState.getPhase() != GamePhase.PLAY) return false;
 
@@ -372,6 +403,14 @@ public class GameController implements GameStateListener {
     }
 
     public boolean attackPlayer(int attackCard){
+        // Nytt för MULTIPLAYER gren
+        // I multiplayer skickar vi den direkta attacken till servern.
+        if (gameClient != null) {
+            gameClient.attackPlayer(attackCard);
+            return true;
+        }
+        // SLUT på Nytt här
+
         if (gameState.getPhase() != GamePhase.PLAY) return false;
 
         PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
@@ -691,7 +730,18 @@ public class GameController implements GameStateListener {
      */
     @Override
     public void onGameStateUpdate(String j) {
-        Platform.runLater(() -> guiManager.updateBoard(j));
+        Platform.runLater(() -> {
+            // 1. Parsa JSON till GameState objekt
+            try {
+            GameState serverState = new com.google.gson.Gson().fromJson(j, GameState.class);
+            // 2. Synca lokal hand och bräde mot servern (kritiskt här)
+            syncLocalHandFromServer(serverState);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 3. Skicka vidare till GUI för rendering
+        guiManager.updateBoard(j);
+    });
     }
 
     /**
@@ -728,14 +778,79 @@ public class GameController implements GameStateListener {
         Platform.runLater(() -> guiManager.showChat(msg));
     }
 
+    /**
+     * Kollar om spelet körs i multiplayer läge.
+     * Används av GUIManager för att välja rätt beteende vid kortval och endTurn.
+     *
+     * @return true om en GameClient är ansluten cilket betyder = multiplayer
+     * @author Leo
+     */
+    public boolean isMultiplayer() {
+        return gameClient != null;
+    }
+
+    /**
+     * Skickar ett DRAFT_PICK meddelande till servern med valt kortId.
+     * Anropas av GUIManager när spelaren klickar på ett kort i PickCardScreen.
+     *
+     * @param cardId id på det valda kortet
+     * @author Leo
+     */
+    public void sendDraftPick(int cardId) {
+        if (gameClient != null) {
+            gameClient.draftPick(cardId);
+        }
+    }
+
+    /**
+     * Synkar den lokala handen mot serverns auktoritativa spelläge.
+     * KRITISK metod efterom att servern drar kort och tar bort spelade kort,
+     * så den lokala handen måste spegla det. Utan denna är den lokala
+     * handen alltid tom och placeCard/moveCardFromHandtoBoard misslyckas,
+     * vilket förstör spelet.
+     *
+     * @param serverState det deserialiserade spelläget från servern
+     * @author Leo
+     */
+    private void syncLocalHandFromServer(GameState serverState) {
+        if (localPlayerRole == null || serverState == null) return;
+
+        // Hämta vår hand från serverns spelläge baserat på vår roll
+        ArrayList<Card> serverHand = (localPlayerRole == PlayerID.PLAYER_ONE)
+                ? serverState.getPlayerOne().getHand()
+                : serverState.getPlayerTwo().getHand();
+
+        // Ersätt lokala handen helt med serverns version
+        playerOne.getHand().clear();
+        if (serverHand != null) {
+            playerOne.getHand().addAll(serverHand);
+        }
+
+        // Synca även brädet och spelinfo
+        if (serverState.getBoard() != null) {
+            board = serverState.getBoard();
+            gameState.setBoard(board);
+        }
+        gameState.setCardsPlayedThisTurn(serverState.getCardsPlayedThisTurn());
+
+        // Synca fasen, viktig för placeCard checken som kräver PLAY
+        if (serverState.getPhase() == GamePhase.PLAY) {
+            gameState.setPhase(GamePhase.PLAY);
+        }
+    }
     @Override
     public void onGameStart(String role) {
-
+        // Servern berättar vilken roll vi har, "PLAYER_ONE" eller "PLAYER_TWO"
+        // Spara det och skicka vidare till GUI så den vet vilken sida av brädet som är "min"
+        localPlayerRole = PlayerID.valueOf(role);
+        Platform.runLater(() -> guiManager.setLocalRole(localPlayerRole));
     }
 
     @Override
     public void onDraftTurn() {
-
+        // Servern säger att det är vår tur att välja kort i draft fasen
+        // Säg till GUIManager att aktivera kortval (sätter isDraftTurn = true där)
+        Platform.runLater(() -> guiManager.enableDraftPicking());
     }
 
     //Borde tas bort!
