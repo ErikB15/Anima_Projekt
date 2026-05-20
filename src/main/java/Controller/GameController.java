@@ -35,6 +35,7 @@ public class GameController implements GameStateListener {
 
     private Player playerOne;
     private Player playerTwo;
+    private EnemyAI enemyAI;
     private Board board;
     private PlayerID localPlayerRole;
     private GUIManager guiManager;
@@ -61,6 +62,7 @@ public class GameController implements GameStateListener {
         playerTwo = new Player("Player2"); //identifera spelare för servern såd e har ett namn
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
+        enemyAI = new EnemyAI(this, gameState);
         addAllCards();
 
         dubbelHit = new DubbelHit();
@@ -413,39 +415,72 @@ public class GameController implements GameStateListener {
         }
 
         if (playerTwo.getHand().isEmpty()) {
+            endTurnSinglePLayer();
             return;
         }
 
         if (!board.hasEmptySlot(PlayerID.PLAYER_TWO)) {
+            endTurnSinglePLayer();
             return;
         }
 
-        int handIndex =
-                (int) (Math.random() * playerTwo.getHand().size());
+        for (int i = 0; i < gameState.getMaxCardsToPlayPerTurn(); i++){
+            if(!board.hasEmptySlot(PlayerID.PLAYER_TWO)){break;}
+            if(gameState.getCardsPlayedThisTurn() >= gameState.getMaxCardsToPlayPerTurn()){break;}
 
-        Card card = playerTwo.getHand().get(handIndex);
+            int handIndex = (int) (Math.random() * playerTwo.getHand().size());
+
+            Card card = playerTwo.getHand().get(handIndex);
 
 
-        int boardIndex = 0;
-        for(int i = 0; i < board.getSlotsForPlayer(PlayerID.PLAYER_TWO).length; i++){
-            if (board.getSlotsForPlayer(PlayerID.PLAYER_TWO)[i] == null){
-                board.placeCard(PlayerID.PLAYER_TWO, i, card);
-                boardIndex = i;
-                guiManager.renderCard(
-                        Zone.OPPONENT_BOARD,
-                        boardIndex,
-                        card.getImagePath()
-                );
-                break;
+            int boardIndex = 0;
+            for(int k = 0; k < board.getSlotsForPlayer(PlayerID.PLAYER_TWO).length; k++){
+                if (board.getSlotsForPlayer(PlayerID.PLAYER_TWO)[k] == null){
+                    board.placeCard(PlayerID.PLAYER_TWO, i, card);
+                    boardIndex = k;
+                    guiManager.renderCard(
+                            Zone.OPPONENT_BOARD,
+                            boardIndex,
+                            card.getImagePath()
+                    );
+                    break;
+                }
             }
         }
 
-        playerTwo.getHand().remove(handIndex);
+        if(!board.canComputerAttack()){
+            endTurnSinglePLayer();
+            return;
+        }
 
-        playerTwo.takeDamage(card.getCardCost());
+        Card[] computerCardsOnBoard = board.getSlotsForPlayer(PlayerID.PLAYER_TWO);
+        Card[] playerCardsOnBoard = board.getSlotsForPlayer(PlayerID.PLAYER_ONE);
+        boolean playerHasCards = false;
+        for(int i = 0; i < playerCardsOnBoard.length; i++){
+            if (playerCardsOnBoard[i] != null){
+                playerHasCards = true;
+            }
+        }
 
-        card.setAsleep(true);
+        int attackingCard = (int) (Math.random() * computerCardsOnBoard.length);
+        if(playerHasCards){
+            int defendingCard = (int) (Math.random() * playerCardsOnBoard.length);
 
+            while(computerCardsOnBoard[attackingCard] == null || !computerCardsOnBoard[attackingCard].getAsleep()){
+                attackingCard = (int) (Math.random() * computerCardsOnBoard.length);
+            }
+            while(playerCardsOnBoard[defendingCard] == null){
+                defendingCard = (int) (Math.random() * playerCardsOnBoard.length);
+            }
+
+            attackCard(attackingCard,defendingCard);
+
+        }else {
+            while(computerCardsOnBoard[attackingCard] == null && !computerCardsOnBoard[attackingCard].getAsleep()){
+                attackingCard = (int) (Math.random() * computerCardsOnBoard.length);
+            }
+            attackPlayer(attackingCard);
+        }
 
         gameState.checkGameOver();
 
