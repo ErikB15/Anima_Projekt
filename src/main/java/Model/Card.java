@@ -8,7 +8,7 @@ public class Card {
     private int cardMaxHP;
     private int cardCurrentHP;
     private int cardID;
-    private Effect cardEffect;
+    private transient Effect cardEffect;
     private int cardCost;
     private boolean asleep;
     private boolean hasAttackedThisTurn;

@@ -13,11 +13,9 @@ import java.net.Socket;
  * @author Leo
  */
 public class GameClient {
-
     private final String serverHost;
     private final int serverPort;
     private final Gson gson = new Gson();
-
     private Socket socket;
     private PrintWriter out;
     private String steamId;
@@ -51,10 +49,9 @@ public class GameClient {
         this.displayName = displayName;
         socket = new Socket(serverHost, serverPort);
         out = new PrintWriter(socket.getOutputStream(), true);
-        new Thread(this::listenToServer).start();           //En bakgrundtråd som lyssnar på servern
+        new Thread(this::listenToServer).start(); //En bakgrundtråd som lyssnar på servern
         send(new GameMessage(GameMessage.Type.JOIN, displayName, steamId)); //presentera sig för server, vi skickar att vi sa join game med steamid
     }
-
 
     /**
      * Lyssnar kontinuerligt på meddelanden från servern.
@@ -76,11 +73,10 @@ public class GameClient {
         }
     }
 
-
     /**
      * Hanterar inkommande meddelanden från servern.
      * Vidarebefordrar händelsen till GameStateListener som GameController
-     * implementerar, vilket håller nätverkskoden separerad från GUI-koden.
+     * implementerar, vilket håller nätverkskoden separerad från GUI koden.
      *
      * @param msg meddelandet som tagits emot från servern
      * @author Leo
@@ -90,7 +86,9 @@ public class GameClient {
             return;
         switch (msg.getType()) {
             case WAITING -> listener.onWaiting();
+            case GAME_START -> listener.onGameStart(msg.getPayload());
             case YOUR_TURN -> listener.onYourTurn();
+            case DRAFT_TURN -> listener.onDraftTurn();
             case GAME_STATE -> listener.onGameStateUpdate(msg.getPayload());
             case GAME_OVER -> listener.onGameOver(msg.getPayload());
             case ERROR -> listener.onError(msg.getPayload());
@@ -102,12 +100,15 @@ public class GameClient {
 
     /**
      * Skickar ett meddelande om att spelaren vill spela ett kort.
+     * Payload är "kortId,brädindex" så att servern vet vilket kort och var det ska placeras.
      *
-     * @param cardId id på kortet som spelas
+     * @param cardId     id (int) på kortet som spelas
+     * @param boardIndex platsen på brädet där kortet placeras (0–3)
      * @author Leo
      */
-    public void playCard(String cardId) {
-        send(new GameMessage(GameMessage.Type.PLAY_CARD, cardId, steamId));
+    public void playCard(int cardId, int boardIndex) {
+        String payload = cardId + "," + boardIndex;
+        send(new GameMessage(GameMessage.Type.PLAY_CARD, payload, steamId));
     }
 
     /**
@@ -117,6 +118,16 @@ public class GameClient {
      */
     public void endTurn() {
         send(new GameMessage(GameMessage.Type.END_TURN, " ", steamId));
+    }
+
+    /**
+     * Skickar ett meddelande om att spelaren valt ett kort i draft-fasen.
+     *
+     * @param cardId id på kortet som valts
+     * @author Leo
+     */
+    public void draftPick(int cardId) {
+        send(new GameMessage(GameMessage.Type.DRAFT_PICK, String.valueOf(cardId), steamId));
     }
 
     /**

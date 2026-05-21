@@ -73,6 +73,19 @@ public class Board {
         }
     }
 
+    public boolean canComputerAttack(){
+        // Kolla isAsleep, så att det finns kort som inte sover.
+        for (int i = 0; i < playerTwoSlots.length; i++){
+            if (playerTwoSlots[i] != null){
+                if(!playerTwoSlots[i].getAsleep()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
     public void resetAttacksForPlayer(PlayerID player) {
         Card[] slots = getSlotsForPlayer(player);
 

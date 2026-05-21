@@ -39,7 +39,8 @@ public class GUIManager {
 
     //denna ska vara en check för vems tur det är. när det är den egna spelarens tur är denna true.
     private boolean isYourTurn = true;
-
+    private PlayerID localRole = PlayerID.PLAYER_ONE; // vilken sida av brädet är "min"
+    private boolean isDraftTurn = false; //är det min tur att välja kort
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -311,6 +312,7 @@ public class GUIManager {
             controller.addPickCardViews(scene);
 
             gameController.bindCardsToView(controller.getCardImageView(scene));
+            //Denna under ska kunnas ta bort om vi kopplar dem rätt.
             gameController.startDraftPhase();
 
         } catch(Exception e){
@@ -342,7 +344,7 @@ public class GUIManager {
             stage.show();
 
             controller.init();
-            gameController.startGame();
+            gameController.startPlayPhase();
 
             addImageViewToList();
             gameController.set();
@@ -370,11 +372,11 @@ public class GUIManager {
      * @author: Elna
      */
     public void pickedCardIndexPoint(MouseEvent event){
-        if (!isYourTurn) {
+        if (!isLocalPlayersTurn()) {
             return;
         }
 
-        if(isYourTurn == true) {
+        if(isLocalPlayersTurn()) {
             if (gameController.isCardPicked()) {
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -475,6 +477,12 @@ public class GUIManager {
      */
 
     public void pickedCard(MouseEvent event) {
+        /**if (gameController.isMultiplayer()) {
+            if (!isDraftTurn)
+                return; //inte din tur, behövs för när vi kör multiplayer
+            //beöver typ samma som nedan så vi har en för single en för multiplayer
+        }
+        */
         if (yourTurnToPickCard == false) return;
         ImageView clickedCard = (ImageView) event.getSource();
         Card card = (Card) clickedCard.getUserData();
@@ -688,8 +696,7 @@ public class GUIManager {
         } else {
             isYourTurn = false;
         }
-
-        gameController.endTurnSinglePLayer();
+        gameController.endTurn();
     }
 
     public void enemyPlaceCard(int index, String imagePath){
@@ -783,28 +790,33 @@ public class GUIManager {
         }
     }
 
-    public void showWaiting()             {
+    public void showWaiting() {
         System.out.println("Väntar...");
+        // Ska visa text som säger att man väntar, t.ex eventloggen eller en ny label
     }
 
-    public void enableCardButtons()       {
+    public void enableCardButtons() {
         isYourTurn = true;
     }
 
-    public void updateBoard(String json)  {
+    public void updateBoard(String json) {
         System.out.println("Spelläge: " + json);
+        // Tar emot hela spelläget från servern och ritar om behöver Gson import
     }
 
     public void showGameOver(String name) {
         sendMessageThroughGUI("Vinnare: " + name);
+        // visa vem som vann
     }
 
-    public void showError(String msg)     {
+    public void showError(String msg) {
         sendMessageThroughGUI(msg);
+        // visa felmeddelnde
     }
 
-    public void showChat(String msg)      {
+    public void showChat(String msg) {
         System.out.println("Chatt: " + msg);
+        //visa chatmeddelande
     }
 
     /**
@@ -813,8 +825,8 @@ public class GUIManager {
      * @param event - eventtypen som skickas från guit.
      * @author Erik
      */
-    public void pickedCardToAttack(MouseEvent event){
-        if(isYourTurn == true) {
+    public void pickedCardToAttack(MouseEvent event) {
+        if(isLocalPlayersTurn()) {
 
             if (!gameController.isAttackerPicked()) {
 
@@ -879,7 +891,7 @@ public class GUIManager {
      * @author Erik
      */
     public void handleBoardClick(MouseEvent event) {
-        if (!isYourTurn) {
+        if (!isLocalPlayersTurn()) {
             return;
         }
 
@@ -1035,6 +1047,25 @@ public class GUIManager {
         }
     }
 
+    //Avgör i updateboard vilken slots som ritas som "min sida"
+    public void setLocalRole(PlayerID role) {
+        this.localRole = role;
+    }
+
+    /**
+     * Metoden ska kunna kolla om det är den lokala (spelaren som kör programmet på sin dator just nu) spelarens tur,
+     * och sedan returnerar den en boolean baserat på om det är deras tur eller inte.
+     * @return En boolean som säger ja eller nej när en spelare klickar och frågar om det är deras tur.
+     */
+    public boolean isLocalPlayersTurn() {
+        return gameController.getGameState().getCurrentPlayerId() == localRole;
+    }
+
+    // Ska anropas när det är din tur att välja kort i draft. Utan denna kan spelaren aldrig klicka på ett kort
+    public void enableDraftPicking() {
+        isDraftTurn = true;
+    }
+
     public void addPickCardViews(Scene scene){
         pickCardViews.add((ImageView) scene.lookup("#card_0"));
         pickCardViews.add((ImageView) scene.lookup("#card_1"));
@@ -1050,4 +1081,7 @@ public class GUIManager {
         pickCardViews.add((ImageView) scene.lookup("#card_11"));
     }
 
+    //behöver en hostgame knapp, här skapar vi då servern
+
+    //samt en joingame knapp och metod där vi här connecttoserver genom gamecontroller metoden jag skapat där
 }

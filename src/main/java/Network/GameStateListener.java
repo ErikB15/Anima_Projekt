@@ -21,13 +21,13 @@ public interface GameStateListener {
      * Anropas när spelaren anslutit men väntar på motståndaren.
      * @author Leo
      */
-    void onWaiting();                       //visa "väntar på motståndare"
+    void onWaiting(); //visa "väntar på motståndare"
 
     /**
      * Anropas när det är spelarens tur att agera.
      * @author Leo
      */
-    void onYourTurn();                      //aktiverA spelarens knappar, så de kan trycka
+    void onYourTurn(); //aktiverA spelarens knappar, så de kan trycka
 
     /**
      * Anropas när servern skickar ett uppdaterat spelläge.
@@ -37,7 +37,7 @@ public interface GameStateListener {
      * @param json spelläget serialiserat som JSON
      * @author Leo
      */
-    void onGameStateUpdate(String json);    //ta emot spelläge som JSON
+    void onGameStateUpdate(String json); //ta emot spelläge som JSON
 
     /**
      * Anropas när spelet är slut.
@@ -45,7 +45,7 @@ public interface GameStateListener {
      * @param winnerName namnet på spelaren som vann
      * @author Leo
      */
-    void onGameOver(String winnerName);     //visa vinnare
+    void onGameOver(String winnerName); //visa vinnare
 
     /**
      * Anropas när ett felmeddelande tas emot från servern.
@@ -53,7 +53,7 @@ public interface GameStateListener {
      * @param message beskrivning av felet
      * @author Leo
      */
-    void onError(String message);           //visa felmeddelande
+    void onError(String message); //visa felmeddelande
 
     /**
      * Anropas när ett chattmeddelande tas emot.
@@ -61,7 +61,22 @@ public interface GameStateListener {
      * @param message chattmeddelandets text
      * @author Leo
      */
-    void onChat(String message);           //detta är om vi implemnetrar en chat, då visa chatmeddelande
+    void onChat(String message); //detta är om vi implemnetrar en chat, då visa chatmeddelande
+
+    /**
+     * Anropas när spelet startar och servern tilldelar spelaren en roll.
+     * Rollen är antingen "PLAYER_ONE" eller "PLAYER_TWO".
+     *
+     * @param role spelarens tilldelade roll som sträng
+     * @author Leo
+     */
+    void onGameStart(String role); // ta emot vilken roll man har (PLAYER_ONE eller PLAYER_TWO)
+
+    /**
+     * Anropas när det är spelarens tur att välja ett kort i draft-fasen.
+     * @author Leo
+     */
+    void onDraftTurn(); // det är din tur att välja kort
 }
 
 
