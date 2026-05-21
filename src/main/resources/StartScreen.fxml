@@ -16,12 +16,12 @@
             <Image url="@Title.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="144.0" fitWidth="403.0" layoutX="101.0" layoutY="200.0" onMouseClicked="#switchToPickCardScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="144.0" fitWidth="403.0" layoutX="101.0" layoutY="200.0" onMouseClicked="#openSinglePlayer" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@SinglePlayer.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="145.0" fitWidth="394.0" layoutX="101.0" layoutY="417.0" onMouseClicked="#switchToGameRulesScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="145.0" fitWidth="394.0" layoutX="101.0" layoutY="417.0" onMouseClicked="#openMultiPlayer" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@gameRulesButton.png" />
          </image>

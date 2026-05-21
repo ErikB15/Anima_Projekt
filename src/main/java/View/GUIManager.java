@@ -17,6 +17,7 @@ import Model.GameState;
 import Model.Board;
 import Model.Card;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -261,13 +262,37 @@ public class GUIManager {
     }
 
     /**
+     * Metod för att skicka in boolean till switchToPickedCardScreen om det är singleplayer eller inte.
+     *
+     * @param event - mousse clicked event
+     * @throws IOException
+     * @author Erik
+     */
+    @FXML
+    private void openSinglePlayer(MouseEvent event) throws IOException {
+        switchToPickCardScreen(event, true);
+    }
+
+    /**
+     * Metod för att skicka in boolean till switchToPickedCardScreen om det är singleplayer eller inte.
+     *
+     * @param event - mousse clicked event
+     * @throws IOException
+     * @author Erik
+     */
+    @FXML
+    private void openMultiPlayer(MouseEvent event) throws IOException {
+        switchToPickCardScreen(event, false);
+    }
+
+    /**
      * Byter till skärmen där spelaren väljer kort.
      * Laddar gui, kopplar controller och binder kortdata till ImageView.
      *
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, Elna
      */
-    public void switchToPickCardScreen(MouseEvent event){
+    public void switchToPickCardScreen(MouseEvent event, boolean Singleplayer){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("PickCardScreen.fxml"));
             root = loader.load();
