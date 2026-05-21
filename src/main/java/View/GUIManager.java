@@ -132,6 +132,8 @@ public class GUIManager {
      * @Param: event - MouseEvent från knapptryck i gui
      * @author: Erik, Elna
      */
+
+    @FXML
     public void switchToStartScreen(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("StartScreen.fxml"));
@@ -139,9 +141,12 @@ public class GUIManager {
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
-            gameController.setGuiManager(controller);
 
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            controller.setStage(stage);
+
+            gameController.setGuiManager(controller);
+
             scene = new Scene(root);
             stage.setScene(scene);
             stage.setResizable(false);
@@ -158,6 +163,7 @@ public class GUIManager {
      * @Param: event - MouseEvent från knapptryck i gui
      * @author: Erik, Elna
      */
+    @FXML
     public void switchToConnectScreen(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ConnectScreen.fxml"));
@@ -165,9 +171,12 @@ public class GUIManager {
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
-            gameController.setGuiManager(controller);
 
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            controller.setStage(stage);
+
+            gameController.setGuiManager(controller);
+
             scene = new Scene(root);
             stage.setScene(scene);
             stage.setResizable(false);
@@ -188,29 +197,20 @@ public class GUIManager {
      *
      * @author Jim Ström
      */
-    public void switchToGameOverMenu() {
-       /* try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getClassLoader().getResource("GameOverScreen.fxml")
-            );
-
-            Parent root = loader.load();
+    @FXML
+    public void switchToGameOverMenu(){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
+            root = loader.load();
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
 
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setResizable(false);
-            stage.show();
+            controller.setStage(stage);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+            gameController.setGuiManager(controller);
 
-        try{
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
-            Scene scene = new Scene(root);
+            scene = new Scene(root);
             stage.setScene(scene);
             stage.setResizable(false);
             stage.show();
@@ -218,17 +218,24 @@ public class GUIManager {
         } catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
+    @FXML
     public void switchToGameOverBUTTON(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
             root = loader.load();
+
+            GUIManager controller = loader.getController();
+            controller.setGameController(gameController);
+
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            controller.setStage(stage);
+
+            gameController.setGuiManager(controller);
+
             scene = new Scene(root);
             stage.setScene(scene);
-            // stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -246,14 +253,20 @@ public class GUIManager {
      * @Param: event - MouseEvent från användarinput
      * @author: Erik, Elna
      */
+    @FXML
     public void switchToGameRulesScreen(MouseEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameRuleScreen.fxml"));
             root = loader.load();
+
+            GUIManager controller = loader.getController();
+            controller.setGameController(gameController);
+
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            controller.setStage(stage);
+
             scene = new Scene(root);
             stage.setScene(scene);
-            // stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
@@ -265,25 +278,24 @@ public class GUIManager {
     /**
      * Metod för att skicka in boolean till switchToPickedCardScreen om det är singleplayer eller inte.
      *
-     * @param event - mousse clicked event
      * @throws IOException
      * @author Erik
      */
     @FXML
-    private void openSinglePlayer(MouseEvent event) throws IOException {
-        switchToPickCardScreen(event, true);
+    private void openSinglePlayer() throws IOException {
+        gameController.startSingleplayer();
     }
 
     /**
      * Metod för att skicka in boolean till switchToPickedCardScreen om det är singleplayer eller inte.
      *
-     * @param event - mousse clicked event
+     * //@param event - mousse clicked event
      * @throws IOException
      * @author Erik
      */
     @FXML
-    private void openMultiPlayer(MouseEvent event) throws IOException {
-        switchToPickCardScreen(event, false);
+    private void openMultiPlayer() throws IOException {
+        gameController.startMultiplayer();
     }
 
     /**
@@ -293,26 +305,26 @@ public class GUIManager {
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, Elna
      */
-    public void switchToPickCardScreen(MouseEvent event, boolean Singleplayer){
+    @FXML
+    public void switchToPickCardScreen(){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("PickCardScreen.fxml"));
             root = loader.load();
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
+
+            controller.setStage(stage);
+
             gameController.setGuiManager(controller);
 
-            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
-            //stage.setFullScreen(true);
             stage.setResizable(false);
             stage.show();
 
             controller.addPickCardViews(scene);
-
             gameController.bindCardsToView(controller.getCardImageView(scene));
-            //Denna under ska kunnas ta bort om vi kopplar dem rätt.
             gameController.startDraftPhase();
 
         } catch(Exception e){
@@ -327,29 +339,31 @@ public class GUIManager {
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, ELna
      */
-    public void switchToGameBoard(MouseEvent event){
-        try{
+    @FXML
+    public void switchToGameBoard() {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameBoard.fxml"));
-            root = loader.load();
+
+            Parent root = loader.load();
 
             GUIManager controller = loader.getController();
-
             controller.setGameController(gameController);
+
+            controller.setStage(stage);
+
             gameController.setGuiManager(controller);
 
-            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-            scene = new Scene(root);
+            Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setResizable(false);
             stage.show();
 
             controller.init();
-            gameController.startPlayPhase();
 
-            addImageViewToList();
+            controller.addImageViewToList();
             gameController.set();
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -360,7 +374,8 @@ public class GUIManager {
      * @Param: e - MouseEvent från gui
      * @author: Elna
      */
-    public void exitApplication(MouseEvent e){
+    @FXML
+    public void exitApplication(){
         Platform.exit();
     }
 
@@ -483,118 +498,23 @@ public class GUIManager {
             //beöver typ samma som nedan så vi har en för single en för multiplayer
         }
         */
-        if (yourTurnToPickCard == false) return;
-        ImageView clickedCard = (ImageView) event.getSource();
-        Card card = (Card) clickedCard.getUserData();
+        if (!isLocalPlayersTurn()){return;}
 
-        for (int i = 0; i < selectedCardsInPickCardphase.size(); i++){
-            if (selectedCardsInPickCardphase.get(i) == clickedCard) {
-                sendMessageThroughGUI("Card already chosen! Pick another card.");
-                System.out.println("Card already chosen! Pick another card.");
-                return;
-            }
-        }
-        String hpID = event.getPickResult().getIntersectedNode().getId();
-        String[] splitID = hpID.split("_");
-        int hpIDInt = Integer.parseInt(splitID[1]);
+        String ID = event.getPickResult().getIntersectedNode().getId();
+        String[] splitID = ID.split("_");
+        int IDInt = Integer.parseInt(splitID[1]);
+        System.out.println(IDInt);
 
-        selectedCardsInPickCardphase.add(clickedCard);
-        clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
-        changeHP(hpIDInt, " ", null);
-
-        gameController.addCardToPlayerOne(card);
-        System.out.println("card added to player 1 deck");
-        switchTurnLabelInPickCard();
-
-        yourTurnToPickCard = false;
-        opponentChooseCardInSinglePayer();
+        gameController.chooseCardPhase(IDInt);
     }
 
-    /**
-     * Okej detta blir ett långt javadoc men det behövs nog för att förklara denna metod.
-     *
-     * Metoden hanterar motståndarens kortval i singleplayer under draft-fasen.
-     * Metoden körs efter att spelaren själv har valt ett kort och ansvarar för att simulera att en dator väljer själv.
-     *
-     * Processen styrs av två tidsfördröjningar (PauseTransition) som separerar logiken i två steg.
-     *
-     * Sidenote om PauseTransition: Jag vill fördröja valet av kort och "animationerna" för att det ska vara lite mer äkta
-     * och lättare för användaren att förstå vad som händer så inte allting händer på ett ögonblick.
-     * Och man kan inte använde thread.sleep för då hänger hela programmet sig. Skillanden med thread.sleep och pausetransition är att
-     * thread.sleep får hela trådan att pause och det vill vi inte. PauseTransition är mer som en fördröjning av en aktivtet på javaFX tråden.
-     * Med det kan vi schemalägga upgifter.
-     *
-     * 1. Pick (fördröjning innan motståndaren väljer kort)
-     *    - Skapar en artificiell paus för att simulera "tänkandet".
-     *    - Efter fördröjningen skannas alla kort i pickCardViews.
-     *    - En lista av tillgängliga kort byggs genom att filtrera bort redan valda kort
-     *      (selectedCardsInPickCardphase).
-     *    - Ett slumpmässigt kort väljs från den kvarvarande listan.
-     *    - Om inga kort återstår avslutas metoden och turen återgår till spelaren.
-     *
-     * 2. Kortval och uppdatering av spelstatus
-     *    - Det valda ImageView-objektet markeras som valt och läggs till i selectedCardsInPickCardphase.
-     *    - Kortets visuella representation byts till baksidan (CardBACKSIDE.png) för att indikera att det är taget.
-     *    - Kortets HP-etikett uppdateras via changeHP för att reflektera att kortet inte längre är tillgängligt.
-     *    - Kortobjektet hämtas från ImageView via getUserData och skickas till GameController via addCardToOpponent,
-     *      vilket lägger till kortet i motståndarens deck och tar bort det från gemensamma kortpoolen.
-     *
-     * Viktigt:
-     * - All faktisk spel-logik (korttilldelning och borttagning från kortpool) hanteras i GameController.
-     * - gui-uppdateringar sker stegvis för att undvika att spelaren och motståndaren väljer samtidigt.
-     * - pick.play() är det som faktiaskt "startar" det som står inom .setOnFinished.
-     * Tänk det lite som en run metod, vi skapar tasken sen senare så startar vi den.
-     *
-     * @author Erik
-     */
-    private void opponentChooseCardInSinglePayer() {
+    public void updateGuiAfterCardIsPicked(int IDInt){
+        changeHP(IDInt, " ", null);
+        switchTurnLabelInPickCard();
 
-        PauseTransition Pick = new PauseTransition(Duration.seconds(1));
-
-        Pick.setOnFinished(e -> {
-
-            ImageView matchedView = null;
-
-            List<ImageView> available = new ArrayList<>();
-
-            for (ImageView view : pickCardViews) {
-                if (!selectedCardsInPickCardphase.contains(view)) {
-                    available.add(view);
-                }
-            }
-
-            if (available.isEmpty()) {
-                yourTurnToPickCard = true;
-                return;
-            }
-
-            int randomIndex = (int) (Math.random() * available.size());
-            matchedView = available.get(randomIndex);
-
-            if (matchedView == null) {
-                yourTurnToPickCard = true;
-                return;
-            }
-
-            Card card = (Card) matchedView.getUserData();
-
-            selectedCardsInPickCardphase.add(matchedView);
-
-            matchedView.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
-
-            String cardID = matchedView.getId();
-            String[] splitID = cardID.split("_");
-            int hpIDInt = Integer.parseInt(splitID[1]);
-
-            changeHP(hpIDInt, " ", null);
-
-            gameController.addCardToOpponent(card);
-
-            switchTurnLabelInPickCard();
-        });
-        Pick.play();
-        System.out.println("Card added to opponents deck");
-        yourTurnToPickCard = true;
+        ImageView view = pickCardViews.get(IDInt);
+        Image newImage = new Image(getClass().getResourceAsStream("/CardBACKSIDE.png"));
+        view.setImage(newImage);
     }
 
 
@@ -1084,4 +1004,8 @@ public class GUIManager {
     //behöver en hostgame knapp, här skapar vi då servern
 
     //samt en joingame knapp och metod där vi här connecttoserver genom gamecontroller metoden jag skapat där
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 }

@@ -64,11 +64,6 @@
                         </Label>
                     </children>
                 </VBox>
-            <ImageView fx:id="Back_Button" fitHeight="71.0" fitWidth="118.0" layoutX="287.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@Back.png" />
-               </image>
-            </ImageView>
             </children>
         </Pane>
         <Pane fx:id="generalRules" layoutX="170.0" managed="false" prefHeight="652.0" prefWidth="430.0" visible="false">
@@ -176,5 +171,10 @@
                 </VBox>
             </children>
         </Pane>
+      <ImageView fx:id="Back_Button" fitHeight="71.0" fitWidth="118.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="5.0">
+         <image>
+            <Image url="@Back.png" />
+         </image>
+      </ImageView>
     </children>
 </AnchorPane>
