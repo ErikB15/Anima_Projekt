@@ -472,7 +472,7 @@ public class GameController implements GameStateListener {
 
         gameState.setPhase(GamePhase.PLAY);
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
-            enemyTurnInSinglePLayer();
+            //enemyTurnInSinglePLayer(); funkar ej längre då jim tog bort
         }
         addMassageInGui(3, currentPlayer, null, null);
     }
@@ -700,6 +700,10 @@ public class GameController implements GameStateListener {
      * @param card - kort-objektet
      * @author Erik
      */
+    //public void addCardToPlayerOne(Card card){
+        //playerOne.addCardToDeck(card);
+       // allCards.remove(card);
+    //}
 
     /**
      * Metod för att lägga till valt kort i motståndarens hand.

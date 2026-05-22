@@ -148,8 +148,11 @@ public class GameServer {
                     new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
 
         } else {
-            // Byt till nästa spelare i draften
-            gameState.switchPlayer();
+            // switchPlayer i GameState är buggad efter merge, ändrar currentPlayer istället för currentDraftPlayer
+            // Vi sätter draft, spelaren direkt här istället.
+            PlayerID nextDrafter = (gameState.getCurrentDraftPlayerId() == PlayerID.PLAYER_ONE)
+                    ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
+            gameState.setCurrentDraftPlayer(nextDrafter);
             broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
             String nextDrafterName = getPlayerNameByRole(gameState.getCurrentDraftPlayerId());
             sendToPlayer(nextDrafterName, new GameMessage(GameMessage.Type.DRAFT_TURN, "", ""));
