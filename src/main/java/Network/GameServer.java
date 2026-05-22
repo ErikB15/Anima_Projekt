@@ -149,7 +149,7 @@ public class GameServer {
 
         } else {
             // Byt till nästa spelare i draften
-            gameState.switchDraftPlayer();
+            gameState.switchPlayer();
             broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
             String nextDrafterName = getPlayerNameByRole(gameState.getCurrentDraftPlayerId());
             sendToPlayer(nextDrafterName, new GameMessage(GameMessage.Type.DRAFT_TURN, "", ""));

@@ -12,6 +12,7 @@ module com.example.anima_projekt {
     requires com.almasb.fxgl.all;
     requires javafx.graphics;
     requires com.google.gson;
+    requires javafx.base;
 
     opens View to javafx.fxml;
     opens Model to com.google.gson;

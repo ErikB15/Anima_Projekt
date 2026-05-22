@@ -73,9 +73,9 @@
             <Image url="@CardPictures/Card12.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="28.0" fitWidth="65.0" layoutX="401.0" layoutY="608.0" onMouseClicked="#switchToGameBoard" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="44.0" fitWidth="72.0" layoutX="402.0" layoutY="597.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@StartGameSmall.png" />
+            <Image url="@Back.png" />
          </image>
       </ImageView>
       <Label fx:id="pickCardTurn" layoutX="55.0" layoutY="503.0" text="Player 1">

@@ -9,11 +9,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="652.0" prefWidth="600.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIManager">
+<AnchorPane prefHeight="652.0" prefWidth="579.0" stylesheets="@Styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.GUIManager">
     <children>
-        <ImageView fitHeight="652.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ImageView fitHeight="663.0" fitWidth="589.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-11.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
             <image>
-                <Image url="@StartMenuNEW.png" />
+                <Image url="@GameRulesScreen.png" />
             </image>
         </ImageView>
         <VBox prefHeight="652.0" prefWidth="170.0" spacing="5.0">
@@ -45,7 +45,7 @@
                 </Button>
             </children>
         </VBox>
-        <Pane fx:id="startMenu" layoutX="170.0" managed="true" prefHeight="652.0" prefWidth="430.0" visible="true">
+        <Pane fx:id="startMenu" layoutX="170.0" managed="true" prefHeight="652.0" prefWidth="417.0" visible="true">
             <children>
                 <VBox layoutX="25.0" layoutY="120.0" prefWidth="380.0" spacing="25.0">
                     <children>
@@ -171,7 +171,7 @@
                 </VBox>
             </children>
         </Pane>
-      <ImageView fx:id="Back_Button" fitHeight="71.0" fitWidth="118.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="10.0">
+      <ImageView fx:id="Back_Button" fitHeight="71.0" fitWidth="118.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="5.0">
          <image>
             <Image url="@Back.png" />
          </image>

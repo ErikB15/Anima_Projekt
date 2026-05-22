@@ -16,7 +16,7 @@
             <Image url="@Title.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="144.0" fitWidth="403.0" layoutX="101.0" layoutY="200.0" onMouseClicked="#switchToPickCardScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="144.0" fitWidth="403.0" layoutX="101.0" layoutY="200.0" onMouseClicked="#openSinglePlayer" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@SinglePlayer.png" />
          </image>
@@ -31,7 +31,7 @@
             <Image url="@exitGameButtonLarge.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="128.0" fitWidth="394.0" layoutX="101.0" layoutY="325.0" onMouseClicked="#switchToConnectScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="128.0" fitWidth="394.0" layoutX="101.0" layoutY="325.0" onMouseClicked="#openMultiPlayer" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@MultiPlayer.png" />
          </image>

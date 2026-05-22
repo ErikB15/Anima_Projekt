@@ -59,10 +59,8 @@ public class GameState {
     }
 
     // Ändrar vem som ska välja kort i "draft" fasen.
-    public void switchDraftPlayer() {
-        currentDraftPlayer = currentDraftPlayer == PlayerID.PLAYER_ONE
-                ? PlayerID.PLAYER_TWO
-                : PlayerID.PLAYER_ONE;
+    public void switchPlayer() {
+        currentPlayer = currentPlayer == PlayerID.PLAYER_ONE ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
     }
 
     // Ska kunna ändra på vilken tur det är.

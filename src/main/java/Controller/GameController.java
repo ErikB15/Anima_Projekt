@@ -1,15 +1,20 @@
 package Controller;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import Model.*;
 import Network.GameClient;
 import Network.GameStateListener;
 import Model.CardEffects.*;
 import View.*;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 
 /**
@@ -17,7 +22,7 @@ import javafx.scene.image.ImageView;
  * När matchens avslutas stängs även game controllern, då den endast är nödvändig när matchen är aktiv.
  */
 public class GameController implements GameStateListener {
-    private ArrayList<Card> allCards;
+    private Card[] allCards;
     private ArrayList<Effect> allEffects;
     private GameClient gameClient; // nytt fält så vi kan snacka med gameclient
 
@@ -35,6 +40,7 @@ public class GameController implements GameStateListener {
 
     private Player playerOne;
     private Player playerTwo;
+    private EnemyAI enemyAI;
     private Board board;
     private PlayerID localPlayerRole;
     private GUIManager guiManager;
@@ -46,6 +52,7 @@ public class GameController implements GameStateListener {
     private Shield shield;
     private Poison poison;
     private Buff buff;
+    private boolean SinglePlayer;
 
     /**
      * Skapar en ny GameController och initierar spelets grunddata.
@@ -55,12 +62,13 @@ public class GameController implements GameStateListener {
      * @author Erik,Jim Ström, Elna
      */
     public GameController(){
-        allCards = new ArrayList<>();
+        allCards = new Card[12];
         allEffects = new ArrayList<>();
         playerOne = new Player("Player1");
         playerTwo = new Player("Player2"); //identifera spelare för servern såd e har ett namn
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
+        enemyAI = new EnemyAI(this, gameState);
         addAllCards();
 
         dubbelHit = new DubbelHit();
@@ -79,35 +87,43 @@ public class GameController implements GameStateListener {
      * @author Erik
      */
     public void addAllCards(){
-        // Ett exempel på hur ett kort kommer att hårdkodas, kommer bli en långgg parameter lista dock.
-        allCards.add(new Card("Monkey", 40,50,1,taunt, "/CardPictures/Card5.png"));
-        allCards.add(new Card("Bob", 40,25,2,buff, "/CardPictures/Card10.png"));
-        allCards.add(new Card("Twins", 40,34,3,dubbelHit, "/CardPictures/Card8.png"));
-        allCards.add(new Card("ChillGuy", 40,20,4,heal, "/CardPictures/Card9.png"));
-        allCards.add(new Card("blockHead", 40,30,5,shield, "/CardPictures/Card7.png"));
-        allCards.add(new Card("Wizard", 40,40,6,poison, "/CardPictures/Card6.png"));
-        allCards.add(new Card("Pernilla", 40,40,6,poison, "/CardPictures/Card12.png"));
-        allCards.add(new Card("Kick", 40,40,6,poison, "/CardPictures/Card11.png"));
-        allCards.add(new Card("George", 40,40,6,poison, "/CardPictures/Card4.png"));
-        allCards.add(new Card("Harrold", 40,40,6,poison, "/CardPictures/Card3.png"));
-        allCards.add(new Card("KnifeGuy", 40,40,6,poison, "/CardPictures/Card2.png"));
-        allCards.add(new Card("Kenneth", 40,40,6,poison, "/CardPictures/Card1.png"));
+        allCards[0] = new Card("Kenneth", 40,40,1,poison, "/CardPictures/Card1.png");
+        allCards[1] = new Card("KnifeGuy", 40,40,2,poison, "/CardPictures/Card2.png");
+        allCards[2] = new Card("Harrold", 40,40,3,poison, "/CardPictures/Card3.png");
+        allCards[3] = new Card("George", 40,40,4,poison, "/CardPictures/Card4.png");
+        allCards[4] = new Card("Monkey", 40,50,5,taunt, "/CardPictures/Card5.png");
+        allCards[5] = new Card("Wizard", 40,40,6,poison, "/CardPictures/Card6.png");
+        allCards[6] = new Card("blockHead", 40,30,7,shield, "/CardPictures/Card7.png");
+        allCards[7] = new Card("Twins", 40,34,8,dubbelHit, "/CardPictures/Card8.png");
+        allCards[8] = new Card("ChillGuy", 40,20,9,heal, "/CardPictures/Card9.png");
+        allCards[9] = new Card("Bob", 40,25,10,buff, "/CardPictures/Card10.png");
+        allCards[10] = new Card("Kick", 40,40,11,poison, "/CardPictures/Card11.png");
+        allCards[11] = new Card("Pernilla", 40,40,12,poison, "/CardPictures/Card12.png");
     }
 
-    /**
-     * Initierar spelbrädet.
-     * Just nu tom metod som är avsedd för framtida uppsättning av spelbräde och UI-koppling.
-     *
-     * @author Jim Ström
-     */
-    public void setupBoard(){
-        // Koppla spelare till de två olika "connections" vi gjort.
-        // board = new Board();
-        // gameState = new GameState(playerOne, playerTwo, board);
-        // Kommer antagligen behöva göras sen när vi gör en connection istället.
-        // Vi kommer behöva koppla player ett och player två till de två olika uppkopplingarna.
-        // Och gameState ska bara skapas när vi gjort dessa grejer.
+
+    public void startSingleplayer() {
+        localPlayerRole = PlayerID.PLAYER_ONE;
+        guiManager.setLocalRole(PlayerID.PLAYER_ONE);
+        startDraftPhase();
+        // Metoden under ska anropas här, men går inte för den behöver ett mouse event.
+        // Metoden under kommer i framtiden antagligen bara anropas via controllern, så hade nog-
+        // varit bäst om den inte behövde en mouse event.
+        guiManager.switchToPickCardScreen();
+        setSinglePLayer(true);
     }
+
+    public void startMultiplayer(){
+        // Här ska servern på något sätt definera vilken spelare som är PLAYER_ONE och vem som är PLAYER_TWO
+
+        startDraftPhase();
+        // Metoden under ska anropas här, men går inte för den behöver ett mouse event.
+        // Metoden under kommer i framtiden antagligen bara anropas via controllern, så hade nog-
+        // varit bäst om den inte behövde en mouse event.
+        setSinglePLayer(false);
+        //guiManager.switchToConnectScreen();
+    }
+
 
     /**
      * Startas när vi går in i välja kort fasen.
@@ -116,16 +132,57 @@ public class GameController implements GameStateListener {
      * @author Jim Ström
      */
     public void startDraftPhase(){
-        int random = (int)(Math.random() * 2) + 1;
+        int random = 1;  //endast för testning annars avänds raden under
+        //int random = (int)(Math.random() * 2) + 1;
         if(random == 1){
             gameState.setFirstDraftPlayer(PlayerID.PLAYER_ONE);
-            gameState.setCurrentDraftPlayer(PlayerID.PLAYER_ONE);
+            gameState.setCurrentPlayer(PlayerID.PLAYER_ONE);
         }else {
             gameState.setFirstDraftPlayer(PlayerID.PLAYER_TWO);
-            gameState.setCurrentDraftPlayer(PlayerID.PLAYER_TWO);
+            gameState.setCurrentPlayer(PlayerID.PLAYER_TWO);
         }
         gameState.setPhase(GamePhase.DRAFT);
     }
+
+
+    /**
+     * Lik startDraftPhase, nu kollar vi på vilken spelare som började få kort i draft fasen.
+     * Efteråt ser vi till att båda de kortlekarna spelarna fått blir blandande.
+     * Sen drar båda spelarna tills deras hand är fylld.
+     * Till sist sätter vi gameState till "Play".
+     * @author Jim Ström
+     */
+    public void startPlayPhase(){
+        guiManager.switchToGameBoard();
+
+        if(gameState.getFirstDraftPlayer() == PlayerID.PLAYER_ONE){
+            gameState.setCurrentPlayer(PlayerID.PLAYER_TWO);
+        } else {
+            gameState.setCurrentPlayer(PlayerID.PLAYER_ONE);
+        }
+
+        Collections.shuffle(playerOne.getDeck());
+        Collections.shuffle(playerTwo.getDeck());
+        playerOne.drawUntilHandIsFull();
+        playerTwo.drawUntilHandIsFull();
+        gameState.setPhase(GamePhase.PLAY);
+
+        for(int i = 0; i < playerOne.getHand().size(); i++){
+            guiManager.renderCard(Zone.HAND, i, playerOne.getHand().get(i).getImagePath());
+        }
+
+        if(getSinglePlayer() && getCurrentPlayerId() == PlayerID.PLAYER_TWO){
+            PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+
+            pause.setOnFinished(e -> {
+                enemyAI.takeTurn();
+            });
+
+            pause.play();
+        }
+    }
+
+
     /**
      * Denna metoden är den som ska kallas när en spelare försöker välja ett kort.
      * Bör finnas någon form av callback eller "updateGUI" metod i botten av denna koden.
@@ -142,40 +199,135 @@ public class GameController implements GameStateListener {
      * @author Jim Ström
      */
     public void chooseCardPhase(int cardIndex){
-        if(gameState.getPhase() != GamePhase.DRAFT){return;}
-        if(cardIndex < 0 || cardIndex >= allCards.size()){return;}
+        if (gameState.getPhase() != GamePhase.DRAFT) return;
+        if (cardIndex < 0 || cardIndex >= allCards.length) return;
+        if (allCards[cardIndex] == null) return;
 
-        Card chosenCard = allCards.get(cardIndex);
-        gameState.getCurrentDraftPlayer().addCardToDeck(chosenCard);
-        allCards.remove(chosenCard);
-
-        if(allCards.isEmpty()){
-            startPlayPhase();
+        if (gameState.getCurrentPlayerId() != localPlayerRole) {
             return;
         }
 
-        gameState.switchDraftPlayer();
-        // Ska finnas en metod eller callback för att uppdatera GUI:et
+        Card chosenCard = allCards[cardIndex];
+        gameState.getCurrentPlayer().addCardToDeck(chosenCard);
+
+        System.out.println("Card added to players deck");
+
+        allCards[cardIndex] = null;
+
+        if (isAllCardsEmpty()) {
+            guiManager.updateGuiAfterCardIsPicked(cardIndex);
+
+            PauseTransition delay = new PauseTransition(Duration.millis(200));
+            delay.setOnFinished(e -> startPlayPhase());
+            delay.play();
+            return;
+        }
+
+        gameState.switchPlayer();
+        guiManager.updateGuiAfterCardIsPicked(cardIndex);
+
+        if(getSinglePlayer() == true){
+            computerChooseCardInSinglePayer();
+        }
     }
 
     /**
-     * Lik startDraftPhase, nu kollar vi på vilken spelare som började få kort i draft fasen.
-     * Efteråt ser vi till att båda de kortlekarna spelarna fått blir blandande.
-     * Sen drar båda spelarna tills deras hand är fylld.
-     * Till sist sätter vi gameState till "Play".
-     * @author Jim Ström
+     * Hjälp metod som bara kollar om allCards är tom på kortobjekt
+     *
+     * @return true || false
+     * @author Erik
      */
-    public void startPlayPhase(){
-        if(gameState.getFirstDraftPlayer() == PlayerID.PLAYER_ONE){
-            gameState.setCurrentPlayer(PlayerID.PLAYER_TWO);
-        }else{
-            gameState.setCurrentPlayer(PlayerID.PLAYER_ONE);
+    private boolean isAllCardsEmpty(){
+        for (Card c : allCards){
+            if (c != null) return false;
         }
-        Collections.shuffle(playerOne.getDeck());
-        Collections.shuffle(playerTwo.getDeck());
-        playerOne.drawUntilHandIsFull();
-        playerTwo.drawUntilHandIsFull();
-        gameState.setPhase(GamePhase.PLAY);
+        return true;
+    }
+
+
+    /**
+     * Okej detta blir ett långt javadoc men det behövs nog för att förklara denna metod.
+     *
+     * Metoden hanterar motståndarens kortval i singleplayer under draft-fasen.
+     * Metoden körs efter att spelaren själv har valt ett kort och ansvarar för att simulera att en dator väljer själv.
+     *
+     * Processen styrs av två tidsfördröjningar (PauseTransition) som separerar logiken i två steg.
+     *
+     * Sidenote om PauseTransition: Jag vill fördröja valet av kort och "animationerna" för att det ska vara lite mer äkta
+     * och lättare för användaren att förstå vad som händer så inte allting händer på ett ögonblick.
+     * Och man kan inte använde thread.sleep för då hänger hela programmet sig. Skillanden med thread.sleep och pausetransition är att
+     * thread.sleep får hela trådan att pause och det vill vi inte. PauseTransition är mer som en fördröjning av en aktivtet på javaFX tråden.
+     * Med det kan vi schemalägga upgifter.
+     *
+     * 1. Pick (fördröjning innan motståndaren väljer kort)
+     *    - Skapar en artificiell paus för att simulera "tänkandet".
+     *    - Efter fördröjningen skannas alla kort i pickCardViews.
+     *    - En lista av tillgängliga kort byggs genom att filtrera bort redan valda kort
+     *      (selectedCardsInPickCardphase).
+     *    - Ett slumpmässigt kort väljs från den kvarvarande listan.
+     *    - Om inga kort återstår avslutas metoden och turen återgår till spelaren.
+     *
+     * 2. Kortval och uppdatering av spelstatus
+     *    - Det valda ImageView-objektet markeras som valt och läggs till i selectedCardsInPickCardphase.
+     *    - Kortets visuella representation byts till baksidan (CardBACKSIDE.png) för att indikera att det är taget.
+     *    - Kortets HP-etikett uppdateras via changeHP för att reflektera att kortet inte längre är tillgängligt.
+     *    - Kortobjektet hämtas från ImageView via getUserData och skickas till GameController via addCardToOpponent,
+     *      vilket lägger till kortet i motståndarens deck och tar bort det från gemensamma kortpoolen.
+     *
+     * Viktigt:
+     * - All faktisk spel-logik (korttilldelning och borttagning från kortpool) hanteras i GameController.
+     * - gui-uppdateringar sker stegvis för att undvika att spelaren och motståndaren väljer samtidigt.
+     * - pick.play() är det som faktiaskt "startar" det som står inom .setOnFinished.
+     * Tänk det lite som en run metod, vi skapar tasken sen senare så startar vi den.
+     *
+     * @author Erik
+     */
+    private void computerChooseCardInSinglePayer() {
+
+        PauseTransition pick = new PauseTransition(Duration.seconds(0.5));
+
+        pick.setOnFinished(e -> {
+
+            List<Integer> availableIndexes = new ArrayList<>();
+
+            for (int i = 0; i < allCards.length; i++) {
+                if (allCards[i] != null) {
+                    availableIndexes.add(i);
+                }
+            }
+
+            if (availableIndexes.isEmpty()) {
+                return;
+            }
+
+            int randomIndex = (int) (Math.random() * availableIndexes.size());
+            int chosenIndex = availableIndexes.get(randomIndex);
+
+            Card card = allCards[chosenIndex];
+
+            if (card == null) {
+                return;
+            }
+
+            allCards[chosenIndex] = null;
+
+            playerTwo.addCardToDeck(card);
+
+            guiManager.updateGuiAfterCardIsPicked(chosenIndex);
+
+            if (isAllCardsEmpty()) {
+                guiManager.updateGuiAfterCardIsPicked(chosenIndex);
+
+                PauseTransition delay = new PauseTransition(Duration.millis(200));
+                delay.setOnFinished(action -> startPlayPhase());
+                delay.play();
+                return;
+            }
+
+            gameState.switchPlayer();
+        });
+
+        pick.play();
     }
 
 
@@ -198,9 +350,9 @@ public class GameController implements GameStateListener {
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
+        if (handIndex < 0 || handIndex >= currentPlayer.getHand().size()) {return false;}
         Card playedCard = currentPlayer.getHand().get(handIndex);
 
-        if (handIndex < 0 || handIndex >= currentPlayer.getHand().size()) {return false;}
         if(gameState.getCardsPlayedThisTurn() == gameState.getMaxCardsToPlayPerTurn()) {return false;}
         if (!board.placeCard(currentPlayerID, boardIndex, currentPlayer.getHand().get(handIndex))){return false;}
 
@@ -213,6 +365,11 @@ public class GameController implements GameStateListener {
         gameState.setCardsPlayedThisTurn(gameState.getCardsPlayedThisTurn() + 1);
         gameState.checkGameOver();
 
+        if(currentPlayerID == PlayerID.PLAYER_TWO){
+            guiManager.renderCard(Zone.OPPONENT_BOARD, boardIndex, playedCard.getImagePath());
+        }else {
+            guiManager.renderCard(Zone.PLAYER_BOARD, boardIndex, playedCard.getImagePath());
+        }
         addMassageInGui(1, currentPlayer, playedCard, null);
 
         if(gameState.isGameOver()){
@@ -439,79 +596,37 @@ public class GameController implements GameStateListener {
         return true;
     }
 
-    /**
-     * Metoden för att simulera single-player motståndarens omgång.
-     * Samma metoder som när vi vill lägga kort men med en while-loop som kontrollerar att där motståndaren vill lägga kort är en gilltig plats.
-     *
-     * @author Erik, Jim
-     */
-    private void enemyTurnInSinglePLayer() {
-
-        if (playerTwo.getHand().isEmpty()) {
-            playerTwo.drawUntilHandIsFull();
-        }
-
-        if (playerTwo.getHand().isEmpty()) {
-            return;
-        }
-
-        if (!board.hasEmptySlot(PlayerID.PLAYER_TWO)) {
-            return;
-        }
-
-        int handIndex =
-                (int) (Math.random() * playerTwo.getHand().size());
-
-        Card card = playerTwo.getHand().get(handIndex);
-
-
-        int boardIndex = 0;
-        for(int i = 0; i < board.getSlotsForPlayer(PlayerID.PLAYER_TWO).length; i++){
-            if (board.getSlotsForPlayer(PlayerID.PLAYER_TWO)[i] == null){
-                board.placeCard(PlayerID.PLAYER_TWO, i, card);
-                boardIndex = i;
-                guiManager.renderCard(
-                        Zone.OPPONENT_BOARD,
-                        boardIndex,
-                        card.getImagePath()
-                );
-                break;
-            }
-        }
-
-        playerTwo.getHand().remove(handIndex);
-
-        playerTwo.takeDamage(card.getCardCost());
-
-        card.setAsleep(true);
-
-
-        gameState.checkGameOver();
-
-        if(gameState.isGameOver()) {
-            gameOver();
-            return;
-        }
-    }
 
     /**
-     * Metod för att hantera end-turn och turbyte mellan spelare i mulitplayer.
-     * Ska fungera likannde som för singleplayer med små modifikationer.
+     * Vad som ska hända när knappen EndTurn klickas, jag har lagt till en extra GamePhase.
+     * Detta är så att om en spelare börjar spam klicka eller försöka attackera precis efter de klickat EndTurn.
+     * Så kommer de andra checks (som kollar vilken "Phase" det är) stoppa dem från att göra det tills endTurn är klar.
+     * Har skapat en ytterligare metod, "wakeUpCardsForPlayer" som väcker korten av den spelare som klickat endTurn.
      *
-     * @author Erik
+     * @author Jim, Erik
      */
-    public void endTurnMultiPLayer(){
+    public void endTurn(){
+        gameState.setPhase(GamePhase.END_TURN);
+        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
+        Player currentPlayer = gameState.getCurrentPlayer();
+        PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
-        enemyTurnInMultiPlayer();
-    }
+        currentPlayer.drawUntilHandIsFull();
+        board.wakeUpCardsForPlayer(currentPlayerID);
+        board.resetAttacksForPlayer(currentPlayerID);
+        gameState.setCardsPlayedThisTurn(0);
 
-    /**
-     * Metoden för att starta multi-player motståndarens omgång.
-     *
-     * @author Erik
-     */
-    public void enemyTurnInMultiPlayer(){
+        for(int i = 0; i < playerOne.getHand().size(); i++){
+            guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
+        }
 
+        gameState.switchTurn();
+
+        gameState.setPhase(GamePhase.PLAY);
+        if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
+            enemyAI.takeTurn();
+        }
+        addMassageInGui(3, currentPlayer, null, null);
     }
 
     /**
@@ -559,8 +674,8 @@ public class GameController implements GameStateListener {
      * @author Erik
      */
     public void bindCardsToView(ArrayList<ImageView> cardImageView) {
-        for (int i = 0; i < cardImageView.size(); i++) {
-            bind(cardImageView.get(i), allCards.get(i));
+        for (int i = 0; i < allCards.length; i++) {
+            bind(cardImageView.get(i), allCards[i]);
         }
     }
 
@@ -585,10 +700,6 @@ public class GameController implements GameStateListener {
      * @param card - kort-objektet
      * @author Erik
      */
-    public void addCardToPlayerOne(Card card){
-        playerOne.addCardToDeck(card);
-        allCards.remove(card);
-    }
 
     /**
      * Metod för att lägga till valt kort i motståndarens hand.
@@ -596,33 +707,10 @@ public class GameController implements GameStateListener {
      * Detta syns när man spelat en runda, trycker exitGame, sen försöker spela en runda till.
      * Vi måste lösa så att spelet återställs vid exit-game.
      *
-     * @param card - kort-objektet
+     //* @param card - kort-objektet
      * @author Erik
      */
-    public void addCardToOpponent(Card card){
-        playerTwo.addCardToDeck(card);
-        allCards.remove(card);
-    }
 
-
-    /**
-     * Startar spelet genom att låta spelarna dra sina initiala händer och renderar spelarens hand i gui.
-     *
-     * @auther: Erik
-     */
-    public void startGame() {
-        playerOne.drawUntilHandIsFull();
-        playerTwo.drawUntilHandIsFull();
-
-        guiManager.setYourTurn(true);
-        gameState.setCurrentPlayer(PlayerID.PLAYER_ONE); // Behövs för annars vet inte gameState vem det är.
-        // Ska settas på ett annat ställe sen.
-
-        for(int i = 0; i < playerOne.getHand().size(); i++){
-            guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
-        }
-        //guiManager.renderHand(playerOne.getHand());
-    }
     public PlayerID getCurrentPlayerId(){
         return gameState.getCurrentPlayerId();
     }
@@ -840,6 +928,11 @@ public class GameController implements GameStateListener {
     }
     @Override
     public void onGameStart(String role) {
+        if(role.equals("PLAYER_ONE")){
+            localPlayerRole = PlayerID.PLAYER_ONE;
+        } else {
+            localPlayerRole = PlayerID.PLAYER_TWO;
+        }
         // Servern berättar vilken roll vi har, "PLAYER_ONE" eller "PLAYER_TWO"
         // Spara det och skicka vidare till GUI så den vet vilken sida av brädet som är "min"
         localPlayerRole = PlayerID.valueOf(role);
@@ -983,6 +1076,13 @@ public class GameController implements GameStateListener {
             return board.getCard(PlayerID.PLAYER_TWO, index).getCardCurrentHP();
         }
 
+    }
+
+    private void setSinglePLayer(boolean singlePLayer) {
+        this.SinglePlayer=singlePLayer;
+    }
+    private boolean getSinglePlayer(){
+        return SinglePlayer;
     }
 
 }

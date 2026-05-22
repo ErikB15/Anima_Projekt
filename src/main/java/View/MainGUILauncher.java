@@ -7,19 +7,18 @@ import javafx.stage.Stage;
 
 public class MainGUILauncher extends Application {
 //Här sker den "riktiga" launchen av GUI. nu kan vi flytta på Main och lägga till mer launch där. Main bara "Kallar" på denna för att starta GUI.
+    @Override
+    public void start(Stage stage) throws Exception {
 
-    public void start(Stage stage){
-        try{
-           Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("StartScreen.fxml"));
-           Scene scene = new Scene(root);
-           stage.setScene(scene);
-           //stage.setFullScreen(true);
-           stage.setResizable(false);
-           stage.show();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/StartScreen.fxml"));
+        Parent root = loader.load();
 
-        } catch(Exception e){
-            System.out.println("nu är jag i MainGUILauncher");
-            e.printStackTrace();
-        }
+        GUIManager controller = loader.getController();
+        controller.setStage(stage);
+
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.show();
     }
 }
