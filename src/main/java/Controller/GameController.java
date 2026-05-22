@@ -471,9 +471,7 @@ public class GameController implements GameStateListener {
         gameState.switchTurn();
 
         gameState.setPhase(GamePhase.PLAY);
-        if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
-            //enemyTurnInSinglePLayer(); funkar ej längre då jim tog bort
-        }
+
         addMassageInGui(3, currentPlayer, null, null);
     }
 
@@ -690,20 +688,6 @@ public class GameController implements GameStateListener {
         view.setUserData(card);
     }
 
-
-    /**
-     * Metod för att lägga till valt kort i spelarens hand.
-     * Delen med "NULL CARD" är för att kolla om det finns ett kort eller inte i bildramen.
-     * Detta syns när man spelat en runda, trycker exitGame, sen försöker spela en runda till.
-     * Vi måste lösa så att spelet återställs vid exit-game.
-     *
-     * @param card - kort-objektet
-     * @author Erik
-     */
-    //public void addCardToPlayerOne(Card card){
-        //playerOne.addCardToDeck(card);
-       // allCards.remove(card);
-    //}
 
     /**
      * Metod för att lägga till valt kort i motståndarens hand.
