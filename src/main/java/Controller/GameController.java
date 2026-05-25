@@ -154,6 +154,7 @@ public class GameController implements GameStateListener {
      */
     public void startPlayPhase(){
         guiManager.switchToGameBoard();
+        guiManager.changePlayerHP();
 
         if(gameState.getFirstDraftPlayer() == PlayerID.PLAYER_ONE){
             gameState.setCurrentPlayer(PlayerID.PLAYER_TWO);
@@ -376,7 +377,7 @@ public class GameController implements GameStateListener {
             gameOver();
             return true;
         }
-
+        guiManager.changePlayerHP();
         return true;
     }
 
@@ -582,6 +583,7 @@ public class GameController implements GameStateListener {
 
         defenderPlayer.takeDamage(attacker.getCardAD());
         attacker.setHasAttackedThisTurn(true);
+        guiManager.changePlayerHP();
 
         gameState.checkGameOver();
 
@@ -1071,6 +1073,20 @@ public class GameController implements GameStateListener {
     }
     private boolean getSinglePlayer(){
         return SinglePlayer;
+    }
+
+    /**
+     * Getter för playerHP. Används av GUI för att displaya player ID på spelplan
+     * @param player Om spelare ett eller två ska hämtas
+     * @return en integer med spelarens HP
+     * @author Elna N.
+     */
+    public int getPlayerHP(int player){
+        if(player == 1){
+           return playerOne.getHp();
+        } else{
+            return playerTwo.getHp();
+        }
     }
 
 }

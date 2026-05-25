@@ -69,6 +69,9 @@ public class GUIManager {
     @FXML private Label hp_9;
     @FXML private Label hp_10;
     @FXML private Label hp_11;
+    @FXML private Label playerHP_1;
+    @FXML private Label playerHP_2;
+
 
 
     //Array för att lägga till alla Labels för Hp i i
@@ -955,6 +958,12 @@ public class GUIManager {
         }
 
     }
+
+    public void changePlayerHP(){
+        playerHP_1.setText(String.valueOf(gameController.getPlayerHP(1)));
+        playerHP_2.setText(String.valueOf(gameController.getPlayerHP(2)));
+    }
+
 
     public int getHPForCard(int index, Zone zone){
 
