@@ -1,5 +1,8 @@
 package Controller;
 
+import com.codedisaster.steamworks.SteamUser;
+import com.codedisaster.steamworks.SteamUserCallback;
+import com.codedisaster.steamworks.SteamAuthTicket;
 import com.codedisaster.steamworks.SteamAPI;
 import com.codedisaster.steamworks.SteamException;
 import com.codedisaster.steamworks.SteamFriends;
@@ -84,6 +87,9 @@ public class ApiController {
             // Loop until the game closes
             while (running && SteamAPI.isSteamRunning()) {
                 SteamAPI.runCallbacks();
+
+                readPackets();
+
                 try {
                     Thread.sleep(16);
                 } catch (InterruptedException e) {
@@ -104,6 +110,21 @@ public class ApiController {
     }
 
 
+
+    public static void playAgainstMyself() {
+        // Replace this number with SteamID64
+        // KEEP the "L" at the  end so Java knows it's a long data type
+        long myOwnSteamID64 = 76561198250604866L; 
+        
+        // Create the SteamID object from your number
+        opponentSteamID = com.codedisaster.steamworks.SteamID.createFromNativeHandle(myOwnSteamID64);
+        
+        System.out.println("Loopback mode: Opponent set to self! ID: " + opponentSteamID.getAccountID());
+        
+        // Trigger the handshake to open the connection
+        onConnectionHandshakeComplete();
+    }
+    
     /**
      * Function to send a packet to the opponent
      * @param message The message that should be sent to the opponent
@@ -120,7 +141,7 @@ public class ApiController {
                 networking.sendP2PPacket(opponentSteamID, buffer, SteamNetworking.P2PSend.Reliable, 0);
                 
                 if (!message.equals("PING")) {
-                    System.out.println("-> Skickade Paket: " + message);
+                    System.out.println("--> Sent Packet " + message);
                 }
             } catch (SteamException e) {
                 System.out.println("Misslyckades att skicka P2P-paket.");
@@ -252,6 +273,7 @@ public void onFavoritesListAccountsUpdated(SteamResult result) {
 
         // Skicka en initial bakgrunds-ping för att öppna P2P-anslutningen
         sendPacket("PING");
+        sendPacket("buh");
     }
 
 
@@ -327,4 +349,9 @@ public void onFavoritesListAccountsUpdated(SteamResult result) {
         return isSteamInitialized;
 
     }
+
+    public static boolean isHost() { 
+        return isHost; 
+    }
+
 }

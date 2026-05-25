@@ -21,6 +21,7 @@ public class MainGUILauncher extends Application {
            //stage.setFullScreen(true);
            stage.setResizable(false);
            stage.show();
+           
 
 
         } catch(Exception e){

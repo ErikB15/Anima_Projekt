@@ -154,6 +154,10 @@ public class GUIManager {
             stage.setResizable(false);
             stage.show();
 
+            for(int i = 0; i < 10; i++ ){
+            ApiController.sendPacket("buh: " + i);  // test
+    }
+
             controller.sendMessageToConsole();
 
         } catch(Exception e){
@@ -335,6 +339,7 @@ public class GUIManager {
             isYourTurn = false;
         }
     }
+    
     /**
      * Skickar varning till gui, används ej.
      * @param message
@@ -651,4 +656,6 @@ public class GUIManager {
             pickCardTurn.setText("Player 2");
         }
     }
+    
+    
 }
