@@ -722,6 +722,49 @@ public class GUIManager {
         isYourTurn = true;
     }
 
+    /**
+     * Ritar om spelarens hand med givna bildvägar
+     * Listan kan ha 0-3 element. Tomma platser rensar bilden där.
+     * HP läses från lokal model (synkad från server via Controller).
+     *
+     * @param imagePaths bildvägar för korten i handen
+     * @author Leo
+     */
+    public void updateMyHand(ArrayList<String> imagePaths) {
+        for (int i = 0; i < 3; i++) {
+            String path = (i < imagePaths.size()) ? imagePaths.get(i) : null;
+            renderCard(Zone.HAND, i, path);
+        }
+    }
+
+    /**
+     * Ritar om min sida av brädet.
+     * Listan ska ha 4 element. Null per plats = tom plats.
+     *
+     * @param imagePaths bildvägar för korten på brädet (4 element)
+     * @author Leo
+     */
+    public void updateMyBoard(ArrayList<String> imagePaths) {
+        for (int i = 0; i < 4; i++) {
+            String path = (i < imagePaths.size()) ? imagePaths.get(i) : null;
+            renderCard(Zone.PLAYER_BOARD, i, path);
+        }
+    }
+
+    /**
+     * Ritar om motståndarens sida av brädet.
+     * Listan ska ha 4 element. Null per plats = tom plats.
+     *
+     * @param imagePaths bildvägar för motståndarens kort (4 element)
+     * @author Leo
+     */
+    public void updateOpponentBoard(ArrayList<String> imagePaths) {
+        for (int i = 0; i < 4; i++) {
+            String path = (i < imagePaths.size()) ? imagePaths.get(i) : null;
+            renderCard(Zone.OPPONENT_BOARD, i, path);
+        }
+    }
+
     public void updateBoard(String json) {
         System.out.println("Spelläge: " + json);
         // Tar emot hela spelläget från servern och ritar om behöver Gson import
@@ -993,6 +1036,33 @@ public class GUIManager {
     // Ska anropas när det är din tur att välja kort i draft. Utan denna kan spelaren aldrig klicka på ett kort
     public void enableDraftPicking() {
         isDraftTurn = true;
+    }
+
+    /**
+     * Uppdaterar PickCardScreen så att kort som inte finns kvar i poolen
+     * visas med baksidan vilket menas, någon har valt dem
+     *
+     * Kortens ID hämtas från userData (sätts av bindCardsToView).
+     * Om kortets ID inte finns i remainingCardIds då betyder det någon har valt det.
+     *
+     * @param remainingCardIds id för kort som FORTFARANDE finns i poolen
+     * @author Leo
+     */
+    public void updateDraftPool(java.util.HashSet<Integer> remainingCardIds) {
+        if (scene == null) return;
+
+        for (int i = 0; i <= 11; i++) {
+            ImageView view = (ImageView) scene.lookup("#card_" + i);
+            if (view == null) continue;
+
+            Card card = (Card) view.getUserData();
+            if (card == null) continue;
+
+            if (!remainingCardIds.contains(card.getCardID())) {
+                // Kortet är valt, visa baksidan
+                view.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+            }
+        }
     }
 
     public void addPickCardViews(Scene scene){
