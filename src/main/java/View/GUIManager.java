@@ -186,6 +186,7 @@ public class GUIManager {
             stage.show();
 
             controller.sendMessageToConsole();
+            openMultiPlayer();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -1086,5 +1087,15 @@ public class GUIManager {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public void joinButtonPressed(MouseEvent event){
+
+        sendMessageThroughGUI("You Pressed Join!");
+    }
+
+    public void hostButtonPressed(MouseEvent event){
+
+        sendMessageThroughGUI("You Pressed Host!");
     }
 }
