@@ -7,7 +7,7 @@ import Model.PlayerID;
 
 import java.util.ArrayList;
 
-public class Poison extends Effect{
+public class    Poison extends Effect{
     private GameController gameController;
 
     /**
