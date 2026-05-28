@@ -35,8 +35,6 @@
       <ImageView fx:id="p2board_2" fitHeight="152.0" fitWidth="110.0" layoutX="260.0" layoutY="111.0" onMouseClicked="#pickedCardToAttack" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="p2board_1" fitHeight="152.0" fitWidth="120.0" layoutX="164.0" layoutY="111.0" onMouseClicked="#pickedCardToAttack" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="p2board_0" fitHeight="152.0" fitWidth="96.0" layoutX="66.0" layoutY="110.0" onMouseClicked="#pickedCardToAttack" pickOnBounds="true" preserveRatio="true" />
-
-      <ImageView fitHeight="130.0" fitWidth="90.0" layoutX="121.0" layoutY="-24.0" pickOnBounds="true" preserveRatio="true" rotate="-160.5" />
       <ImageView fitHeight="130.0" fitWidth="90.0" layoutX="217.0" layoutY="-24.0" pickOnBounds="true" preserveRatio="true" rotate="10.5">
          <image>
              <Image url="@CardBACKSIDE.png" />
@@ -115,6 +113,16 @@
       <Label fx:id="hp_10" layoutX="430.0" layoutY="127.0" prefHeight="17.0" prefWidth="19.0">
          <font>
             <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="playerHP_2" layoutX="124.0" prefHeight="58.0" prefWidth="51.0" text="10">
+         <font>
+            <Font name="System Bold" size="40.0" />
+         </font>
+      </Label>
+      <Label fx:id="playerHP_1" layoutX="87.0" layoutY="470.0" prefHeight="58.0" prefWidth="51.0" text="10">
+         <font>
+            <Font name="System Bold" size="40.0" />
          </font>
       </Label>
    </children>

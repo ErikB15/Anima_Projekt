@@ -69,6 +69,9 @@ public class GUIManager {
     @FXML private Label hp_9;
     @FXML private Label hp_10;
     @FXML private Label hp_11;
+    @FXML private Label playerHP_1;
+    @FXML private Label playerHP_2;
+
 
 
     //Array för att lägga till alla Labels för Hp i i
@@ -183,6 +186,7 @@ public class GUIManager {
             stage.show();
 
             controller.sendMessageToConsole();
+            openMultiPlayer();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -719,6 +723,49 @@ public class GUIManager {
         isYourTurn = true;
     }
 
+    /**
+     * Ritar om spelarens hand med givna bildvägar
+     * Listan kan ha 0-3 element. Tomma platser rensar bilden där.
+     * HP läses från lokal model (synkad från server via Controller).
+     *
+     * @param imagePaths bildvägar för korten i handen
+     * @author Leo
+     */
+    public void updateMyHand(ArrayList<String> imagePaths) {
+        for (int i = 0; i < 3; i++) {
+            String path = (i < imagePaths.size()) ? imagePaths.get(i) : null;
+            renderCard(Zone.HAND, i, path);
+        }
+    }
+
+    /**
+     * Ritar om min sida av brädet.
+     * Listan ska ha 4 element. Null per plats = tom plats.
+     *
+     * @param imagePaths bildvägar för korten på brädet (4 element)
+     * @author Leo
+     */
+    public void updateMyBoard(ArrayList<String> imagePaths) {
+        for (int i = 0; i < 4; i++) {
+            String path = (i < imagePaths.size()) ? imagePaths.get(i) : null;
+            renderCard(Zone.PLAYER_BOARD, i, path);
+        }
+    }
+
+    /**
+     * Ritar om motståndarens sida av brädet.
+     * Listan ska ha 4 element. Null per plats = tom plats.
+     *
+     * @param imagePaths bildvägar för motståndarens kort (4 element)
+     * @author Leo
+     */
+    public void updateOpponentBoard(ArrayList<String> imagePaths) {
+        for (int i = 0; i < 4; i++) {
+            String path = (i < imagePaths.size()) ? imagePaths.get(i) : null;
+            renderCard(Zone.OPPONENT_BOARD, i, path);
+        }
+    }
+
     public void updateBoard(String json) {
         System.out.println("Spelläge: " + json);
         // Tar emot hela spelläget från servern och ritar om behöver Gson import
@@ -956,6 +1003,12 @@ public class GUIManager {
 
     }
 
+    public void changePlayerHP(){
+        playerHP_1.setText(String.valueOf(gameController.getPlayerHP(1)));
+        playerHP_2.setText(String.valueOf(gameController.getPlayerHP(2)));
+    }
+
+
     public int getHPForCard(int index, Zone zone){
 
         if(zone == Zone.HAND){
@@ -986,6 +1039,33 @@ public class GUIManager {
         isDraftTurn = true;
     }
 
+    /**
+     * Uppdaterar PickCardScreen så att kort som inte finns kvar i poolen
+     * visas med baksidan vilket menas, någon har valt dem
+     *
+     * Kortens ID hämtas från userData (sätts av bindCardsToView).
+     * Om kortets ID inte finns i remainingCardIds då betyder det någon har valt det.
+     *
+     * @param remainingCardIds id för kort som FORTFARANDE finns i poolen
+     * @author Leo
+     */
+    public void updateDraftPool(java.util.HashSet<Integer> remainingCardIds) {
+        if (scene == null) return;
+
+        for (int i = 0; i <= 11; i++) {
+            ImageView view = (ImageView) scene.lookup("#card_" + i);
+            if (view == null) continue;
+
+            Card card = (Card) view.getUserData();
+            if (card == null) continue;
+
+            if (!remainingCardIds.contains(card.getCardID())) {
+                // Kortet är valt, visa baksidan
+                view.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+            }
+        }
+    }
+
     public void addPickCardViews(Scene scene){
         pickCardViews.add((ImageView) scene.lookup("#card_0"));
         pickCardViews.add((ImageView) scene.lookup("#card_1"));
@@ -1007,5 +1087,15 @@ public class GUIManager {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public void joinButtonPressed(MouseEvent event){
+
+        sendMessageThroughGUI("You Pressed Join!");
+    }
+
+    public void hostButtonPressed(MouseEvent event){
+
+        sendMessageThroughGUI("You Pressed Host!");
     }
 }

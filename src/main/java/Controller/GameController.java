@@ -154,6 +154,7 @@ public class GameController implements GameStateListener {
      */
     public void startPlayPhase(){
         guiManager.switchToGameBoard();
+        guiManager.changePlayerHP();
 
         if(gameState.getFirstDraftPlayer() == PlayerID.PLAYER_ONE){
             gameState.setCurrentPlayer(PlayerID.PLAYER_TWO);
@@ -376,7 +377,7 @@ public class GameController implements GameStateListener {
             gameOver();
             return true;
         }
-
+        guiManager.changePlayerHP();
         return true;
     }
 
@@ -582,6 +583,7 @@ public class GameController implements GameStateListener {
 
         defenderPlayer.takeDamage(attacker.getCardAD());
         attacker.setHasAttackedThisTurn(true);
+        guiManager.changePlayerHP();
 
         gameState.checkGameOver();
 
@@ -799,7 +801,8 @@ public class GameController implements GameStateListener {
 
     /**
      * Anropas av nätverket när spelläget uppdaterats.
-     * Vidarebefordrar JSON strängen till GUIManager som ritar om brädet.
+     * Parsar Json till gamestate, sunkar lokal model, och anropar
+     * specifika gui metoder med färdig data.
      *
      * @param j det uppdaterade spelläget som JSON sträng
      * @author Leo
@@ -812,12 +815,80 @@ public class GameController implements GameStateListener {
             GameState serverState = new com.google.gson.Gson().fromJson(j, GameState.class);
             // 2. Synca lokal hand och bräde mot servern (kritiskt här)
             syncLocalHandFromServer(serverState);
+            updateGuiFromServerState(serverState);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // 3. Skicka vidare till GUI för rendering
-        guiManager.updateBoard(j);
     });
+    }
+
+    /**
+     * Bryter ner serverns spelläge i specifika delar och anropar rätt gui metod för varje.
+     * Hanterar både DRAFT fasen (uppdatera kortpool) och PLAY fasen (rita bräde + hand).
+     *
+     * @param state det auktoritativa spelläget från servern
+     * @author Leo
+     */
+    private void updateGuiFromServerState(GameState state) {
+        if (state == null || localPlayerRole == null) return;
+
+        // DRAFT fas: skicka över id för kvarvarande kort i poolen
+        if (state.getPhase() == GamePhase.DRAFT) {
+            java.util.HashSet<Integer> remainingIds = new java.util.HashSet<>();
+            if (state.getDraftPool() != null) {
+                for (Card c : state.getDraftPool()) {
+                    remainingIds.add(c.getCardID());
+                }
+            }
+            guiManager.updateDraftPool(remainingIds);
+            return;
+        }
+
+        // PLAY fas: rita bräde och hand
+        if (state.getPhase() != GamePhase.PLAY || state.getBoard() == null) return;
+
+        Card[] mySlots = state.getBoard().getSlotsForPlayer(localPlayerRole);
+        PlayerID opponentRole;
+        if (localPlayerRole == PlayerID.PLAYER_ONE) {
+            opponentRole = PlayerID.PLAYER_TWO;
+        } else {
+            opponentRole = PlayerID.PLAYER_ONE;
+        }
+        Card[] opponentSlots = state.getBoard().getSlotsForPlayer(opponentRole);
+
+        ArrayList<String> mySlotsPaths = new ArrayList<>();
+        for (Card c : mySlots) {
+            if (c != null) {
+                mySlotsPaths.add(c.getImagePath());
+            } else {
+                mySlotsPaths.add(null);
+            }
+        }
+
+        ArrayList<String> opponentSlotsPaths = new ArrayList<>();
+        for (Card c : opponentSlots) {
+            if (c != null) {
+                opponentSlotsPaths.add(c.getImagePath());
+            } else {
+                opponentSlotsPaths.add(null);
+            }
+        }
+
+        Player myPlayer;
+        if (localPlayerRole == PlayerID.PLAYER_ONE) {
+            myPlayer = state.getPlayerOne();
+        } else {
+            myPlayer = state.getPlayerTwo();
+        }
+
+        ArrayList<String> handPaths = new ArrayList<>();
+        for (Card c : myPlayer.getHand()) {
+            handPaths.add(c.getImagePath());
+        }
+
+        guiManager.updateMyHand(handPaths);
+        guiManager.updateMyBoard(mySlotsPaths);
+        guiManager.updateOpponentBoard(opponentSlotsPaths);
     }
 
     /**
@@ -1071,6 +1142,20 @@ public class GameController implements GameStateListener {
     }
     private boolean getSinglePlayer(){
         return SinglePlayer;
+    }
+
+    /**
+     * Getter för playerHP. Används av GUI för att displaya player ID på spelplan
+     * @param player Om spelare ett eller två ska hämtas
+     * @return en integer med spelarens HP
+     * @author Elna N.
+     */
+    public int getPlayerHP(int player){
+        if(player == 1){
+           return playerOne.getHp();
+        } else{
+            return playerTwo.getHp();
+        }
     }
 
 }
