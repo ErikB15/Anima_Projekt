@@ -36,7 +36,7 @@ public class Card {
         this.imagePath = imagePath;
         this.cardCurrentHP = cardMaxHP;
 
-        cardCost = Math.round((cardAD * 2 + cardMaxHP) / 5f);
+        cardCost = (Math.round((float)(cardAD + cardMaxHP) / 4));
         // Temporär formel som lagts till endast för testning.
     }
 
@@ -64,7 +64,7 @@ public class Card {
 
 
     /**
-     * Normaltvist försöker jag göra en kommentar på allting.
+     * Normaltvis försöker jag göra en kommentar på allting.
      * Men om ni skrollar ner lite, tror jag ni förstår varför jag inte gör en kommentar på allting under.
      * Kommer det in att vi måste göra kommentarer på allt? Då får jag göra det men i nuläget skippar vi detta.
      * Massa getters och setters för alla de olika variablerna som Card klassen innehåller.

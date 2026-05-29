@@ -2,7 +2,6 @@ package Model;
 import Controller.GameController;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class EnemyAI {
 
@@ -21,91 +20,9 @@ public class EnemyAI {
      * @author Jim Ström
      */
     public void takeTurn() {
-        if(canIKillPlayer()){return;}
-        amIGonnaDie();
         playCards();
         attack();
         controller.endTurn();
-    }
-
-
-    /**
-     *
-     */
-    public boolean canIKillPlayer(){
-        ArrayList<Integer> computerIndexCards = getValidAttackers();
-        if(computerIndexCards.isEmpty()){return false;}
-        int damage = 0;
-        int playerHP = gameState.getPlayerOne().getHp();
-        for(int i = 0; i < computerIndexCards.size(); i++){
-            damage += gameState.getBoard().getCard(PlayerID.PLAYER_TWO, computerIndexCards.get(i)).getCardAD();
-        }
-        if(damage >= playerHP){
-            for(int i = 0; i < computerIndexCards.size(); i++){
-                controller.attackPlayer(computerIndexCards.get(i));
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     *
-     */
-    public void amIGonnaDie(){
-        ArrayList<Integer> playerIndexCards = getValidTargets();
-        ArrayList<Integer> computerIndexCards = getValidAttackers();
-
-        if(playerIndexCards.isEmpty()){return;}
-
-        int damage = 0;
-        int computerHP = gameState.getPlayerTwo().getHp();
-
-        for(int i = 0; i < playerIndexCards.size(); i++){
-            damage += gameState.getBoard().getCard(PlayerID.PLAYER_ONE, playerIndexCards.get(i)).getCardAD();
-        }
-
-        if(!(damage >= computerHP)){return;}
-        if(computerIndexCards.isEmpty()){return;}
-
-        int highestDamage = -1;
-        int indexOfHighestDamage = -1;
-
-        int secondHighestDamage = -1;
-        int indexOfSecondHighestDamage = -1;
-
-        for (int i = 0; i < playerIndexCards.size();i++){
-            int attack = gameState.getBoard().getCard(PlayerID.PLAYER_ONE,playerIndexCards.get(i)).getCardAD();
-            if (attack > highestDamage){
-                secondHighestDamage = highestDamage;
-                indexOfSecondHighestDamage = indexOfHighestDamage;
-                highestDamage = attack;
-                indexOfHighestDamage = playerIndexCards.get(i);
-            } else if (attack > secondHighestDamage) {
-                secondHighestDamage = attack;
-                indexOfSecondHighestDamage = playerIndexCards.get(i);
-            }
-        }
-
-
-
-        for (int i = 0; i < computerIndexCards.size();i++){
-            Card highDMGCard = gameState.getBoard().getCard(PlayerID.PLAYER_ONE,indexOfHighestDamage);
-            Card secondHighDMGCard = null;
-            if(indexOfSecondHighestDamage != -1){
-                secondHighDMGCard = gameState.getBoard().getCard(PlayerID.PLAYER_ONE, indexOfSecondHighestDamage);
-            }
-
-            if(highDMGCard != null){
-            controller.attackCard(computerIndexCards.get(i),indexOfHighestDamage);
-            continue;
-            }
-
-            if(secondHighDMGCard != null){
-                controller.attackCard(computerIndexCards.get(i),indexOfSecondHighestDamage);
-            }
-        }
-
     }
 
 
@@ -124,14 +41,8 @@ public class EnemyAI {
             if (playerTwo.getHand().isEmpty()) {playerTwo.drawUntilHandIsFull();}
             if (playerTwo.getHand().isEmpty() || !board.hasEmptySlot(PlayerID.PLAYER_TWO)) {break;}
 
-            ArrayList<Integer> affordableCards = new ArrayList<>();
-            for(int k = 0; k < playerTwo.getHand().size();k++){
-                if(playerTwo.getHp() > playerTwo.getHand().get(k).getCardCost()){
-                    affordableCards.add(k);
-                }
-            }
-            if (affordableCards.isEmpty()){break;}
-            int handIndex = affordableCards.get((int)(Math.random() * affordableCards.size()));
+            int handIndex = (int) (Math.random() * playerTwo.getHand().size());
+
             for(int k = 0; k < board.getSlotsForPlayer(PlayerID.PLAYER_TWO).length; k++){
                 if (board.getSlotsForPlayer(PlayerID.PLAYER_TWO)[k] == null){
                     controller.placeCard(handIndex, k);
@@ -154,11 +65,24 @@ public class EnemyAI {
             ArrayList<Integer> validAttackers = getValidAttackers();
             ArrayList<Integer> validTargets = getValidTargets();
 
-            if(validAttackers.isEmpty()){return;}
-            int attackerIndex = validAttackers.get((int)(Math.random() * validAttackers.size()));
-            if(validTargets.isEmpty()){controller.attackPlayer(attackerIndex);
+            if(validAttackers.isEmpty()){
+                return;
+            }
+            int attackerIndex =
+                    validAttackers.get(
+                            (int)(Math.random() * validAttackers.size())
+                    );
+
+            if(validTargets.isEmpty()){
+                controller.attackPlayer(attackerIndex);
+
             } else {
-                int defenderIndex = validTargets.get((int)(Math.random() * validTargets.size()));
+
+                int defenderIndex =
+                        validTargets.get(
+                                (int)(Math.random() * validTargets.size())
+                        );
+
                 controller.attackCard(attackerIndex, defenderIndex);
             }
         }
@@ -169,8 +93,12 @@ public class EnemyAI {
         ArrayList<Integer> validAttackers = new ArrayList<>();
         Card[] computerCardsOnBoard = gameState.getBoard().getSlotsForPlayer(PlayerID.PLAYER_TWO);
         for(int i = 0; i < computerCardsOnBoard.length; i++){
-            if (computerCardsOnBoard[i] != null && !computerCardsOnBoard[i].getAsleep() &&
-                    !computerCardsOnBoard[i].getHasAttackedThisTurn()) {validAttackers.add(i);}
+            if (computerCardsOnBoard[i] != null &&
+                    !computerCardsOnBoard[i].getAsleep() &&
+                    !computerCardsOnBoard[i].getHasAttackedThisTurn())
+            {
+                validAttackers.add(i);
+            }
         }
         return validAttackers;
     }

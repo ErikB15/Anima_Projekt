@@ -88,29 +88,30 @@ public class GameController implements GameStateListener {
      * @author Erik
      */
     public void addAllCards(){
-        allCards[0] = new Card("Kenneth", 10,15,1,poison, "/CardPictures/Card1.png");
-        allCards[1] = new Card("KnifeGuy", 13,12,2,poison, "/CardPictures/Card2.png");
-        allCards[2] = new Card("Harrold", 1,30,3,poison, "/CardPictures/Card3.png");
-        allCards[3] = new Card("George", 5,20,4,poison, "/CardPictures/Card4.png");
-        allCards[4] = new Card("Monkey", 30,5,5,taunt, "/CardPictures/Card5.png");
-        allCards[5] = new Card("Wizard", 30,5,6,poison, "/CardPictures/Card6.png");
-        allCards[6] = new Card("blockHead", 1,35,7,shield, "/CardPictures/Card7.png");
-        allCards[7] = new Card("Twins", 10,17,8,dubbelHit, "/CardPictures/Card8.png");
-        allCards[8] = new Card("ChillGuy", 5,22,9,heal, "/CardPictures/Card9.png");
-        allCards[9] = new Card("Bob", 15,8,10,buff, "/CardPictures/Card10.png");
-        allCards[10] = new Card("Kick", 13,13,11,poison, "/CardPictures/Card11.png");
-        allCards[11] = new Card("Pernilla", 2,28,12,poison, "/CardPictures/Card12.png");
+        allCards[0] = new Card("Kenneth", 40,40,1,poison, "/CardPictures/Card1.png");
+        allCards[1] = new Card("KnifeGuy", 40,40,2,poison, "/CardPictures/Card2.png");
+        allCards[2] = new Card("Harrold", 40,40,3,poison, "/CardPictures/Card3.png");
+        allCards[3] = new Card("George", 40,40,4,poison, "/CardPictures/Card4.png");
+        allCards[4] = new Card("Monkey", 40,50,5,taunt, "/CardPictures/Card5.png");
+        allCards[5] = new Card("Wizard", 40,40,6,poison, "/CardPictures/Card6.png");
+        allCards[6] = new Card("blockHead", 40,30,7,shield, "/CardPictures/Card7.png");
+        allCards[7] = new Card("Twins", 40,34,8,dubbelHit, "/CardPictures/Card8.png");
+        allCards[8] = new Card("ChillGuy", 40,20,9,heal, "/CardPictures/Card9.png");
+        allCards[9] = new Card("Bob", 40,25,10,buff, "/CardPictures/Card10.png");
+        allCards[10] = new Card("Kick", 40,40,11,poison, "/CardPictures/Card11.png");
+        allCards[11] = new Card("Pernilla", 40,40,12,poison, "/CardPictures/Card12.png");
     }
 
 
     public void startSingleplayer() {
-        startDraftPhase();
-
         localPlayerRole = PlayerID.PLAYER_ONE;
         guiManager.setLocalRole(PlayerID.PLAYER_ONE);
-        setSinglePLayer(true);
+        startDraftPhase();
+        // Metoden under ska anropas här, men går inte för den behöver ett mouse event.
+        // Metoden under kommer i framtiden antagligen bara anropas via controllern, så hade nog-
+        // varit bäst om den inte behövde en mouse event.
         guiManager.switchToPickCardScreen();
-
+        setSinglePLayer(true);
     }
 
     public void startMultiplayer(){
@@ -210,6 +211,8 @@ public class GameController implements GameStateListener {
 
         Card chosenCard = allCards[cardIndex];
         gameState.getCurrentPlayer().addCardToDeck(chosenCard);
+
+        System.out.println("Card added to players deck");
 
         allCards[cardIndex] = null;
 
@@ -391,6 +394,8 @@ public class GameController implements GameStateListener {
 
         Player currentPlayer = gameState.getCurrentPlayer();
 
+        System.out.println("Current player: " + gameState.getCurrentPlayerId());
+
         if (!cardPicked || !spotPicked) {
             return;
         }
@@ -425,6 +430,7 @@ public class GameController implements GameStateListener {
 
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
+            System.out.println();
         }
 
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
@@ -452,6 +458,7 @@ public class GameController implements GameStateListener {
         // SLUT NYTT för multiplayer
 
         gameState.setPhase(GamePhase.END_TURN);
+        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
@@ -486,6 +493,7 @@ public class GameController implements GameStateListener {
         }
         // Slut på nytt
 
+        System.out.println("Innan gamestate Checken");
         if (gameState.getPhase() != GamePhase.PLAY) return false;
 
         PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
@@ -623,13 +631,13 @@ public class GameController implements GameStateListener {
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
         }
         addMassageInGui(3, currentPlayer, null, null);
+
         gameState.switchTurn();
 
         gameState.setPhase(GamePhase.PLAY);
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             enemyAI.takeTurn();
         }
-        guiManager.displayTurnRound();
     }
 
     /**
