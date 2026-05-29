@@ -400,38 +400,34 @@ public class GUIManager {
         }
 
         if(isLocalPlayersTurn()) {
-            if (gameController.isCardPicked()) {
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Warning!");
-                alert.setContentText("You have already chose a card!");
-                alert.show();
+            if (gameController.isCardPicked()) {
+                sendMessageThroughGUI("You have already picked a card. This will change your pick.");
+            }
+
+            String cardID = event.getPickResult().getIntersectedNode().getId();
+
+            String[] splitID;
+
+            splitID = cardID.split("_");
+
+            int cardIDInt = Integer.parseInt(splitID[1]);
+
+            System.out.println(cardIDInt);
+
+            if ((cardIDInt < 3) && (cardIDInt >= 0)) {
+
+                gameController.setIndexCardOnHandToMove(cardIDInt);
+                cardFromHandPicked = true;
 
             } else {
 
-                String cardID = event.getPickResult().getIntersectedNode().getId();
-
-                String[] splitID;
-
-                splitID = cardID.split("_");
-
-                int cardIDInt = Integer.parseInt(splitID[1]);
-
-                System.out.println(cardIDInt);
-
-                if ((cardIDInt < 3) && (cardIDInt >= 0)) {
-
-                    gameController.setIndexCardOnHandToMove(cardIDInt);
-                    cardFromHandPicked = true;
-
-                } else {
-
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Warning!");
-                    alert.setContentText("INVALID NUMBER");
-                    alert.show();
-                }
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("INVALID NUMBER");
+                alert.show();
             }
+
         }
     }
 
