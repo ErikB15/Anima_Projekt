@@ -167,15 +167,13 @@ public class GUIManager {
      * @author: Erik, Elna
      */
     @FXML
-    public void switchToConnectScreen(MouseEvent event){
+    public void switchToConnectScreen(){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ConnectScreen.fxml"));
-            root = loader.load();
+            Parent root = loader.load();
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
-
-            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             controller.setStage(stage);
 
             gameController.setGuiManager(controller);
@@ -187,6 +185,8 @@ public class GUIManager {
 
             controller.sendMessageToConsole();
             openMultiPlayer();
+
+            gameController.set();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -347,7 +347,6 @@ public class GUIManager {
     public void switchToGameBoard() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameBoard.fxml"));
-
             Parent root = loader.load();
 
             GUIManager controller = loader.getController();
