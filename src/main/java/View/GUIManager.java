@@ -854,7 +854,7 @@ public class GUIManager {
                 //Board board = gameState.getBoard();
 
                 cardToAttackWith = attackerIndex;
-                attackCardPicked = true;
+
                 cardToAttack = defenderIndex;
 
                 gameController.attackCard(attackerIndex, defenderIndex);
@@ -919,6 +919,7 @@ public class GUIManager {
             }
 
             gameController.setIndexSpotToPlaceCard(index);
+            attackCardPicked = true;
             cardFromHandPicked = false;
             return;
         }
@@ -1172,6 +1173,7 @@ public class GUIManager {
            if(id == enemyIcon.getId()){
                enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
                gameController.attackPlayer(cardToAttackWith);
+               attackCardPicked = false;
 
 
            }
