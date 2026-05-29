@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -108,11 +109,15 @@ public class GUIManager {
     private boolean attackCardPicked = false;
     private boolean cardFromHandPicked = false;
     private boolean yourTurnToPickCard = true;
+    @FXML
+    private TextArea textArea;
 
     private ArrayList<ImageView> pickCardViews = new ArrayList<>();
 
     @FXML
     public void initialize(){
+            System.out.println("INIT GUIManager: " + this);
+            System.out.println("textArea = " + textArea);
     }
 
     /**
@@ -650,9 +655,10 @@ public class GUIManager {
         boardImageViews.add(p1board_3);
     }
 
+    @FXML
     public void sendMessageToEventLog(String message){
-
-    }
+        if (textArea == null) return;
+        Platform.runLater(() -> textArea.appendText(message + "\n"));    }
 
     public void init() {
         zoneMap.put(Zone.HAND, new ImageView[]{hand_0, hand_1, hand_2});
