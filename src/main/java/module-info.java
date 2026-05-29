@@ -13,6 +13,7 @@ module com.example.anima_projekt {
     requires javafx.graphics;
     requires com.google.gson;
     requires javafx.base;
+    requires java.desktop;
 
     opens View to javafx.fxml;
     opens Model to com.google.gson;

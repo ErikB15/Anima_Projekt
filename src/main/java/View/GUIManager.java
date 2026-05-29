@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -23,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import static java.lang.String.valueOf;
@@ -55,6 +58,8 @@ public class GUIManager {
     @FXML private ImageView hand_0;
     @FXML private ImageView hand_1;
     @FXML private ImageView hand_2;
+
+    @FXML private ImageView enemyIcon;
 
     //Detta är labels för Hp i spelet. //Elna
     @FXML private Label hp_0;
@@ -99,15 +104,20 @@ public class GUIManager {
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
-    private Card cardToAttack;
-    private Card cardToAttackWith;
+    private int cardToAttack;
+    private int cardToAttackWith;
+    private boolean attackCardPicked = false;
     private boolean cardFromHandPicked = false;
     private boolean yourTurnToPickCard = true;
+    @FXML
+    private TextArea textArea;
 
     private ArrayList<ImageView> pickCardViews = new ArrayList<>();
 
     @FXML
     public void initialize(){
+            System.out.println("INIT GUIManager: " + this);
+            System.out.println("textArea = " + textArea);
     }
 
     /**
@@ -173,7 +183,7 @@ public class GUIManager {
     }
 
     @FXML
-    public void switchToConnectScreen(MouseEvent event){
+    public void switchToConnectScreen(){
         System.out.println("MULTIPLAYER KNAPPEN KLICKAD!");
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ConnectScreen.fxml"));
@@ -181,8 +191,6 @@ public class GUIManager {
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
-
-            stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             controller.setStage(stage);
 
             gameController.setGuiManager(controller);
@@ -193,6 +201,8 @@ public class GUIManager {
             stage.show();
 
             controller.sendMessageToConsole();
+
+            gameController.set();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -353,8 +363,7 @@ public class GUIManager {
     public void switchToGameBoard() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameBoard.fxml"));
-
-            Parent root = loader.load();
+            root = loader.load();
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
@@ -402,38 +411,34 @@ public class GUIManager {
         }
 
         if(isLocalPlayersTurn()) {
-            if (gameController.isCardPicked()) {
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Warning!");
-                alert.setContentText("You have already chose a card!");
-                alert.show();
+            if (gameController.isCardPicked()) {
+                sendMessageThroughGUI("You have already picked a card. This will change your pick.");
+            }
+
+            String cardID = event.getPickResult().getIntersectedNode().getId();
+
+            String[] splitID;
+
+            splitID = cardID.split("_");
+
+            int cardIDInt = Integer.parseInt(splitID[1]);
+
+            System.out.println(cardIDInt);
+
+            if ((cardIDInt < 3) && (cardIDInt >= 0)) {
+
+                gameController.setIndexCardOnHandToMove(cardIDInt);
+                cardFromHandPicked = true;
 
             } else {
 
-                String cardID = event.getPickResult().getIntersectedNode().getId();
-
-                String[] splitID;
-
-                splitID = cardID.split("_");
-
-                int cardIDInt = Integer.parseInt(splitID[1]);
-
-                System.out.println(cardIDInt);
-
-                if ((cardIDInt < 3) && (cardIDInt >= 0)) {
-
-                    gameController.setIndexCardOnHandToMove(cardIDInt);
-                    cardFromHandPicked = true;
-
-                } else {
-
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Warning!");
-                    alert.setContentText("INVALID NUMBER");
-                    alert.show();
-                }
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Warning!");
+                alert.setContentText("INVALID NUMBER");
+                alert.show();
             }
+
         }
     }
 
@@ -647,6 +652,7 @@ public class GUIManager {
             isYourTurn = false;
         }
         gameController.endTurn();
+        resetPlayerIcons();
     }
 
     public void enemyPlaceCard(int index, String imagePath){
@@ -675,9 +681,10 @@ public class GUIManager {
         boardImageViews.add(p1board_3);
     }
 
+    @FXML
     public void sendMessageToEventLog(String message){
-
-    }
+        if (textArea == null) return;
+        Platform.runLater(() -> textArea.appendText(message + "\n"));    }
 
     public void init() {
         zoneMap.put(Zone.HAND, new ImageView[]{hand_0, hand_1, hand_2});
@@ -844,10 +851,11 @@ public class GUIManager {
                 int attackerIndex = gameController.getIndexToCardToAttackWith();
 
                 GameState gameState = gameController.getGameState();
-                Board board = gameState.getBoard();
+                //Board board = gameState.getBoard();
 
-                cardToAttackWith = board.getCard(PlayerID.PLAYER_ONE, attackerIndex);
-                cardToAttack = board.getCard(PlayerID.PLAYER_TWO, defenderIndex);
+                cardToAttackWith = attackerIndex;
+                attackCardPicked = true;
+                cardToAttack = defenderIndex;
 
                 gameController.attackCard(attackerIndex, defenderIndex);
 
@@ -917,11 +925,11 @@ public class GUIManager {
         gameController.setIndexOfCardOnMyBoardToAttackWith(index);
     }
 
-    public Card getCardToAttack(){
+    public int getCardToAttack(){
         return cardToAttack;
     }
 
-    public Card getCardToAttackWith(){
+    public int getCardToAttackWith(){
         return cardToAttackWith;
     }
 
@@ -1156,5 +1164,22 @@ public class GUIManager {
             e.printStackTrace();
             sendMessageThroughGUI("Kunde inte starta servern: " + e.getMessage());
         }
+    }
+
+    public void playerPressed(MouseEvent event) {
+           String id = event.getPickResult().getIntersectedNode().getId();
+        if(isLocalPlayersTurn() && attackCardPicked){
+           if(id == enemyIcon.getId()){
+               enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
+               gameController.attackPlayer(cardToAttackWith);
+
+
+           }
+        }
+    }
+
+    public void resetPlayerIcons(){
+        enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2.png").toExternalForm()));
+
     }
 }

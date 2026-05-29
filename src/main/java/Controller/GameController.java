@@ -630,6 +630,7 @@ public class GameController implements GameStateListener {
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
         }
+        addMassageInGui(3, currentPlayer, null, null);
 
         gameState.switchTurn();
 
@@ -637,7 +638,6 @@ public class GameController implements GameStateListener {
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             enemyAI.takeTurn();
         }
-        addMassageInGui(3, currentPlayer, null, null);
     }
 
     /**
@@ -739,6 +739,14 @@ public class GameController implements GameStateListener {
 
                 guiManager.sendMessageToEventLog(firstCard.getCardName() + " has attacked " + secondCard.getCardName() + " for " + firstCard.getCardAD());
                 guiManager.sendMessageToEventLog("___________________________");
+                if (firstCard.isDead()){
+                    guiManager.sendMessageToEventLog(firstCard.getCardName() + " has died in battle fighting " + secondCard.getCardName());
+                    guiManager.sendMessageToEventLog("___________________________");
+                }
+                if (secondCard.isDead()){
+                    guiManager.sendMessageToEventLog(secondCard.getCardName() + " has died in battle fighting " + secondCard.getCardName());
+                    guiManager.sendMessageToEventLog("___________________________");
+                }
                 break;
             case 3:
                 // Om någon har avslutat sin tur.
