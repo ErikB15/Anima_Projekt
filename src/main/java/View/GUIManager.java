@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -108,6 +109,9 @@ public class GUIManager {
     private boolean attackCardPicked = false;
     private boolean cardFromHandPicked = false;
     private boolean yourTurnToPickCard = true;
+    @FXML
+    private TextArea textArea;
+    @FXML private Label turnNumber;
 
     private ArrayList<ImageView> pickCardViews = new ArrayList<>();
 
@@ -171,8 +175,15 @@ public class GUIManager {
      * @Param: event - MouseEvent från knapptryck i gui
      * @author: Erik, Elna
      */
+
+    @FXML
+    public void switchToMainMenuScreen(MouseEvent event) {
+        switchToStartScreen(event);
+    }
+
     @FXML
     public void switchToConnectScreen(){
+        System.out.println("MULTIPLAYER KNAPPEN KLICKAD!");
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ConnectScreen.fxml"));
             root = loader.load();
@@ -189,7 +200,6 @@ public class GUIManager {
             stage.show();
 
             controller.sendMessageToConsole();
-            openMultiPlayer();
 
             gameController.set();
 
@@ -334,7 +344,6 @@ public class GUIManager {
 
             controller.addPickCardViews(scene);
             gameController.bindCardsToView(controller.getCardImageView(scene));
-            gameController.startDraftPhase();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -412,8 +421,6 @@ public class GUIManager {
             splitID = cardID.split("_");
 
             int cardIDInt = Integer.parseInt(splitID[1]);
-
-            System.out.println(cardIDInt);
 
             if ((cardIDInt < 3) && (cardIDInt >= 0)) {
 
@@ -496,18 +503,38 @@ public class GUIManager {
      */
 
     public void pickedCard(MouseEvent event) {
-        /**if (gameController.isMultiplayer()) {
-            if (!isDraftTurn)
-                return; //inte din tur, behövs för när vi kör multiplayer
-            //beöver typ samma som nedan så vi har en för single en för multiplayer
+        ImageView clickedCard = (ImageView) event.getSource();
+        Card card = (Card) clickedCard.getUserData();
+
+        // MULTIPLAYER GREN
+        if (gameController.isMultiplayer()) {
+            System.out.println("(GUI) pickedCard klick. isDraftTurn=" + isDraftTurn + ", localRole=" + localRole);
+            // Kolla om det är spelarens tur att välja (sätts av onDraftTurn till enableDraftPicking)
+            if (!isDraftTurn) {
+                sendMessageThroughGUI("Vänta på din tur att välja kort!");
+                return;
+            }
+            if (card == null) return;
+
+            // Förhindra dubbelklick innan servern svarar
+            isDraftTurn = false;
+
+            // Visa baksidan lokalt direkt (snabb feedback)
+            clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+
+            // Skicka valet till servern. Servern lägger kortet i din deck och broadcastar GAME_STATE.
+            gameController.sendDraftPick(card.getCardID());
+
+            return; // VIKTIGT här, kör INTE singleplayer logiken nedanför
         }
-        */
+        // SLUT MULTIPLAYER GREN
+
         if (!isLocalPlayersTurn()){return;}
+
 
         String ID = event.getPickResult().getIntersectedNode().getId();
         String[] splitID = ID.split("_");
         int IDInt = Integer.parseInt(splitID[1]);
-        System.out.println(IDInt);
 
         gameController.chooseCardPhase(IDInt);
     }
@@ -612,9 +639,6 @@ public class GUIManager {
     }
 
     public void endTurnInGuiInSinglePlayer(){
-
-        System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
-
         if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             isYourTurn = true;
         } else {
@@ -650,9 +674,10 @@ public class GUIManager {
         boardImageViews.add(p1board_3);
     }
 
+    @FXML
     public void sendMessageToEventLog(String message){
-
-    }
+        if (textArea == null) return;
+        Platform.runLater(() -> textArea.appendText(message + "\n"));    }
 
     public void init() {
         zoneMap.put(Zone.HAND, new ImageView[]{hand_0, hand_1, hand_2});
@@ -818,7 +843,6 @@ public class GUIManager {
 
                 int attackerIndex = gameController.getIndexToCardToAttackWith();
 
-                GameState gameState = gameController.getGameState();
                 //Board board = gameState.getBoard();
 
                 cardToAttackWith = attackerIndex;
@@ -875,10 +899,9 @@ public class GUIManager {
 
         int index = Integer.parseInt(splitID[1]);
 
-        GameState gameState = gameController.getGameState();
-        Board board = gameState.getBoard();
+        Board board = gameController.getGameState().getBoard();
 
-        PlayerID currentPlayer = gameState.getCurrentPlayerId();
+        PlayerID currentPlayer = gameController.getGameState().getCurrentPlayerId();
         Card cardOnBoard = board.getCard(currentPlayer, index);
 
         if (cardOnBoard == null) {
@@ -1024,6 +1047,7 @@ public class GUIManager {
 
     //Avgör i updateboard vilken slots som ritas som "min sida"
     public void setLocalRole(PlayerID role) {
+        System.out.println("(GUI) setLocalRole anropad med " + role + " på instance " + this);
         this.localRole = role;
     }
 
@@ -1052,10 +1076,13 @@ public class GUIManager {
      * @author Leo
      */
     public void updateDraftPool(java.util.HashSet<Integer> remainingCardIds) {
-        if (scene == null) return;
+        // scene fältet är inte satt på den nya GUIManager instansen (kopieras inte via setStage)
+        // Hämta scenen från stage istället därför det blev problem
+        Scene currentScene = (stage != null) ? stage.getScene() : scene;
+        if (currentScene == null) return;
 
         for (int i = 0; i <= 11; i++) {
-            ImageView view = (ImageView) scene.lookup("#card_" + i);
+            ImageView view = (ImageView) currentScene.lookup("#card_" + i);
             if (view == null) continue;
 
             Card card = (Card) view.getUserData();
@@ -1092,23 +1119,51 @@ public class GUIManager {
     }
 
     public void joinButtonPressed(MouseEvent event){
-
         sendMessageThroughGUI("You Pressed Join!");
+        try {
+            // 1. Byt till PickCardScreen INNAN vi ansluter
+            // (så den nya GUIManager instansen är aktiv när server meddelanden börjar komma)
+            switchToPickCardScreen();
+
+            // 2. Anslut till servern på localhost, server måste redan vara startad av host
+            gameController.connectToServer("Player2");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessageThroughGUI("Kunde inte ansluta till servern: " + e.getMessage());
+        }
     }
 
     public void hostButtonPressed(MouseEvent event){
-
         sendMessageThroughGUI("You Pressed Host!");
+        try {
+            // 1. Starta GameServer i en bakgrundstråd så den inte blockerar GUI
+            Network.GameServer server = new Network.GameServer();
+            new Thread(server::start).start();
+
+            // 2. Vänta lite så servern hinner sätta upp socket lyssnaren
+            Thread.sleep(300);
+
+            // 3. Byt till PickCardScreen INNAN vi ansluter
+            // (så den nya GUIManager instansen är aktiv när server meddelanden börjar komma)
+            switchToPickCardScreen();
+
+            // 4. Anslut som spelare 1, servern svarar med WAITING tills spelare 2 ansluter
+            gameController.connectToServer("Player1");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessageThroughGUI("Kunde inte starta servern: " + e.getMessage());
+        }
     }
 
     public void playerPressed(MouseEvent event) {
-           String id = event.getPickResult().getIntersectedNode().getId();
+        String id = event.getPickResult().getIntersectedNode().getId();
         if(isLocalPlayersTurn() && attackCardPicked){
            if(id == enemyIcon.getId()){
                enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
                gameController.attackPlayer(cardToAttackWith);
-
-
+               //skicka till eventlogg också
            }
         }
     }
@@ -1116,5 +1171,11 @@ public class GUIManager {
     public void resetPlayerIcons(){
         enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2.png").toExternalForm()));
 
+    }
+
+    public void displayTurnRound(){
+        if (turnNumber == null) return;
+        turnNumber.setText(String.valueOf(gameController.getGameState().getTurnNumber()));
+        //här kan man också skriva ut hur många kort som är tillåtna att placera var runda.
     }
 }

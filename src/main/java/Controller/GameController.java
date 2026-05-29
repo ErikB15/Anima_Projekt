@@ -45,6 +45,7 @@ public class GameController implements GameStateListener {
     private PlayerID localPlayerRole;
     private GUIManager guiManager;
     private Card testCard; //ENDAST FÖR TESTNING
+    private GamePhase lastKnownPhase; // håller koll på serverns senaste fas så vi kan detektera DRAFT till PLAY övergång
     private GameState gameState;
     private DubbelHit dubbelHit;
     private Taunt taunt;
@@ -103,14 +104,13 @@ public class GameController implements GameStateListener {
 
 
     public void startSingleplayer() {
+        startDraftPhase();
+
         localPlayerRole = PlayerID.PLAYER_ONE;
         guiManager.setLocalRole(PlayerID.PLAYER_ONE);
-        startDraftPhase();
-        // Metoden under ska anropas här, men går inte för den behöver ett mouse event.
-        // Metoden under kommer i framtiden antagligen bara anropas via controllern, så hade nog-
-        // varit bäst om den inte behövde en mouse event.
-        guiManager.switchToPickCardScreen();
         setSinglePLayer(true);
+        guiManager.switchToPickCardScreen();
+
     }
 
     public void startMultiplayer(){
@@ -210,8 +210,6 @@ public class GameController implements GameStateListener {
 
         Card chosenCard = allCards[cardIndex];
         gameState.getCurrentPlayer().addCardToDeck(chosenCard);
-
-        System.out.println("Card added to players deck");
 
         allCards[cardIndex] = null;
 
@@ -393,8 +391,6 @@ public class GameController implements GameStateListener {
 
         Player currentPlayer = gameState.getCurrentPlayer();
 
-        System.out.println("Current player: " + gameState.getCurrentPlayerId());
-
         if (!cardPicked || !spotPicked) {
             return;
         }
@@ -429,7 +425,6 @@ public class GameController implements GameStateListener {
 
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
-            System.out.println();
         }
 
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
@@ -457,7 +452,6 @@ public class GameController implements GameStateListener {
         // SLUT NYTT för multiplayer
 
         gameState.setPhase(GamePhase.END_TURN);
-        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
@@ -492,7 +486,6 @@ public class GameController implements GameStateListener {
         }
         // Slut på nytt
 
-        System.out.println("Innan gamestate Checken");
         if (gameState.getPhase() != GamePhase.PLAY) return false;
 
         PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
@@ -606,6 +599,16 @@ public class GameController implements GameStateListener {
      * @author Jim, Erik
      */
     public void endTurn(){
+        // MULTIPLAYER GREN
+        // I multiplayer skickar vi END_TURN till servern istället för att köra logiken lokalt.
+        // Servern växlar tur, drar kort, och broadcastar nya spelläget tillbaka.
+        if (gameClient != null) {
+            gameClient.endTurn();
+            gameState.setPhase(GamePhase.END_TURN); // blockera lokala handlingar tills servern svarar
+            return; // VIKTIGT, kör INTE singleplayer logiken (AI etc) nedanför för fryser spelet
+        }
+        // SLUT MULTIPLAYER GREN
+
         gameState.setPhase(GamePhase.END_TURN);
         System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
@@ -619,14 +622,14 @@ public class GameController implements GameStateListener {
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
         }
-
+        addMassageInGui(3, currentPlayer, null, null);
         gameState.switchTurn();
 
         gameState.setPhase(GamePhase.PLAY);
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             enemyAI.takeTurn();
         }
-        addMassageInGui(3, currentPlayer, null, null);
+        guiManager.displayTurnRound();
     }
 
     /**
@@ -728,6 +731,14 @@ public class GameController implements GameStateListener {
 
                 guiManager.sendMessageToEventLog(firstCard.getCardName() + " has attacked " + secondCard.getCardName() + " for " + firstCard.getCardAD());
                 guiManager.sendMessageToEventLog("___________________________");
+                if (firstCard.isDead()){
+                    guiManager.sendMessageToEventLog(firstCard.getCardName() + " has died in battle fighting " + secondCard.getCardName());
+                    guiManager.sendMessageToEventLog("___________________________");
+                }
+                if (secondCard.isDead()){
+                    guiManager.sendMessageToEventLog(secondCard.getCardName() + " has died in battle fighting " + secondCard.getCardName());
+                    guiManager.sendMessageToEventLog("___________________________");
+                }
                 break;
             case 3:
                 // Om någon har avslutat sin tur.
@@ -823,14 +834,25 @@ public class GameController implements GameStateListener {
     }
 
     /**
-     * Bryter ner serverns spelläge i specifika delar och anropar rätt gui metod för varje.
-     * Hanterar både DRAFT fasen (uppdatera kortpool) och PLAY fasen (rita bräde + hand).
+     * Bryter ner serverns spelläge i specifika delar och anropar rätt GUI metod för varje.
+     * Detekterar också fas övergång från DRAFT till PLAY och byter scen automatiskt.
      *
      * @param state det auktoritativa spelläget från servern
      * @author Leo
      */
     private void updateGuiFromServerState(GameState state) {
         if (state == null || localPlayerRole == null) return;
+
+        // AUTOMATISKT SCENBYTE
+        // Om vi precis växlade från DRAFT till PLAY då byt till GameBoard
+        if (lastKnownPhase == GamePhase.DRAFT && state.getPhase() == GamePhase.PLAY) {
+            guiManager.switchToGameBoard();
+            // Efter scenbytet är guiManager en NY instans, sätt rollen igen
+            // (switchToGameBoard skapar ny GUIManager som startar med default roll)
+            guiManager.setLocalRole(localPlayerRole);
+        }
+        lastKnownPhase = state.getPhase();
+        // SLUT SCENBYTE
 
         // DRAFT fas: skicka över id för kvarvarande kort i poolen
         if (state.getPhase() == GamePhase.DRAFT) {
@@ -980,6 +1002,11 @@ public class GameController implements GameStateListener {
         }
         gameState.setCardsPlayedThisTurn(serverState.getCardsPlayedThisTurn());
 
+        // KRITISKT för fryser annars, synca currentPlayer så isLocalPlayersTurn() ger rätt svar
+        if (serverState.getCurrentPlayerId() != null) {
+            gameState.setCurrentPlayer(serverState.getCurrentPlayerId());
+        }
+
         // Synca fasen, viktig för placeCard checken som kräver PLAY
         if (serverState.getPhase() == GamePhase.PLAY) {
             gameState.setPhase(GamePhase.PLAY);
@@ -996,6 +1023,7 @@ public class GameController implements GameStateListener {
         // Spara det och skicka vidare till GUI så den vet vilken sida av brädet som är "min"
         localPlayerRole = PlayerID.valueOf(role);
         Platform.runLater(() -> guiManager.setLocalRole(localPlayerRole));
+        System.out.println("(CTRL) onGameStart, role=" + role + ", localPlayerRole=" + localPlayerRole);
     }
 
     @Override
@@ -1128,13 +1156,15 @@ public class GameController implements GameStateListener {
     }
 
     public int getHPforCardBoard(int index, int whatPlayer){
+        // whatPlayer 1 = "min" sida, 2 = "motståndarens" sida
+        // Mappa via localPlayerRole istället för hårdkodat PLAYER_ONE/TWO så att HP speglas och inte kodat för position
+        PlayerID myRole = (localPlayerRole != null) ? localPlayerRole : PlayerID.PLAYER_ONE;
+        PlayerID opponentRole = (myRole == PlayerID.PLAYER_ONE) ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
 
-        if(whatPlayer == 1){
-            return board.getCard(PlayerID.PLAYER_ONE, index).getCardCurrentHP();
-        } else{
-            return board.getCard(PlayerID.PLAYER_TWO, index).getCardCurrentHP();
-        }
-
+        PlayerID target = (whatPlayer == 1) ? myRole : opponentRole;
+        Card card = board.getCard(target, index);
+        if (card == null) return 0;
+        return card.getCardCurrentHP();
     }
 
     private void setSinglePLayer(boolean singlePLayer) {
