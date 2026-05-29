@@ -166,8 +166,15 @@ public class GUIManager {
      * @Param: event - MouseEvent från knapptryck i gui
      * @author: Erik, Elna
      */
+
+    @FXML
+    public void switchToMainMenuScreen(MouseEvent event) {
+        switchToStartScreen(event);
+    }
+
     @FXML
     public void switchToConnectScreen(MouseEvent event){
+        System.out.println("MULTIPLAYER KNAPPEN KLICKAD!");
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ConnectScreen.fxml"));
             root = loader.load();
@@ -186,7 +193,6 @@ public class GUIManager {
             stage.show();
 
             controller.sendMessageToConsole();
-            openMultiPlayer();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -496,12 +502,32 @@ public class GUIManager {
      */
 
     public void pickedCard(MouseEvent event) {
-        /**if (gameController.isMultiplayer()) {
-            if (!isDraftTurn)
-                return; //inte din tur, behövs för när vi kör multiplayer
-            //beöver typ samma som nedan så vi har en för single en för multiplayer
+        ImageView clickedCard = (ImageView) event.getSource();
+        Card card = (Card) clickedCard.getUserData();
+
+        // MULTIPLAYER GREN
+        if (gameController.isMultiplayer()) {
+            System.out.println("(GUI) pickedCard klick. isDraftTurn=" + isDraftTurn + ", localRole=" + localRole);
+            // Kolla om det är spelarens tur att välja (sätts av onDraftTurn till enableDraftPicking)
+            if (!isDraftTurn) {
+                sendMessageThroughGUI("Vänta på din tur att välja kort!");
+                return;
+            }
+            if (card == null) return;
+
+            // Förhindra dubbelklick innan servern svarar
+            isDraftTurn = false;
+
+            // Visa baksidan lokalt direkt (snabb feedback)
+            clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+
+            // Skicka valet till servern. Servern lägger kortet i din deck och broadcastar GAME_STATE.
+            gameController.sendDraftPick(card.getCardID());
+
+            return; // VIKTIGT här, kör INTE singleplayer logiken nedanför
         }
-        */
+        // SLUT MULTIPLAYER GREN
+
         if (!isLocalPlayersTurn()){return;}
 
         String ID = event.getPickResult().getIntersectedNode().getId();
@@ -1022,6 +1048,7 @@ public class GUIManager {
 
     //Avgör i updateboard vilken slots som ritas som "min sida"
     public void setLocalRole(PlayerID role) {
+        System.out.println("(GUI) setLocalRole anropad med " + role + " på instance " + this);
         this.localRole = role;
     }
 
@@ -1050,10 +1077,13 @@ public class GUIManager {
      * @author Leo
      */
     public void updateDraftPool(java.util.HashSet<Integer> remainingCardIds) {
-        if (scene == null) return;
+        // scene fältet är inte satt på den nya GUIManager instansen (kopieras inte via setStage)
+        // Hämta scenen från stage istället därför det blev problem
+        Scene currentScene = (stage != null) ? stage.getScene() : scene;
+        if (currentScene == null) return;
 
         for (int i = 0; i <= 11; i++) {
-            ImageView view = (ImageView) scene.lookup("#card_" + i);
+            ImageView view = (ImageView) currentScene.lookup("#card_" + i);
             if (view == null) continue;
 
             Card card = (Card) view.getUserData();
@@ -1090,12 +1120,41 @@ public class GUIManager {
     }
 
     public void joinButtonPressed(MouseEvent event){
-
         sendMessageThroughGUI("You Pressed Join!");
+        try {
+            // 1. Byt till PickCardScreen INNAN vi ansluter
+            // (så den nya GUIManager instansen är aktiv när server meddelanden börjar komma)
+            switchToPickCardScreen();
+
+            // 2. Anslut till servern på localhost, server måste redan vara startad av host
+            gameController.connectToServer("Player2");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessageThroughGUI("Kunde inte ansluta till servern: " + e.getMessage());
+        }
     }
 
     public void hostButtonPressed(MouseEvent event){
-
         sendMessageThroughGUI("You Pressed Host!");
+        try {
+            // 1. Starta GameServer i en bakgrundstråd så den inte blockerar GUI
+            Network.GameServer server = new Network.GameServer();
+            new Thread(server::start).start();
+
+            // 2. Vänta lite så servern hinner sätta upp socket lyssnaren
+            Thread.sleep(300);
+
+            // 3. Byt till PickCardScreen INNAN vi ansluter
+            // (så den nya GUIManager instansen är aktiv när server meddelanden börjar komma)
+            switchToPickCardScreen();
+
+            // 4. Anslut som spelare 1, servern svarar med WAITING tills spelare 2 ansluter
+            gameController.connectToServer("Player1");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessageThroughGUI("Kunde inte starta servern: " + e.getMessage());
+        }
     }
 }
