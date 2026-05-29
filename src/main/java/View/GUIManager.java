@@ -111,13 +111,12 @@ public class GUIManager {
     private boolean yourTurnToPickCard = true;
     @FXML
     private TextArea textArea;
+    @FXML private Label turnNumber;
 
     private ArrayList<ImageView> pickCardViews = new ArrayList<>();
 
     @FXML
     public void initialize(){
-            System.out.println("INIT GUIManager: " + this);
-            System.out.println("textArea = " + textArea);
     }
 
     /**
@@ -339,7 +338,6 @@ public class GUIManager {
 
             controller.addPickCardViews(scene);
             gameController.bindCardsToView(controller.getCardImageView(scene));
-            gameController.startDraftPhase();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -417,8 +415,6 @@ public class GUIManager {
             splitID = cardID.split("_");
 
             int cardIDInt = Integer.parseInt(splitID[1]);
-
-            System.out.println(cardIDInt);
 
             if ((cardIDInt < 3) && (cardIDInt >= 0)) {
 
@@ -509,10 +505,10 @@ public class GUIManager {
         */
         if (!isLocalPlayersTurn()){return;}
 
+
         String ID = event.getPickResult().getIntersectedNode().getId();
         String[] splitID = ID.split("_");
         int IDInt = Integer.parseInt(splitID[1]);
-        System.out.println(IDInt);
 
         gameController.chooseCardPhase(IDInt);
     }
@@ -617,9 +613,6 @@ public class GUIManager {
     }
 
     public void endTurnInGuiInSinglePlayer(){
-
-        System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
-
         if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             isYourTurn = true;
         } else {
@@ -824,7 +817,6 @@ public class GUIManager {
 
                 int attackerIndex = gameController.getIndexToCardToAttackWith();
 
-                GameState gameState = gameController.getGameState();
                 //Board board = gameState.getBoard();
 
                 cardToAttackWith = attackerIndex;
@@ -881,10 +873,9 @@ public class GUIManager {
 
         int index = Integer.parseInt(splitID[1]);
 
-        GameState gameState = gameController.getGameState();
-        Board board = gameState.getBoard();
+        Board board = gameController.getGameState().getBoard();
 
-        PlayerID currentPlayer = gameState.getCurrentPlayerId();
+        PlayerID currentPlayer = gameController.getGameState().getCurrentPlayerId();
         Card cardOnBoard = board.getCard(currentPlayer, index);
 
         if (cardOnBoard == null) {
@@ -1108,13 +1099,12 @@ public class GUIManager {
     }
 
     public void playerPressed(MouseEvent event) {
-           String id = event.getPickResult().getIntersectedNode().getId();
+        String id = event.getPickResult().getIntersectedNode().getId();
         if(isLocalPlayersTurn() && attackCardPicked){
            if(id == enemyIcon.getId()){
                enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
                gameController.attackPlayer(cardToAttackWith);
-
-
+               //skicka till eventlogg också
            }
         }
     }
@@ -1122,5 +1112,11 @@ public class GUIManager {
     public void resetPlayerIcons(){
         enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2.png").toExternalForm()));
 
+    }
+
+    public void displayTurnRound(){
+        if (turnNumber == null) return;
+        turnNumber.setText(String.valueOf(gameController.getGameState().getTurnNumber()));
+        //här kan man också skriva ut hur många kort som är tillåtna att placera var runda.
     }
 }

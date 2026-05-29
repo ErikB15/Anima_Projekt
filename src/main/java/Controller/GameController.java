@@ -103,14 +103,13 @@ public class GameController implements GameStateListener {
 
 
     public void startSingleplayer() {
+        startDraftPhase();
+
         localPlayerRole = PlayerID.PLAYER_ONE;
         guiManager.setLocalRole(PlayerID.PLAYER_ONE);
-        startDraftPhase();
-        // Metoden under ska anropas här, men går inte för den behöver ett mouse event.
-        // Metoden under kommer i framtiden antagligen bara anropas via controllern, så hade nog-
-        // varit bäst om den inte behövde en mouse event.
-        guiManager.switchToPickCardScreen();
         setSinglePLayer(true);
+        guiManager.switchToPickCardScreen();
+
     }
 
     public void startMultiplayer(){
@@ -210,8 +209,6 @@ public class GameController implements GameStateListener {
 
         Card chosenCard = allCards[cardIndex];
         gameState.getCurrentPlayer().addCardToDeck(chosenCard);
-
-        System.out.println("Card added to players deck");
 
         allCards[cardIndex] = null;
 
@@ -393,8 +390,6 @@ public class GameController implements GameStateListener {
 
         Player currentPlayer = gameState.getCurrentPlayer();
 
-        System.out.println("Current player: " + gameState.getCurrentPlayerId());
-
         if (!cardPicked || !spotPicked) {
             return;
         }
@@ -429,7 +424,6 @@ public class GameController implements GameStateListener {
 
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
-            System.out.println();
         }
 
         guiManager.renderCard(Zone.PLAYER_BOARD, indexSpotToPlaceCard, cardMoved.getImagePath());
@@ -457,7 +451,6 @@ public class GameController implements GameStateListener {
         // SLUT NYTT för multiplayer
 
         gameState.setPhase(GamePhase.END_TURN);
-        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
@@ -492,7 +485,6 @@ public class GameController implements GameStateListener {
         }
         // Slut på nytt
 
-        System.out.println("Innan gamestate Checken");
         if (gameState.getPhase() != GamePhase.PLAY) return false;
 
         PlayerID attackerPlayerID = gameState.getCurrentPlayerId();
@@ -620,13 +612,13 @@ public class GameController implements GameStateListener {
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
         }
         addMassageInGui(3, currentPlayer, null, null);
-
         gameState.switchTurn();
 
         gameState.setPhase(GamePhase.PLAY);
         if (gameState.getCurrentPlayerId() == PlayerID.PLAYER_TWO) {
             enemyAI.takeTurn();
         }
+        guiManager.displayTurnRound();
     }
 
     /**
@@ -1004,6 +996,7 @@ public class GameController implements GameStateListener {
         // Spara det och skicka vidare till GUI så den vet vilken sida av brädet som är "min"
         localPlayerRole = PlayerID.valueOf(role);
         Platform.runLater(() -> guiManager.setLocalRole(localPlayerRole));
+
     }
 
     @Override
