@@ -55,9 +55,12 @@ public class EnemyAI {
     public void amIGonnaDie(){
         ArrayList<Integer> playerIndexCards = getValidTargets();
         ArrayList<Integer> computerIndexCards = getValidAttackers();
+
         if(playerIndexCards.isEmpty()){return;}
+
         int damage = 0;
         int computerHP = gameState.getPlayerTwo().getHp();
+
         for(int i = 0; i < playerIndexCards.size(); i++){
             damage += gameState.getBoard().getCard(PlayerID.PLAYER_ONE, playerIndexCards.get(i)).getCardAD();
         }
@@ -121,8 +124,14 @@ public class EnemyAI {
             if (playerTwo.getHand().isEmpty()) {playerTwo.drawUntilHandIsFull();}
             if (playerTwo.getHand().isEmpty() || !board.hasEmptySlot(PlayerID.PLAYER_TWO)) {break;}
 
-            int handIndex = (int) (Math.random() * playerTwo.getHand().size());
-
+            ArrayList<Integer> affordableCards = new ArrayList<>();
+            for(int k = 0; k < playerTwo.getHand().size();k++){
+                if(playerTwo.getHp() > playerTwo.getHand().get(k).getCardCost()){
+                    affordableCards.add(k);
+                }
+            }
+            if (affordableCards.isEmpty()){break;}
+            int handIndex = affordableCards.get((int)(Math.random() * affordableCards.size()));
             for(int k = 0; k < board.getSlotsForPlayer(PlayerID.PLAYER_TWO).length; k++){
                 if (board.getSlotsForPlayer(PlayerID.PLAYER_TWO)[k] == null){
                     controller.placeCard(handIndex, k);
