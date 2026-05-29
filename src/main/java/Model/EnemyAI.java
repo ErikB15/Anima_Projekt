@@ -20,9 +20,60 @@ public class EnemyAI {
      * @author Jim Ström
      */
     public void takeTurn() {
+        canIKillPlayer();
+        amIGonnaDie();
         playCards();
         attack();
         controller.endTurn();
+    }
+
+
+    /**
+     *
+     */
+    public void canIKillPlayer(){
+        ArrayList<Integer> computerIndexCards = getValidAttackers();
+        if(computerIndexCards.isEmpty()){return;}
+        int damage = 0;
+        int playerHP = gameState.getPlayerOne().getHp();
+        for(int i = 0; i < computerIndexCards.size(); i++){
+            damage += gameState.getBoard().getCard(PlayerID.PLAYER_TWO, computerIndexCards.get(i)).getCardAD();
+        }
+        if(damage >= playerHP){
+            for(int i = 0; i < computerIndexCards.size(); i++){
+                controller.attackPlayer(computerIndexCards.get(i));
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    public void amIGonnaDie(){
+        ArrayList<Integer> playerIndexCards = getValidTargets();
+        ArrayList<Integer> computerIndexCards = getValidAttackers();
+        if(playerIndexCards.isEmpty()){return;}
+        int damage = 0;
+        int computerHP = gameState.getPlayerTwo().getHp();
+        for(int i = 0; i < playerIndexCards.size(); i++){
+            damage += gameState.getBoard().getCard(PlayerID.PLAYER_ONE, playerIndexCards.get(i)).getCardAD();
+        }
+
+        if(!(damage >= computerHP)){return;}
+        if(computerIndexCards.isEmpty()){return;}
+
+
+
+        for (int i = 0; i < playerIndexCards.size();i++){
+            if(i > 0){
+                int card1Attack = gameState.getBoard().getCard(PlayerID.PLAYER_ONE,(i - 1)).getCardAD();
+                int card2Attack = gameState.getBoard().getCard(PlayerID.PLAYER_ONE,i).getCardAD();
+                if(card2Attack > card1Attack){
+                    Integer temporary = playerIndexCards.get(i);
+
+                }
+            }
+        }
     }
 
 
@@ -65,24 +116,11 @@ public class EnemyAI {
             ArrayList<Integer> validAttackers = getValidAttackers();
             ArrayList<Integer> validTargets = getValidTargets();
 
-            if(validAttackers.isEmpty()){
-                return;
-            }
-            int attackerIndex =
-                    validAttackers.get(
-                            (int)(Math.random() * validAttackers.size())
-                    );
-
-            if(validTargets.isEmpty()){
-                controller.attackPlayer(attackerIndex);
-
+            if(validAttackers.isEmpty()){return;}
+            int attackerIndex = validAttackers.get((int)(Math.random() * validAttackers.size()));
+            if(validTargets.isEmpty()){controller.attackPlayer(attackerIndex);
             } else {
-
-                int defenderIndex =
-                        validTargets.get(
-                                (int)(Math.random() * validTargets.size())
-                        );
-
+                int defenderIndex = validTargets.get((int)(Math.random() * validTargets.size()));
                 controller.attackCard(attackerIndex, defenderIndex);
             }
         }
@@ -93,12 +131,8 @@ public class EnemyAI {
         ArrayList<Integer> validAttackers = new ArrayList<>();
         Card[] computerCardsOnBoard = gameState.getBoard().getSlotsForPlayer(PlayerID.PLAYER_TWO);
         for(int i = 0; i < computerCardsOnBoard.length; i++){
-            if (computerCardsOnBoard[i] != null &&
-                    !computerCardsOnBoard[i].getAsleep() &&
-                    !computerCardsOnBoard[i].getHasAttackedThisTurn())
-            {
-                validAttackers.add(i);
-            }
+            if (computerCardsOnBoard[i] != null && !computerCardsOnBoard[i].getAsleep() &&
+                    !computerCardsOnBoard[i].getHasAttackedThisTurn()) {validAttackers.add(i);}
         }
         return validAttackers;
     }

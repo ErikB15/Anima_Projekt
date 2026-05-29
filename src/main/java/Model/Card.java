@@ -64,7 +64,7 @@ public class Card {
 
 
     /**
-     * Normaltvis försöker jag göra en kommentar på allting.
+     * Normaltvist försöker jag göra en kommentar på allting.
      * Men om ni skrollar ner lite, tror jag ni förstår varför jag inte gör en kommentar på allting under.
      * Kommer det in att vi måste göra kommentarer på allt? Då får jag göra det men i nuläget skippar vi detta.
      * Massa getters och setters för alla de olika variablerna som Card klassen innehåller.
