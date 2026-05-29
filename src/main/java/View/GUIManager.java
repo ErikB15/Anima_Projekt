@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import static java.lang.String.valueOf;
@@ -55,6 +57,8 @@ public class GUIManager {
     @FXML private ImageView hand_0;
     @FXML private ImageView hand_1;
     @FXML private ImageView hand_2;
+
+    @FXML private ImageView enemyIcon;
 
     //Detta är labels för Hp i spelet. //Elna
     @FXML private Label hp_0;
@@ -99,8 +103,9 @@ public class GUIManager {
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private boolean playerOnesTurn = true;
-    private Card cardToAttack;
-    private Card cardToAttackWith;
+    private int cardToAttack;
+    private int cardToAttackWith;
+    private boolean attackCardPicked = false;
     private boolean cardFromHandPicked = false;
     private boolean yourTurnToPickCard = true;
 
@@ -621,6 +626,7 @@ public class GUIManager {
             isYourTurn = false;
         }
         gameController.endTurn();
+        resetPlayerIcons();
     }
 
     public void enemyPlaceCard(int index, String imagePath){
@@ -818,10 +824,11 @@ public class GUIManager {
                 int attackerIndex = gameController.getIndexToCardToAttackWith();
 
                 GameState gameState = gameController.getGameState();
-                Board board = gameState.getBoard();
+                //Board board = gameState.getBoard();
 
-                cardToAttackWith = board.getCard(PlayerID.PLAYER_ONE, attackerIndex);
-                cardToAttack = board.getCard(PlayerID.PLAYER_TWO, defenderIndex);
+                cardToAttackWith = attackerIndex;
+                attackCardPicked = true;
+                cardToAttack = defenderIndex;
 
                 gameController.attackCard(attackerIndex, defenderIndex);
 
@@ -891,11 +898,11 @@ public class GUIManager {
         gameController.setIndexOfCardOnMyBoardToAttackWith(index);
     }
 
-    public Card getCardToAttack(){
+    public int getCardToAttack(){
         return cardToAttack;
     }
 
-    public Card getCardToAttackWith(){
+    public int getCardToAttackWith(){
         return cardToAttackWith;
     }
 
@@ -1097,5 +1104,22 @@ public class GUIManager {
     public void hostButtonPressed(MouseEvent event){
 
         sendMessageThroughGUI("You Pressed Host!");
+    }
+
+    public void playerPressed(MouseEvent event) {
+           String id = event.getPickResult().getIntersectedNode().getId();
+        if(isLocalPlayersTurn() && attackCardPicked){
+           if(id == enemyIcon.getId()){
+               enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
+               gameController.attackPlayer(cardToAttackWith);
+
+
+           }
+        }
+    }
+
+    public void resetPlayerIcons(){
+        enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2.png").toExternalForm()));
+
     }
 }
