@@ -2,6 +2,7 @@ package Model;
 import Controller.GameController;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class EnemyAI {
 
@@ -20,7 +21,7 @@ public class EnemyAI {
      * @author Jim Ström
      */
     public void takeTurn() {
-        canIKillPlayer();
+        if(canIKillPlayer()){return;}
         amIGonnaDie();
         playCards();
         attack();
@@ -31,9 +32,9 @@ public class EnemyAI {
     /**
      *
      */
-    public void canIKillPlayer(){
+    public boolean canIKillPlayer(){
         ArrayList<Integer> computerIndexCards = getValidAttackers();
-        if(computerIndexCards.isEmpty()){return;}
+        if(computerIndexCards.isEmpty()){return false;}
         int damage = 0;
         int playerHP = gameState.getPlayerOne().getHp();
         for(int i = 0; i < computerIndexCards.size(); i++){
@@ -43,7 +44,9 @@ public class EnemyAI {
             for(int i = 0; i < computerIndexCards.size(); i++){
                 controller.attackPlayer(computerIndexCards.get(i));
             }
+            return true;
         }
+        return false;
     }
 
     /**
@@ -62,18 +65,44 @@ public class EnemyAI {
         if(!(damage >= computerHP)){return;}
         if(computerIndexCards.isEmpty()){return;}
 
+        int highestDamage = -1;
+        int indexOfHighestDamage = -1;
 
+        int secondHighestDamage = -1;
+        int indexOfSecondHighestDamage = -1;
 
         for (int i = 0; i < playerIndexCards.size();i++){
-            if(i > 0){
-                int card1Attack = gameState.getBoard().getCard(PlayerID.PLAYER_ONE,(i - 1)).getCardAD();
-                int card2Attack = gameState.getBoard().getCard(PlayerID.PLAYER_ONE,i).getCardAD();
-                if(card2Attack > card1Attack){
-                    Integer temporary = playerIndexCards.get(i);
-
-                }
+            int attack = gameState.getBoard().getCard(PlayerID.PLAYER_ONE,playerIndexCards.get(i)).getCardAD();
+            if (attack > highestDamage){
+                secondHighestDamage = highestDamage;
+                indexOfSecondHighestDamage = indexOfHighestDamage;
+                highestDamage = attack;
+                indexOfHighestDamage = playerIndexCards.get(i);
+            } else if (attack > secondHighestDamage) {
+                secondHighestDamage = attack;
+                indexOfSecondHighestDamage = playerIndexCards.get(i);
             }
         }
+
+
+
+        for (int i = 0; i < computerIndexCards.size();i++){
+            Card highDMGCard = gameState.getBoard().getCard(PlayerID.PLAYER_ONE,indexOfHighestDamage);
+            Card secondHighDMGCard = null;
+            if(indexOfSecondHighestDamage != -1){
+                secondHighDMGCard = gameState.getBoard().getCard(PlayerID.PLAYER_ONE, indexOfSecondHighestDamage);
+            }
+
+            if(highDMGCard != null){
+            controller.attackCard(computerIndexCards.get(i),indexOfHighestDamage);
+            continue;
+            }
+
+            if(secondHighDMGCard != null){
+                controller.attackCard(computerIndexCards.get(i),indexOfSecondHighestDamage);
+            }
+        }
+
     }
 
 

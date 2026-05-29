@@ -36,7 +36,7 @@ public class Card {
         this.imagePath = imagePath;
         this.cardCurrentHP = cardMaxHP;
 
-        cardCost = (Math.round((float)(cardAD + cardMaxHP) / 4));
+        cardCost = Math.round((cardAD * 2 + cardMaxHP) / 5f);
         // Temporär formel som lagts till endast för testning.
     }
 
