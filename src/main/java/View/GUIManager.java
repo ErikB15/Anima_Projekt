@@ -103,7 +103,7 @@ public class GUIManager {
     @FXML private Pane startMenu;
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
-    private boolean playerOnesTurn = true;
+    private int playerTurnPickCard = 1;
     private int cardToAttack;
     private int cardToAttackWith;
     private boolean attackCardPicked = false;
@@ -541,11 +541,13 @@ public class GUIManager {
         System.out.println(IDInt);
 
         gameController.chooseCardPhase(IDInt);
+
+
     }
 
     public void updateGuiAfterCardIsPicked(int IDInt){
         changeHP(IDInt, " ", null);
-        switchTurnLabelInPickCard();
+        //switchTurnLabelInPickCard();
 
         ImageView view = pickCardViews.get(IDInt);
         Image newImage = new Image(getClass().getResourceAsStream("/CardBACKSIDE.png"));
@@ -737,13 +739,14 @@ public class GUIManager {
         }
     }
 
-    public void switchTurnLabelInPickCard(){
+    public void switchTurnLabelInPickCard(PlayerID id){
 
-        if(playerOnesTurn == true){
-            pickCardTurn.setText("Player 1");
 
-        } else{
+        if(id == PlayerID.PLAYER_ONE){
             pickCardTurn.setText("Player 2");
+
+        } else if(id == PlayerID.PLAYER_TWO){
+            pickCardTurn.setText("Player 1");
         }
     }
 
@@ -1174,8 +1177,6 @@ public class GUIManager {
                enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
                gameController.attackPlayer(cardToAttackWith);
                attackCardPicked = false;
-
-
            }
         }
     }
