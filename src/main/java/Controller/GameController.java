@@ -729,11 +729,11 @@ public class GameController implements GameStateListener {
                 guiManager.sendMessageToEventLog(firstCard.getCardName() + " has attacked " + secondCard.getCardName() + " for " + firstCard.getCardAD());
                 guiManager.sendMessageToEventLog("___________________________");
                 if (firstCard.isDead()){
-                    guiManager.sendMessageToEventLog(firstCard.getCardName() + "has died in battle fighting " + secondCard.getCardName());
+                    guiManager.sendMessageToEventLog(firstCard.getCardName() + " has died in battle fighting " + secondCard.getCardName());
                     guiManager.sendMessageToEventLog("___________________________");
                 }
                 if (secondCard.isDead()){
-                    guiManager.sendMessageToEventLog(secondCard.getCardName() + "has died in battle fighting " + secondCard.getCardName());
+                    guiManager.sendMessageToEventLog(secondCard.getCardName() + " has died in battle fighting " + secondCard.getCardName());
                     guiManager.sendMessageToEventLog("___________________________");
                 }
                 break;
