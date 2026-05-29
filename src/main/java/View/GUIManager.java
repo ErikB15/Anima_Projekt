@@ -170,7 +170,7 @@ public class GUIManager {
     public void switchToConnectScreen(){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ConnectScreen.fxml"));
-            Parent root = loader.load();
+            root = loader.load();
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
@@ -347,7 +347,7 @@ public class GUIManager {
     public void switchToGameBoard() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameBoard.fxml"));
-            Parent root = loader.load();
+            root = loader.load();
 
             GUIManager controller = loader.getController();
             controller.setGameController(gameController);
