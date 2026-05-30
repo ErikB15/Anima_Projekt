@@ -546,7 +546,7 @@ public class GUIManager {
 
     public void updateGuiAfterCardIsPicked(int IDInt){
         changeHP(IDInt, " ", null);
-        switchTurnLabelInPickCard();
+
 
         ImageView view = pickCardViews.get(IDInt);
         Image newImage = new Image(getClass().getResourceAsStream("/CardBACKSIDE.png"));
@@ -738,13 +738,13 @@ public class GUIManager {
         }
     }
 
-    public void switchTurnLabelInPickCard(){
+    public void switchTurnLabelInPickCard(PlayerID id){
 
-        if(playerOnesTurn == true){
-            pickCardTurn.setText("Player 1");
-
-        } else{
+        if(id == PlayerID.PLAYER_ONE){
             pickCardTurn.setText("Player 2");
+
+        } else if(id == PlayerID.PLAYER_TWO) {
+            pickCardTurn.setText("Player 1");
         }
     }
 
