@@ -102,7 +102,7 @@ public class GUIManager {
 
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
-    private int playerTurnPickCard = 1;
+    private boolean playerOnesTurn = true;
     private int cardToAttack;
     private int cardToAttackWith;
     private boolean attackCardPicked = false;
@@ -110,6 +110,7 @@ public class GUIManager {
     private boolean yourTurnToPickCard = true;
     @FXML
     private TextArea textArea;
+    @FXML private Label turnNumber;
 
     private ArrayList<ImageView> pickCardViews = new ArrayList<>();
 
@@ -541,13 +542,11 @@ public class GUIManager {
         System.out.println(IDInt);
 
         gameController.chooseCardPhase(IDInt);
-
-
     }
 
     public void updateGuiAfterCardIsPicked(int IDInt){
         changeHP(IDInt, " ", null);
-        //switchTurnLabelInPickCard();
+
 
         ImageView view = pickCardViews.get(IDInt);
         Image newImage = new Image(getClass().getResourceAsStream("/CardBACKSIDE.png"));
@@ -740,10 +739,11 @@ public class GUIManager {
     }
 
     public void switchTurnLabelInPickCard(PlayerID id){
+
         if(id == PlayerID.PLAYER_ONE){
             pickCardTurn.setText("Player 2");
 
-        } else if(id == PlayerID.PLAYER_TWO){
+        } else if(id == PlayerID.PLAYER_TWO) {
             pickCardTurn.setText("Player 1");
         }
     }
@@ -855,7 +855,7 @@ public class GUIManager {
                 //Board board = gameState.getBoard();
 
                 cardToAttackWith = attackerIndex;
-
+                attackCardPicked = true;
                 cardToAttack = defenderIndex;
 
                 gameController.attackCard(attackerIndex, defenderIndex);
@@ -920,7 +920,6 @@ public class GUIManager {
             }
 
             gameController.setIndexSpotToPlaceCard(index);
-            attackCardPicked = true;
             cardFromHandPicked = false;
             return;
         }
@@ -1121,6 +1120,12 @@ public class GUIManager {
         pickCardViews.add((ImageView) scene.lookup("#card_11"));
     }
 
+    public void displayTurnRound(){
+        if (turnNumber == null) return;
+        turnNumber.setText(String.valueOf(gameController.getGameState().getTurnNumber()));
+        //här kan man också skriva ut hur många kort som är tillåtna att placera var runda.
+    }
+
     //behöver en hostgame knapp, här skapar vi då servern
 
     //samt en joingame knapp och metod där vi här connecttoserver genom gamecontroller metoden jag skapat där
@@ -1176,6 +1181,8 @@ public class GUIManager {
                gameController.attackPlayer(cardToAttackWith);
                //gameController.addMassageInGui(5, );
                attackCardPicked = false;
+
+
            }
         }
     }
