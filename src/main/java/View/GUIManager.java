@@ -20,10 +20,7 @@ import Model.Card;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javafx.animation.PauseTransition;
@@ -101,6 +98,8 @@ public class GUIManager {
     @FXML private Pane effectsRules;
     @FXML private Pane matchRules;
     @FXML private Pane startMenu;
+    boolean validChoice;
+
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
     private ImageView[] views;
     private int playerTurnPickCard = 1;
@@ -344,6 +343,7 @@ public class GUIManager {
             stage.show();
 
             controller.addPickCardViews(scene);
+            createBordersForPickCards();
             gameController.bindCardsToView(controller.getCardImageView(scene));
             gameController.startDraftPhase();
 
@@ -1183,5 +1183,36 @@ public class GUIManager {
     public void resetPlayerIcons(){
         enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2.png").toExternalForm()));
 
+    }
+
+    public void onMouseEnterCardArea(MouseEvent event){
+        ImageView card = (ImageView) event.getSource();
+
+        if ((gameController.getGameState().getPhase() == GamePhase.DRAFT && gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO) /*|| card.getImage().getUrl().contains("CardBACKSIDE.png")*/) {
+            validChoice = false;
+        } else {
+            validChoice = true;
+        }
+
+       // if (gameController.getGameState().getPhase() == GamePhase.PLAY && card.){
+       //
+       // }
+        if (validChoice) {
+            card.setStyle("-fx-effect: dropshadow(gaussian, green, 10, 0.7, 0, 0);");
+        } else {
+            card.setStyle("-fx-effect: dropshadow(gaussian, red, 0, 0.0, 0, 0);");
+        }
+    }
+    public void onMouseExitCardArea(MouseEvent event){
+
+        ImageView card = (ImageView) event.getSource();
+
+        card.setStyle("-fx-effect: dropshadow(gaussian, transparent, 0, 0.0, 0, 0);");
+    }
+    private void createBordersForPickCards() {
+
+        for (ImageView card : pickCardViews) {
+            card.setStyle("-fx-border-color: transparent;" + "-fx-border-width: 3;");
+        }
     }
 }
