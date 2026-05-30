@@ -287,7 +287,7 @@ public class GameController implements GameStateListener {
      */
     private void computerChooseCardInSinglePayer() {
 
-        PauseTransition pick = new PauseTransition(Duration.seconds(0.5));
+        PauseTransition pick = new PauseTransition(Duration.seconds(1));
 
         pick.setOnFinished(e -> {
 
@@ -731,14 +731,11 @@ public class GameController implements GameStateListener {
         switch (eventNumber){
             case 1:
                 // Om någon placerar ett kort
-
                 guiManager.sendMessageToEventLog(player.getName() + " has placed down " + firstCard.getCardName());
                 guiManager.sendMessageToEventLog("___________________________");
                 break;
-                // För att få ett tomt utrymme under.
             case 2:
                 // Om någon attackerat ett kort.
-
                 guiManager.sendMessageToEventLog(firstCard.getCardName() + " has attacked " + secondCard.getCardName() + " for " + firstCard.getCardAD());
                 guiManager.sendMessageToEventLog("___________________________");
                 if (firstCard.isDead()){
@@ -752,7 +749,6 @@ public class GameController implements GameStateListener {
                 break;
             case 3:
                 // Om någon har avslutat sin tur.
-
                 guiManager.sendMessageToEventLog(player.getName() + " has ended their turn!");
                 guiManager.sendMessageToEventLog("___________________________");
                 break;

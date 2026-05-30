@@ -740,8 +740,6 @@ public class GUIManager {
     }
 
     public void switchTurnLabelInPickCard(PlayerID id){
-
-
         if(id == PlayerID.PLAYER_ONE){
             pickCardTurn.setText("Player 2");
 
@@ -1171,11 +1169,12 @@ public class GUIManager {
     }
 
     public void playerPressed(MouseEvent event) {
-           String id = event.getPickResult().getIntersectedNode().getId();
+        String id = event.getPickResult().getIntersectedNode().getId();
         if(isLocalPlayersTurn() && attackCardPicked){
            if(id == enemyIcon.getId()){
                enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
                gameController.attackPlayer(cardToAttackWith);
+               //gameController.addMassageInGui(5, );
                attackCardPicked = false;
            }
         }
