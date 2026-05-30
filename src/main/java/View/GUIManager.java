@@ -1120,6 +1120,12 @@ public class GUIManager {
         pickCardViews.add((ImageView) scene.lookup("#card_11"));
     }
 
+    public void displayTurnRound(){
+        if (turnNumber == null) return;
+        turnNumber.setText(String.valueOf(gameController.getGameState().getTurnNumber()));
+        //här kan man också skriva ut hur många kort som är tillåtna att placera var runda.
+    }
+
     //behöver en hostgame knapp, här skapar vi då servern
 
     //samt en joingame knapp och metod där vi här connecttoserver genom gamecontroller metoden jag skapat där
