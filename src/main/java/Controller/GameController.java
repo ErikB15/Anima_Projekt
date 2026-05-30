@@ -224,14 +224,13 @@ public class GameController implements GameStateListener {
             delay.play();
             return;
         }
-        guiManager.switchTurnLabelInPickCard(getCurrentPlayerId());
+
         gameState.switchPlayer();
         guiManager.updateGuiAfterCardIsPicked(cardIndex);
 
         if(getSinglePlayer() == true){
             computerChooseCardInSinglePayer();
         }
-
     }
 
     /**
@@ -327,7 +326,6 @@ public class GameController implements GameStateListener {
                 return;
             }
 
-            guiManager.switchTurnLabelInPickCard(getCurrentPlayerId());
             gameState.switchPlayer();
         });
 
