@@ -222,6 +222,7 @@ public class GameController implements GameStateListener {
             return;
         }
 
+        guiManager.switchTurnLabelInPickCard(getCurrentPlayerId());
         gameState.switchPlayer();
         guiManager.updateGuiAfterCardIsPicked(cardIndex);
 
@@ -323,6 +324,7 @@ public class GameController implements GameStateListener {
                 return;
             }
 
+            guiManager.switchTurnLabelInPickCard(getCurrentPlayerId());
             gameState.switchPlayer();
         });
 
