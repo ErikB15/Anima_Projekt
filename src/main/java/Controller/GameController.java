@@ -88,20 +88,26 @@ public class GameController implements GameStateListener {
     public void addAllCards(){
         allCards[0] = new Card("Kenneth", 10,15,1,poison, "/CardPictures/Card1.png");
         allCards[1] = new Card("KnifeGuy", 13,12,2,poison, "/CardPictures/Card2.png");
-        allCards[2] = new Card("Harrold", 1,30,3,poison, "/CardPictures/Card3.png");
+        allCards[2] = new Card("Harrold", 1,37,3,poison, "/CardPictures/Card3.png");
         allCards[3] = new Card("George", 5,20,4,poison, "/CardPictures/Card4.png");
-        allCards[4] = new Card("Monkey", 30,5,5,taunt, "/CardPictures/Card5.png");
-        allCards[5] = new Card("Wizard", 30,5,6,poison, "/CardPictures/Card6.png");
-        allCards[6] = new Card("blockHead", 1,35,7,shield, "/CardPictures/Card7.png");
+        allCards[4] = new Card("Monkey", 30,3,5,taunt, "/CardPictures/Card5.png");
+        allCards[5] = new Card("Wizard", 30,4,6,poison, "/CardPictures/Card6.png");
+        allCards[6] = new Card("blockHead", 1,38,7,shield, "/CardPictures/Card7.png");
         allCards[7] = new Card("Twins", 10,17,8,dubbelHit, "/CardPictures/Card8.png");
         allCards[8] = new Card("ChillGuy", 5,22,9,heal, "/CardPictures/Card9.png");
-        allCards[9] = new Card("Bob", 15,8,10,buff, "/CardPictures/Card10.png");
-        allCards[10] = new Card("Kick", 13,13,11,poison, "/CardPictures/Card11.png");
-        allCards[11] = new Card("Pernilla", 2,28,12,poison, "/CardPictures/Card12.png");
+        allCards[9] = new Card("Bob", 15,9,10,buff, "/CardPictures/Card10.png");
+        allCards[10] = new Card("Kick", 13,14,11,poison, "/CardPictures/Card11.png");
+        allCards[11] = new Card("Pernilla", 2,31,12,poison, "/CardPictures/Card12.png");
     }
 
 
     public void startSingleplayer() {
+        playerOne = new Player("Player1");
+        playerTwo = new Player("Player2"); //identifera spelare för servern såd e har ett namn
+        board = new Board();
+        gameState = new GameState(playerOne, playerTwo, board);
+        enemyAI = new EnemyAI(this, gameState);
+        addAllCards();
         startDraftPhase();
 
         localPlayerRole = PlayerID.PLAYER_ONE;

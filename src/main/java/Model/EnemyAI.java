@@ -233,42 +233,36 @@ public class EnemyAI {
         this.totalDeckHealth += allCards[bestIndex].getCardMaxHP();
         this.totalDeckAttack += allCards[bestIndex].getCardAD();
 
+
+        double adPercentage = ((double) totalDeckAttack / (totalDeckAttack + totalDeckHealth)) * 100;
+
+        double hpPercentage = ((double) totalDeckHealth / (totalDeckAttack + totalDeckHealth)) * 100;
+
         if (aggressive){
-            System.out.println(
-                    "Personality: Aggressive"
-            );
+            System.out.println("Personality: Aggressive");
 
-            System.out.println(
-                    "Attack: " + totalDeckAttack
-            );
+            System.out.println("Attack: " + totalDeckAttack);
+            System.out.println("Health: " + totalDeckHealth);
 
-            System.out.println(
-                    "Health: " + totalDeckHealth
-            );
+            System.out.printf("AD: %.1f%%%n", adPercentage);
+            System.out.printf("HP: %.1f%%%n", hpPercentage);
         } else if (defensive) {
-            System.out.println(
-                    "Personality: Defensive"
-            );
+            System.out.println("Personality: Defensive");
 
-            System.out.println(
-                    "Attack: " + totalDeckAttack
-            );
+            System.out.println("Attack: " + totalDeckAttack);
+            System.out.println("Health: " + totalDeckHealth);
 
-            System.out.println(
-                    "Health: " + totalDeckHealth
-            );
+            System.out.printf("AD: %.1f%%%n", adPercentage);
+            System.out.printf("HP: %.1f%%%n", hpPercentage);
         }else {
-            System.out.println(
-                    "Personality: Balanced"
-            );
+            System.out.println("Personality: Balanced");
 
-            System.out.println(
-                    "Attack: " + totalDeckAttack
-            );
+            System.out.println("Attack: " + totalDeckAttack);
+            System.out.println("Health: " + totalDeckHealth);
 
-            System.out.println(
-                    "Health: " + totalDeckHealth
-            );
+            System.out.printf("AD: %.1f%%%n", adPercentage);
+            System.out.printf("HP: %.1f%%%n", hpPercentage);
+            
         }
         return bestIndex;
     }
@@ -370,8 +364,8 @@ public class EnemyAI {
         int totalScore = 0;
 
         if(aggressive){totalScore = (4 * attackScore) + healthScore;}
-        if(defensive){totalScore = attackScore + (healthScore * 4);}
-        if(balanced){totalScore = (attackScore * 2) + (healthScore * 2);}
+        if(defensive){totalScore = attackScore + (healthScore * 3);}
+        if(balanced){totalScore = (attackScore * 3) + (healthScore * 2);}
 
         return totalScore;
     }
@@ -384,17 +378,17 @@ public class EnemyAI {
         double attackRatio = attackPoints/totalPoints;
 
         if(aggressive){
-            double targetRatio = 0.75;
+            double targetRatio = 0.70;
             double distance = Math.abs(targetRatio - attackRatio);
-            return Math.round((float)(60 - (distance * 60)));
+            return Math.round((float)(70 - (distance * 70)));
         } else if (defensive){
-            double targetRatio = 0.25;
+            double targetRatio = 0.30;
             double distance = Math.abs(targetRatio - attackRatio);
-            return Math.round((float)(60 - (distance * 60)));
+            return Math.round((float)(70 - (distance * 70)));
         } else{
             double targetRatio = 0.50;
             double distance = Math.abs(targetRatio - attackRatio);
-            return Math.round((float)(60 - (distance * 60)));
+            return Math.round((float)(80 - (distance * 80)));
         }
     }
 
