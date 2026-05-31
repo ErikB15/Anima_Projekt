@@ -143,65 +143,17 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <ImageView fitHeight="179.0" fitWidth="123.0" layoutX="24.0" layoutY="539.0" pickOnBounds="true" preserveRatio="true" rotate="-29.4">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="179.0" fitWidth="123.0" layoutX="56.0" layoutY="528.0" pickOnBounds="true" preserveRatio="true" rotate="-8.6">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="179.0" fitWidth="123.0" layoutX="113.0" layoutY="519.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="179.0" fitWidth="123.0" layoutX="172.0" layoutY="521.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="179.0" fitWidth="123.0" layoutX="213.0" layoutY="527.0" pickOnBounds="true" preserveRatio="true" rotate="14.9">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="179.0" fitWidth="123.0" layoutX="260.0" layoutY="549.0" pickOnBounds="true" preserveRatio="true" rotate="32.0">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="162.0" fitWidth="91.0" layoutX="102.0" layoutY="-72.0" pickOnBounds="true" preserveRatio="true" rotate="-145.6">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="152.0" fitWidth="91.0" layoutX="147.0" layoutY="-58.0" pickOnBounds="true" preserveRatio="true" rotate="-167.5">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="179.0" fitWidth="91.0" layoutX="207.0" layoutY="-49.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="171.0" fitWidth="96.0" layoutX="262.0" layoutY="-57.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="161.0" fitWidth="103.0" layoutX="313.0" layoutY="-66.0" pickOnBounds="true" preserveRatio="true" rotate="169.4">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="144.0" fitWidth="81.0" layoutX="371.0" layoutY="-55.0" pickOnBounds="true" preserveRatio="true" rotate="155.2">
-         <image>
-            <Image url="@CardPictures/Card9.png" />
-         </image>
-      </ImageView>
+      <ImageView fx:id="player_0" fitHeight="179.0" fitWidth="123.0" layoutX="2.0" layoutY="528.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="player_1" fitHeight="179.0" fitWidth="123.0" layoutX="58.0" layoutY="528.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="player_2" fitHeight="179.0" fitWidth="123.0" layoutX="116.0" layoutY="528.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="player_3" fitHeight="179.0" fitWidth="123.0" layoutX="169.0" layoutY="528.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="player_4" fitHeight="179.0" fitWidth="123.0" layoutX="218.0" layoutY="528.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="player_5" fitHeight="179.0" fitWidth="123.0" layoutX="291.0" layoutY="528.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="enemy_5" fitHeight="179.0" fitWidth="123.0" layoutX="73.0" layoutY="-89.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
+      <ImageView fx:id="enemy_4" fitHeight="179.0" fitWidth="123.0" layoutX="129.0" layoutY="-89.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
+      <ImageView fx:id="enemy_3" fitHeight="179.0" fitWidth="123.0" layoutX="187.0" layoutY="-89.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
+      <ImageView fx:id="enemy_2" fitHeight="179.0" fitWidth="123.0" layoutX="240.0" layoutY="-89.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
+      <ImageView fx:id="enemy_1" fitHeight="179.0" fitWidth="123.0" layoutX="289.0" layoutY="-89.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
+      <ImageView fx:id="enemy_0" fitHeight="179.0" fitWidth="123.0" layoutX="362.0" layoutY="-89.0" pickOnBounds="true" preserveRatio="true" rotate="180.0" />
    </children>
 </AnchorPane>
