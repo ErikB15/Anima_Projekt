@@ -1,6 +1,5 @@
 package Controller;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +11,6 @@ import Model.CardEffects.*;
 import View.*;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
@@ -226,8 +224,8 @@ public class GameController implements GameStateListener {
         gameState.switchPlayer();
         guiManager.updateGuiAfterCardIsPicked(cardIndex);
 
-        if(getSinglePlayer() == true){
-            computerChooseCardInSinglePayer();
+        if(getSinglePlayer()){
+            computerChooseCardInSinglePlayer();
         }
     }
 
@@ -282,7 +280,7 @@ public class GameController implements GameStateListener {
      *
      * @author Erik
      */
-    private void computerChooseCardInSinglePayer() {
+    private void computerChooseCardInSinglePlayer() {
 
         PauseTransition pick = new PauseTransition(Duration.seconds(1));
 
@@ -300,8 +298,9 @@ public class GameController implements GameStateListener {
                 return;
             }
 
-            int randomIndex = (int) (Math.random() * availableIndexes.size());
-            int chosenIndex = availableIndexes.get(randomIndex);
+            int chosenIndex = enemyAI.scoreDraftCards(allCards);
+
+            if(chosenIndex == -1){return;}
 
             Card card = allCards[chosenIndex];
 
@@ -423,8 +422,6 @@ public class GameController implements GameStateListener {
         }
         guiManager.renderCard(Zone.HAND,2,null);
 
-        //guiManager.renderHand(currentPlayer.getHand());
-
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
         }
@@ -435,49 +432,11 @@ public class GameController implements GameStateListener {
     }
 
     /**
-     * Vad som ska hända när knappen EndTurn klickas, jag har lagt till en extra GamePhase.
-     * Detta är så att om en spelare börjar spam klicka eller försöka attackera precis efter de klickat EndTurn.
-     * Så kommer de andra checks (som kollar vilken "Phase" det är) stoppa dem från att göra det tills endTurn är klar.
-     * Har skapat en ytterligare metod, "wakeUpCardsForPlayer" som väcker korten av den spelare som klickat endTurn.
-     *
-     * @author Jim, Erik
-     */
-    public void endTurnSinglePLayer(){
-        // Nytt för MULTIPLAYER gren
-        // I multiplayer skickar vi END_TURN till servern.
-        // Servern växlar tur, drar kort åt nästa spelare, och broadcastar nya spelläget.
-        if (gameClient != null) {
-            gameClient.endTurn();
-            gameState.setPhase(GamePhase.END_TURN); // blockera lokala handlingar tills servern svarar
-            return; // Viktigt här, kör INTE singleplayer logiken (AI osv)
-        }
-        // SLUT NYTT för multiplayer
-
-        gameState.setPhase(GamePhase.END_TURN);
-        Player currentPlayer = gameState.getCurrentPlayer();
-        PlayerID currentPlayerID = gameState.getCurrentPlayerId();
-
-        currentPlayer.drawUntilHandIsFull();
-        board.wakeUpCardsForPlayer(currentPlayerID);
-        board.resetAttacksForPlayer(currentPlayerID);
-
-        for(int i = 0; i < playerOne.getHand().size(); i++){
-            guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
-        }
-
-        gameState.switchTurn();
-
-        gameState.setPhase(GamePhase.PLAY);
-
-        addMassageInGui(3, currentPlayer, null, null);
-    }
-
-
-    /**
      *
      * @param attackerIndex
      * @param defenderIndex
      * @return
+     * @author Jim,Leo
      */
     public boolean attackCard(int attackerIndex, int defenderIndex) {
         // Nytt för MULTIPLAYER gren
@@ -553,6 +512,12 @@ public class GameController implements GameStateListener {
         return true;
     }
 
+    /**
+     *
+     * @param attackCard
+     * @return
+     * @author Jim,Leo
+     */
     public boolean attackPlayer(int attackCard){
         // Nytt för MULTIPLAYER gren
         // I multiplayer skickar vi den direkta attacken till servern.
@@ -593,12 +558,12 @@ public class GameController implements GameStateListener {
 
 
     /**
-     * Vad som ska hända när knappen EndTurn klickas, jag har lagt till en extra GamePhase.
+     * Vad som ska hända när knappen EndTurn klickas, jag
      * Detta är så att om en spelare börjar spam klicka eller försöka attackera precis efter de klickat EndTurn.
      * Så kommer de andra checks (som kollar vilken "Phase" det är) stoppa dem från att göra det tills endTurn är klar.
      * Har skapat en ytterligare metod, "wakeUpCardsForPlayer" som väcker korten av den spelare som klickat endTurn.
      *
-     * @author Jim, Erik
+     * @author Jim, Erik, Leo
      */
     public void endTurn(){
         // MULTIPLAYER GREN
@@ -642,33 +607,11 @@ public class GameController implements GameStateListener {
      * @author Jim
      */
     public void gameOver(){
-        // BORDE FINNAS NÅGOT SOM TAR OSS TILL MAIN MENYN HÄR.
+        guiManager.switchToGameOverMenu();
         playerOne = new Player("Player 1");
         playerTwo = new Player("Player 2");
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
-
-        guiManager.switchToGameOverMenu();
-
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-
-        // TODO.. Här ska det fixas game over, mest troligen blir det bara att gameState resettas samt GUI:n
-        // Om jag inte hunnit och ni redan kollar på detta, så kan ni göra en GUI metod som bara resettar allt.
-        // Och sedan kalla den här inne, så ska jag fixa att uppdaterra klasserna och all den delen strax.
-
-        //guiManager.switchToGameOverScreen(); //visar just nu endast ett tumt fönster som inte säger ngt mer än gamover.
-        // gameover metoden borde beräkna resultat av matchen och sedan visa det i giut via guimanager.
     }
 
     /**

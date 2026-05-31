@@ -19,7 +19,7 @@ public class Player {
      * Graveyard - De korten en spelare har förlorat.
      */
     public Player(String name){
-        this.hp = 90; // PS. 30 Är bara test "value" just nu.
+        this.hp = 90;
         this.deck = new ArrayList<>();
         this.hand = new ArrayList<>();
         this.graveyard = new ArrayList<>();
@@ -143,8 +143,6 @@ public class Player {
     public ArrayList<Card> getGraveyard() {
         return graveyard;
     }
-
-
 
 
 }
