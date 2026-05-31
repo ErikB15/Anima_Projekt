@@ -318,6 +318,7 @@ public class GameController implements GameStateListener {
 
             playerTwo.addCardToDeck(card);
 
+            guiManager.displayPickedCardDraft(card.getImagePath(), PlayerID.PLAYER_TWO);
             guiManager.updateGuiAfterCardIsPicked(chosenIndex);
 
             if (isAllCardsEmpty()) {

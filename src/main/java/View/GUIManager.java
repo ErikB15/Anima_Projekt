@@ -511,6 +511,11 @@ public class GUIManager {
         ImageView clickedCard = (ImageView) event.getSource();
         Card card = (Card) clickedCard.getUserData();
 
+        //ID som behövs för både multi och singleplayer
+        String ID = event.getPickResult().getIntersectedNode().getId();
+        String[] splitID = ID.split("_");
+        int IDInt = Integer.parseInt(splitID[1]);
+
         // MULTIPLAYER GREN
         if (gameController.isMultiplayer()) {
             System.out.println("(GUI) pickedCard klick. isDraftTurn=" + isDraftTurn + ", localRole=" + localRole);
@@ -526,6 +531,8 @@ public class GUIManager {
 
             // Visa baksidan lokalt direkt (snabb feedback)
             clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+            changeHP(IDInt, " ", null);
+            displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
 
             // Skicka valet till servern. Servern lägger kortet i din deck och broadcastar GAME_STATE.
             gameController.sendDraftPick(card.getCardID());
@@ -536,11 +543,10 @@ public class GUIManager {
 
         if (!isLocalPlayersTurn()){return;}
 
-        String ID = event.getPickResult().getIntersectedNode().getId();
-        String[] splitID = ID.split("_");
-        int IDInt = Integer.parseInt(splitID[1]);
+
         System.out.println(IDInt);
 
+        displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
         gameController.chooseCardPhase(IDInt);
     }
 
@@ -1222,5 +1228,38 @@ public class GUIManager {
         for (ImageView card : pickCardViews) {
             card.setStyle("-fx-border-color: transparent;" + "-fx-border-width: 3;");
         }
+    }
+
+    /**
+     * Metod för att visa kort i diverse spelares hand i pick card phase
+     * @param imagePath
+     * @param id
+     * @author Elna
+     */
+    public void displayPickedCardDraft(String imagePath, PlayerID id){
+        Scene currentScene = (stage != null) ? stage.getScene() : scene;
+        if (currentScene == null) return;
+
+        if(id == PlayerID.PLAYER_ONE){
+
+            for (int i = 0; i < 6; i++) {
+                ImageView view = (ImageView) currentScene.lookup("#player_" + i);
+
+                if (view.getImage() == null){
+                    view.setImage(new Image(getClass().getResource(imagePath).toExternalForm()));
+                    break;
+                }
+            }
+        } else{
+            for (int i = 0; i < 6; i++) {
+                ImageView view = (ImageView) currentScene.lookup("#enemy_" + i);
+
+                if (view.getImage() == null){
+                    view.setImage(new Image(getClass().getResource(imagePath).toExternalForm()));
+                    break;
+                }
+            }
+        }
+
     }
 }
