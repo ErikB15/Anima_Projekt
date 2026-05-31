@@ -511,6 +511,11 @@ public class GUIManager {
         ImageView clickedCard = (ImageView) event.getSource();
         Card card = (Card) clickedCard.getUserData();
 
+        //ID som behövs för både multi och singleplayer
+        String ID = event.getPickResult().getIntersectedNode().getId();
+        String[] splitID = ID.split("_");
+        int IDInt = Integer.parseInt(splitID[1]);
+
         // MULTIPLAYER GREN
         if (gameController.isMultiplayer()) {
             System.out.println("(GUI) pickedCard klick. isDraftTurn=" + isDraftTurn + ", localRole=" + localRole);
@@ -526,9 +531,10 @@ public class GUIManager {
 
             // Visa baksidan lokalt direkt (snabb feedback)
             clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+            changeHP(IDInt, " ", null);
+            displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
 
             // Skicka valet till servern. Servern lägger kortet i din deck och broadcastar GAME_STATE.
-            displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
             gameController.sendDraftPick(card.getCardID());
 
             return; // VIKTIGT här, kör INTE singleplayer logiken nedanför
@@ -537,9 +543,7 @@ public class GUIManager {
 
         if (!isLocalPlayersTurn()){return;}
 
-        String ID = event.getPickResult().getIntersectedNode().getId();
-        String[] splitID = ID.split("_");
-        int IDInt = Integer.parseInt(splitID[1]);
+
         System.out.println(IDInt);
 
         displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
