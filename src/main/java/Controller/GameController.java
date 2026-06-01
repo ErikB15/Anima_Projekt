@@ -886,13 +886,15 @@ public class GameController implements GameStateListener {
 
     /**
      * Anropas av nätverket när ett chattmeddelande tas emot.
+     * Skickar meddelandet vidare till eventloggen i GUI så att båda spelare
+     * ser samma händelse historik (server broadcastar CHAT efter varje action).
      *
      * @param msg chattmeddelandets text
      * @author Leo
      */
     @Override
     public void onChat(String msg) {
-        Platform.runLater(() -> guiManager.showChat(msg));
+        Platform.runLater(() -> guiManager.sendMessageToEventLog(msg));
     }
 
     /**

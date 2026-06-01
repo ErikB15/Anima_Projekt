@@ -133,7 +133,7 @@ public class GameServer {
         gameState.getDraftPool().remove(chosen);
 
         if (gameState.getDraftPool().isEmpty()) {
-            // Draft klar → dela ut kort och starta spelfasen
+            // Draft klar, dela ut kort och starta spelfasen
             gameState.getPlayerOne().drawUntilHandIsFull();
             gameState.getPlayerTwo().drawUntilHandIsFull();
 
@@ -144,6 +144,7 @@ public class GameServer {
             gameState.setPhase(GamePhase.PLAY);
 
             broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
+            broadcast(new GameMessage(GameMessage.Type.CHAT, "Draften är klar — spelet börjar!", ""));
             sendToPlayer(getPlayerNameByRole(firstPlayPlayer),
                     new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
 
@@ -175,7 +176,7 @@ public class GameServer {
 
         int cardId, boardIndex;
         try {
-            cardId     = Integer.parseInt(parts[0].trim());
+            cardId = Integer.parseInt(parts[0].trim());
             boardIndex = Integer.parseInt(parts[1].trim());
         } catch (NumberFormatException e) { return; }
 
@@ -190,11 +191,11 @@ public class GameServer {
 
         // Hitta kortet i handen
         Card cardToPlay = null;
-        int handIndex   = -1;
+        int handIndex = -1;
         for (int i = 0; i < player.getHand().size(); i++) {
             if (player.getHand().get(i).getCardID() == cardId) {
                 cardToPlay = player.getHand().get(i);
-                handIndex  = i;
+                handIndex = i;
                 break;
             }
         }
@@ -215,6 +216,9 @@ public class GameServer {
         }
 
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT,
+                playerName + " placerade " + cardToPlay.getCardName(), ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
     }
 
 
@@ -291,6 +295,10 @@ public class GameServer {
         }
 
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT,
+                attacker.getCardName() + " attackerade " + defender.getCardName()
+                        + " för " + attacker.getCardAD() + " skada", ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
     }
 
     /**
@@ -339,6 +347,10 @@ public class GameServer {
         }
 
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT,
+                attacker.getCardName() + " attackerade " + defenderPlayer.getName()
+                        + " direkt för " + attacker.getCardAD() + " skada", ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
     }
     /**
      * Hanterar när en spelare avslutar sin tur.
@@ -358,31 +370,40 @@ public class GameServer {
         gameState.getCurrentPlayer().drawUntilHandIsFull();
 
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT, playerName + " avslutade sin tur", ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
+        sendToPlayer(gameState.getCurrentPlayer().getName(),
+                new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
         sendToPlayer(gameState.getCurrentPlayer().getName(),
                 new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
     }
 
     /**
-     * Skapar en lista med alla 12 spelkort.
-     * Används som gemensam draft-pool när spelet startar.
-     * Effect är null — effekter hanteras ej på serversidan.
+     /**
+     * Skapar listan med alla 12 kort som ingår i draft poolen.
+     * MÅSTE matcha GameController.addAllCards() exakt, annars får klienterna
+     * fel kortvärden från servern jämfört med vad GUI är förberedd att rendera.
      *
+     * Effect fältet sätts till null på serversidan eftersom servern inte
+     * kör effekter (de hanteras på klientsidan om alls).
+     *
+     * @return en ny ArrayList med 12 kort i id ordning 1-12
      * @author Leo
      */
     private ArrayList<Card> createAllCards() {
         ArrayList<Card> cards = new ArrayList<>();
-        cards.add(new Card("Monkey",    40, 50, 1,  null, "/CardPictures/Card5.png"));
-        cards.add(new Card("Bob",       40, 25, 2,  null, "/CardPictures/Card10.png"));
-        cards.add(new Card("Twins",     40, 34, 3,  null, "/CardPictures/Card8.png"));
-        cards.add(new Card("ChillGuy",  40, 20, 4,  null, "/CardPictures/Card9.png"));
-        cards.add(new Card("blockHead", 40, 30, 5,  null, "/CardPictures/Card7.png"));
-        cards.add(new Card("Wizard",    40, 40, 6,  null, "/CardPictures/Card6.png"));
-        cards.add(new Card("Pernilla",  40, 40, 7,  null, "/CardPictures/Card12.png"));
-        cards.add(new Card("Kick",      40, 40, 8,  null, "/CardPictures/Card11.png"));
-        cards.add(new Card("George",    40, 40, 9,  null, "/CardPictures/Card4.png"));
-        cards.add(new Card("Harrold",   40, 40, 10, null, "/CardPictures/Card3.png"));
-        cards.add(new Card("KnifeGuy",  40, 40, 11, null, "/CardPictures/Card2.png"));
-        cards.add(new Card("Kenneth",   40, 40, 12, null, "/CardPictures/Card1.png"));
+        cards.add(new Card("Kenneth",   10, 15, 1,  null, "/CardPictures/Card1.png"));
+        cards.add(new Card("KnifeGuy",  13, 12, 2,  null, "/CardPictures/Card2.png"));
+        cards.add(new Card("Harrold",   1,  30, 3,  null, "/CardPictures/Card3.png"));
+        cards.add(new Card("George",    5,  20, 4,  null, "/CardPictures/Card4.png"));
+        cards.add(new Card("Monkey",    30, 5,  5,  null, "/CardPictures/Card5.png"));
+        cards.add(new Card("Wizard",    30, 5,  6,  null, "/CardPictures/Card6.png"));
+        cards.add(new Card("blockHead", 1,  35, 7,  null, "/CardPictures/Card7.png"));
+        cards.add(new Card("Twins",     10, 17, 8,  null, "/CardPictures/Card8.png"));
+        cards.add(new Card("ChillGuy",  5,  22, 9,  null, "/CardPictures/Card9.png"));
+        cards.add(new Card("Bob",       15, 8,  10, null, "/CardPictures/Card10.png"));
+        cards.add(new Card("Kick",      13, 13, 11, null, "/CardPictures/Card11.png"));
+        cards.add(new Card("Pernilla",  2,  28, 12, null, "/CardPictures/Card12.png"));
         return cards;
     }
 
