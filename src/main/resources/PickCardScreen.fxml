@@ -13,62 +13,62 @@
             <Image url="@pickCardScene.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_4" fitHeight="152.0" fitWidth="103.0" layoutX="11.0" layoutY="230.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_4" fitHeight="152.0" fitWidth="103.0" layoutX="11.0" layoutY="230.0" onMouseClicked="#pickedCard" onMouseExited="#onMouseExitCardArea" onMouseMoved="#onMouseMoveOnCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card5.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_0" fitHeight="152.0" fitWidth="103.0" layoutX="8.0" layoutY="107.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_0" fitHeight="152.0" fitWidth="103.0" layoutX="8.0" layoutY="107.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card1.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_1" fitHeight="159.0" fitWidth="96.0" layoutX="124.0" layoutY="107.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_1" fitHeight="159.0" fitWidth="96.0" layoutX="124.0" layoutY="107.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card2.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_5" fitHeight="145.0" fitWidth="113.0" layoutX="124.0" layoutY="235.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_5" fitHeight="145.0" fitWidth="113.0" layoutX="124.0" layoutY="235.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card6.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_2" fitHeight="152.0" fitWidth="103.0" layoutX="241.0" layoutY="107.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_2" fitHeight="152.0" fitWidth="103.0" layoutX="241.0" layoutY="107.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card3.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_3" fitHeight="152.0" fitWidth="96.0" layoutX="370.0" layoutY="106.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_3" fitHeight="152.0" fitWidth="96.0" layoutX="370.0" layoutY="106.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card4.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_6" fitHeight="152.0" fitWidth="103.0" layoutX="242.0" layoutY="236.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_6" fitHeight="152.0" fitWidth="103.0" layoutX="242.0" layoutY="236.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card7.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_7" fitHeight="152.0" fitWidth="96.0" layoutX="370.0" layoutY="235.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_7" fitHeight="152.0" fitWidth="96.0" layoutX="370.0" layoutY="235.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card8.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_8" fitHeight="152.0" fitWidth="103.0" layoutX="11.0" layoutY="365.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_8" fitHeight="152.0" fitWidth="103.0" layoutX="11.0" layoutY="365.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card9.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_9" fitHeight="152.0" fitWidth="96.0" layoutX="122.0" layoutY="365.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_9" fitHeight="152.0" fitWidth="96.0" layoutX="122.0" layoutY="365.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card10.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_10" fitHeight="152.0" fitWidth="96.0" layoutX="245.0" layoutY="368.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_10" fitHeight="152.0" fitWidth="96.0" layoutX="245.0" layoutY="368.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card11.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="card_11" fitHeight="152.0" fitWidth="103.0" layoutX="363.0" layoutY="369.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseEnterCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="card_11" fitHeight="152.0" fitWidth="103.0" layoutX="363.0" layoutY="369.0" onMouseClicked="#pickedCard" onMouseEntered="#onMouseMoveOnCardArea" onMouseExited="#onMouseExitCardArea" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@CardPictures/Card12.png" />
          </image>

@@ -21,10 +21,7 @@ import Model.Card;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
 import static java.lang.String.valueOf;
 
 
@@ -549,7 +546,7 @@ public class GUIManager {
 
 
         ImageView view = pickCardViews.get(IDInt);
-        Image newImage = new Image(getClass().getResourceAsStream("/CardBACKSIDE.png"));
+        Image newImage = new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm());
         view.setImage(newImage);
     }
 
@@ -1193,23 +1190,46 @@ public class GUIManager {
 
     }
 
-    public void onMouseEnterCardArea(MouseEvent event){
+    public void onMouseMoveOnCardArea(MouseEvent event){
         ImageView card = (ImageView) event.getSource();
+        Image img = card.getImage();
 
-        if ((gameController.getGameState().getPhase() == GamePhase.DRAFT && gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO) /*|| card.getImage().getUrl().contains("CardBACKSIDE.png")*/) {
-            validChoice = false;
-        } else {
+        String url = (img != null) ? img.getUrl() : null;
+
+        boolean backside = url != null && url.contains("CardBACKSIDE.png");
+
+        if (gameController.getGameState().getPhase() == GamePhase.DRAFT){
             validChoice = true;
+            if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO || backside) {
+                validChoice = false;
+            }
         }
 
-       // if (gameController.getGameState().getPhase() == GamePhase.PLAY && card.){
-       //
-       // }
+        if (gameController.getGameState().getPhase() == GamePhase.PLAY){
+            validChoice = true;
+
+            String id = card.getId();
+            String[] splitID = id.split("_");
+            int idInt = Integer.parseInt(splitID[1]);
+
+            try {
+                Card chosenCard = gameController.getGameState().getBoard().getCard(localRole, idInt);
+
+                if (gameController.getGameState().getCardsPlayedThisTurn() >= gameController.getGameState().getMaxCardsToPlayPerTurn()) {
+                    validChoice = false;
+                }
+
+                if (chosenCard.getAsleep()) {
+                    validChoice = false;
+                }
+
+            } catch (NullPointerException n){ return;}
+        }
+
         if (validChoice) {
             card.setStyle("-fx-effect: dropshadow(gaussian, green, 10, 0.7, 0, 0);");
-        } else {
-            card.setStyle("-fx-effect: dropshadow(gaussian, red, 0, 0.0, 0, 0);");
-        }
+        } else card.setStyle("-fx-effect: dropshadow(gaussian, red, 10, 0.7, 0, 0);");
+
     }
     public void onMouseExitCardArea(MouseEvent event){
 

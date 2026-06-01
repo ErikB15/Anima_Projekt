@@ -54,6 +54,7 @@ public class GameController implements GameStateListener {
     private Poison poison;
     private Buff buff;
     private boolean SinglePlayer;
+    private Card card;
 
     /**
      * Skapar en ny GameController och initierar spelets grunddata.
@@ -1186,4 +1187,7 @@ public class GameController implements GameStateListener {
         }
     }
 
+    public Card getCard(){
+        return card;
+    }
 }
