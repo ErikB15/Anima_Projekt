@@ -12,6 +12,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import Model.GameState;
@@ -48,7 +49,7 @@ public class GUIManager {
 
     //boolean för att kontrollera ordningen av knapptryck i spelfas
 
-    //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta på
+    //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta
     @FXML private ImageView hand_0;
     @FXML private ImageView hand_1;
     @FXML private ImageView hand_2;
@@ -372,6 +373,7 @@ public class GUIManager {
 
             Scene scene = new Scene(root);
             stage.setScene(scene);
+
             stage.setResizable(false);
             stage.show();
 
