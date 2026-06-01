@@ -1109,7 +1109,10 @@ public class GUIManager {
                 // Kortet är valt, visa baksidan
                 view.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
                 changeHP(i, " ", null);
+                displayPickedCardDraft(card.getImagePath(), PlayerID.PLAYER_TWO);
             }
+
+
         }
     }
 

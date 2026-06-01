@@ -822,6 +822,7 @@ public class GameController implements GameStateListener {
                 }
             }
             guiManager.updateDraftPool(remainingIds);
+
             return;
         }
 
