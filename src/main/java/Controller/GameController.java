@@ -427,7 +427,18 @@ public class GameController implements GameStateListener {
             resetPlacementState();
             return;
         }
-        guiManager.renderCard(Zone.HAND,2,null);
+
+        if(gameState.getTurnNumber() < 5){
+            guiManager.renderCard(Zone.HAND,2,null);
+        } else if(gameState.getTurnNumber() < 10){
+            guiManager.renderCard(Zone.HAND,1,null);
+            guiManager.renderCard(Zone.HAND,2,null);
+        } else {
+            guiManager.renderCard(Zone.HAND,0,null);
+            guiManager.renderCard(Zone.HAND,1,null);
+            guiManager.renderCard(Zone.HAND,2,null);
+        }
+
 
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
@@ -811,6 +822,7 @@ public class GameController implements GameStateListener {
                 }
             }
             guiManager.updateDraftPool(remainingIds);
+
             return;
         }
 

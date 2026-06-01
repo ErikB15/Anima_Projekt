@@ -720,7 +720,8 @@ public class GUIManager {
         changeHP(index, hp, zone);
     }
 
-    public void renderHand(ArrayList<Card> hand) {
+    //Används inte
+    /*public void renderHand(ArrayList<Card> hand) {
         views = zoneMap.get(Zone.HAND);
 
         for (int i = 0; i < views.length; i++) {
@@ -742,7 +743,7 @@ public class GUIManager {
                 views[i].setImage(null);
             }
         }
-    }
+    }*/
 
     public void switchTurnLabelInPickCard(PlayerID id){
 
@@ -1107,7 +1108,11 @@ public class GUIManager {
             if (!remainingCardIds.contains(card.getCardID())) {
                 // Kortet är valt, visa baksidan
                 view.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+                changeHP(i, " ", null);
+                displayPickedCardDraft(card.getImagePath(), PlayerID.PLAYER_TWO);
             }
+
+
         }
     }
 
