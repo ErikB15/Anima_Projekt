@@ -1108,6 +1108,7 @@ public class GUIManager {
             if (!remainingCardIds.contains(card.getCardID())) {
                 // Kortet är valt, visa baksidan
                 view.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
+                changeHP(i, " ", null);
             }
         }
     }
