@@ -1198,46 +1198,109 @@ public class GUIManager {
 
     }
 
-    public void onMouseMoveOnCardArea(MouseEvent event){
+    public void onMouseMoveOnCardArea(MouseEvent event) {
+
         ImageView card = (ImageView) event.getSource();
         Image img = card.getImage();
 
         String url = (img != null) ? img.getUrl() : null;
-
         boolean backside = url != null && url.contains("CardBACKSIDE.png");
 
-        if (gameController.getGameState().getPhase() == GamePhase.DRAFT){
-            validChoice = true;
+        validChoice = true;
+
+        GameState state = gameController.getGameState();
+        if (state == null) {
+            return;
+        }
+
+        GamePhase phase = state.getPhase();
+
+        if (phase == GamePhase.DRAFT) {
+
             if (gameController.getCurrentPlayerId() == PlayerID.PLAYER_TWO || backside) {
                 validChoice = false;
             }
-        }
 
-        if (gameController.getGameState().getPhase() == GamePhase.PLAY){
-            validChoice = true;
+        } else if (phase == GamePhase.PLAY) {
 
             String id = card.getId();
+
+            if (id == null || !id.contains("_")) {
+                return;
+            }
+
             String[] splitID = id.split("_");
-            int idInt = Integer.parseInt(splitID[1]);
+
+            if (splitID.length < 2) {
+                return;
+            }
+
+            int idInt;
 
             try {
-                Card chosenCard = gameController.getGameState().getBoard().getCard(localRole, idInt);
+                idInt = Integer.parseInt(splitID[1]);
+            } catch (NumberFormatException e) {
+                return;
+            }
 
-                if (gameController.getGameState().getCardsPlayedThisTurn() >= gameController.getGameState().getMaxCardsToPlayPerTurn()) {
+            if (id.startsWith("hand_")) {
+
+                if (state.getCardsPlayedThisTurn() >= state.getMaxCardsToPlayPerTurn()) {
                     validChoice = false;
+                }
+
+            }
+
+            else if (id.startsWith("p1board_")) {
+
+                Board board = state.getBoard();
+
+                if (board == null) {
+                    return;
+                }
+
+                Card chosenCard = board.getCard(PlayerID.PLAYER_ONE, idInt);
+
+                if (chosenCard == null) {
+                    return;
                 }
 
                 if (chosenCard.getAsleep()) {
                     validChoice = false;
                 }
 
-            } catch (NullPointerException n){ return;}
+                if (chosenCard.getHasAttackedThisTurn()) {
+                    validChoice = false;
+                }
+            }
+
+            else if (id.startsWith("p2board_")) {
+
+                Board board = state.getBoard();
+
+                if (board == null) {
+                    return;
+                }
+
+                Card chosenCard = board.getCard(PlayerID.PLAYER_TWO, idInt);
+
+                if (chosenCard == null) {
+                    return;
+                }
+
+                if (gameController.isAttackerPicked()) {
+                    validChoice = true;
+                } else {
+                    validChoice = false;
+                }
+            }
         }
 
         if (validChoice) {
             card.setStyle("-fx-effect: dropshadow(gaussian, green, 10, 0.7, 0, 0);");
-        } else card.setStyle("-fx-effect: dropshadow(gaussian, red, 10, 0.7, 0, 0);");
-
+        } else {
+            card.setStyle("-fx-effect: dropshadow(gaussian, red, 10, 0.7, 0, 0);");
+        }
     }
     public void onMouseExitCardArea(MouseEvent event){
 
