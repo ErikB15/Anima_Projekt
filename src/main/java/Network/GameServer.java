@@ -144,7 +144,7 @@ public class GameServer {
             gameState.setPhase(GamePhase.PLAY);
 
             broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
-            broadcast(new GameMessage(GameMessage.Type.CHAT, "Draften är klar — spelet börjar!", ""));
+            broadcast(new GameMessage(GameMessage.Type.CHAT, "Draft phase done, game starting!", ""));
             sendToPlayer(getPlayerNameByRole(firstPlayPlayer),
                     new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
 
@@ -210,14 +210,14 @@ public class GameServer {
         gameState.checkGameOver();
 
         if (gameState.isGameOver()) {
-            String winnerName = gameState.getWinner() != null ? gameState.getWinner().getName() : "Okänd";
+            String winnerName = gameState.getWinner() != null ? gameState.getWinner().getName() : "Unknown";
             broadcast(new GameMessage(GameMessage.Type.GAME_OVER, winnerName, ""));
             return;
         }
 
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
         broadcast(new GameMessage(GameMessage.Type.CHAT,
-                playerName + " placerade " + cardToPlay.getCardName(), ""));
+                playerName + " has placed down " + cardToPlay.getCardName(), ""));
         broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
     }
 
@@ -289,15 +289,15 @@ public class GameServer {
 
         gameState.checkGameOver();
         if (gameState.isGameOver()) {
-            String winnerName = gameState.getWinner() != null ? gameState.getWinner().getName() : "Okänd";
+            String winnerName = gameState.getWinner() != null ? gameState.getWinner().getName() : "Unknown";
             broadcast(new GameMessage(GameMessage.Type.GAME_OVER, winnerName, ""));
             return;
         }
 
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
         broadcast(new GameMessage(GameMessage.Type.CHAT,
-                attacker.getCardName() + " attackerade " + defender.getCardName()
-                        + " för " + attacker.getCardAD() + " skada", ""));
+                attacker.getCardName() + " has attacked " + defender.getCardName()
+                        + " for " + attacker.getCardAD() + " damage", ""));
         broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
     }
 
@@ -341,15 +341,15 @@ public class GameServer {
 
         gameState.checkGameOver();
         if (gameState.isGameOver()) {
-            String winnerName = gameState.getWinner() != null ? gameState.getWinner().getName() : "Okänd";
+            String winnerName = gameState.getWinner() != null ? gameState.getWinner().getName() : "Unknown";
             broadcast(new GameMessage(GameMessage.Type.GAME_OVER, winnerName, ""));
             return;
         }
 
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
         broadcast(new GameMessage(GameMessage.Type.CHAT,
-                attacker.getCardName() + " attackerade " + defenderPlayer.getName()
-                        + " direkt för " + attacker.getCardAD() + " skada", ""));
+                attacker.getCardName() + " has attacked " + defenderPlayer.getName()
+                        + " straight to the face for " + attacker.getCardAD() + " damage!", ""));
         broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
     }
     /**
@@ -370,7 +370,7 @@ public class GameServer {
         gameState.getCurrentPlayer().drawUntilHandIsFull();
 
         broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
-        broadcast(new GameMessage(GameMessage.Type.CHAT, playerName + " avslutade sin tur", ""));
+        broadcast(new GameMessage(GameMessage.Type.CHAT, playerName + " has ended their turn!", ""));
         broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
         sendToPlayer(gameState.getCurrentPlayer().getName(),
                 new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
