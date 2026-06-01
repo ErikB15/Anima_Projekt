@@ -73,9 +73,7 @@ public class GameState {
         updateMaxCardsToPlayPerTurn();
     }
 
-    // Det ska vara denna metoden som har koll på hur många kort en spelare kan spela.
     private void updateMaxCardsToPlayPerTurn() {
-        // Kommer inte ihåg exakt hur värdena skulle vara nu igen!
         if (turnNumber >= 9) {
             maxCardsToPlayPerTurn = 3;
         } else if (turnNumber >= 5) {
@@ -85,18 +83,10 @@ public class GameState {
         }
     }
 
-    // Egentligen bara en enkel check för att se om spelet är över.
     public boolean isGameOver() {
         return gameOver;
     }
 
-    public void finishGame(Player winner) {
-        this.gameOver = true;
-        this.winner = winner;
-        this.phase = GamePhase.GAME_OVER;
-    }
-
-    // Kollar om spelet är över och sätter sedan variablerna till vad dem bör vara.
     public void checkGameOver() {
         if (playerOne.getHp() <= 0) {
             gameOver = true;

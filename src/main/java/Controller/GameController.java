@@ -1,6 +1,5 @@
 package Controller;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +11,6 @@ import Model.CardEffects.*;
 import View.*;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
@@ -91,20 +89,26 @@ public class GameController implements GameStateListener {
     public void addAllCards(){
         allCards[0] = new Card("Kenneth", 10,15,1,poison, "/CardPictures/Card1.png");
         allCards[1] = new Card("KnifeGuy", 13,12,2,poison, "/CardPictures/Card2.png");
-        allCards[2] = new Card("Harrold", 1,30,3,poison, "/CardPictures/Card3.png");
+        allCards[2] = new Card("Harrold", 1,37,3,poison, "/CardPictures/Card3.png");
         allCards[3] = new Card("George", 5,20,4,poison, "/CardPictures/Card4.png");
-        allCards[4] = new Card("Monkey", 30,5,5,taunt, "/CardPictures/Card5.png");
-        allCards[5] = new Card("Wizard", 30,5,6,poison, "/CardPictures/Card6.png");
-        allCards[6] = new Card("blockHead", 1,35,7,shield, "/CardPictures/Card7.png");
+        allCards[4] = new Card("Monkey", 30,3,5,taunt, "/CardPictures/Card5.png");
+        allCards[5] = new Card("Wizard", 30,4,6,poison, "/CardPictures/Card6.png");
+        allCards[6] = new Card("blockHead", 1,38,7,shield, "/CardPictures/Card7.png");
         allCards[7] = new Card("Twins", 10,17,8,dubbelHit, "/CardPictures/Card8.png");
         allCards[8] = new Card("ChillGuy", 5,22,9,heal, "/CardPictures/Card9.png");
-        allCards[9] = new Card("Bob", 15,8,10,buff, "/CardPictures/Card10.png");
-        allCards[10] = new Card("Kick", 13,13,11,poison, "/CardPictures/Card11.png");
-        allCards[11] = new Card("Pernilla", 2,28,12,poison, "/CardPictures/Card12.png");
+        allCards[9] = new Card("Bob", 15,9,10,buff, "/CardPictures/Card10.png");
+        allCards[10] = new Card("Kick", 13,14,11,poison, "/CardPictures/Card11.png");
+        allCards[11] = new Card("Pernilla", 2,31,12,poison, "/CardPictures/Card12.png");
     }
 
 
     public void startSingleplayer() {
+        playerOne = new Player("Player1");
+        playerTwo = new Player("Player2"); //identifera spelare för servern såd e har ett namn
+        board = new Board();
+        gameState = new GameState(playerOne, playerTwo, board);
+        enemyAI = new EnemyAI(this, gameState);
+        addAllCards();
         startDraftPhase();
 
         localPlayerRole = PlayerID.PLAYER_ONE;
@@ -227,8 +231,8 @@ public class GameController implements GameStateListener {
         gameState.switchPlayer();
         guiManager.updateGuiAfterCardIsPicked(cardIndex);
 
-        if(getSinglePlayer() == true){
-            computerChooseCardInSinglePayer();
+        if(getSinglePlayer()){
+            computerChooseCardInSinglePlayer();
         }
     }
 
@@ -283,7 +287,7 @@ public class GameController implements GameStateListener {
      *
      * @author Erik
      */
-    private void computerChooseCardInSinglePayer() {
+    private void computerChooseCardInSinglePlayer() {
 
         PauseTransition pick = new PauseTransition(Duration.seconds(1));
 
@@ -301,8 +305,9 @@ public class GameController implements GameStateListener {
                 return;
             }
 
-            int randomIndex = (int) (Math.random() * availableIndexes.size());
-            int chosenIndex = availableIndexes.get(randomIndex);
+            int chosenIndex = enemyAI.scoreDraftCards(allCards);
+
+            if(chosenIndex == -1){return;}
 
             Card card = allCards[chosenIndex];
 
@@ -314,6 +319,7 @@ public class GameController implements GameStateListener {
 
             playerTwo.addCardToDeck(card);
 
+            guiManager.displayPickedCardDraft(card.getImagePath(), PlayerID.PLAYER_TWO);
             guiManager.updateGuiAfterCardIsPicked(chosenIndex);
 
             if (isAllCardsEmpty()) {
@@ -422,9 +428,18 @@ public class GameController implements GameStateListener {
             resetPlacementState();
             return;
         }
-        guiManager.renderCard(Zone.HAND,2,null);
 
-        //guiManager.renderHand(currentPlayer.getHand());
+        if(gameState.getTurnNumber() < 5){
+            guiManager.renderCard(Zone.HAND,2,null);
+        } else if(gameState.getTurnNumber() < 10){
+            guiManager.renderCard(Zone.HAND,1,null);
+            guiManager.renderCard(Zone.HAND,2,null);
+        } else {
+            guiManager.renderCard(Zone.HAND,0,null);
+            guiManager.renderCard(Zone.HAND,1,null);
+            guiManager.renderCard(Zone.HAND,2,null);
+        }
+
 
         for(int i = 0; i < playerOne.getHand().size(); i++){
             guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
@@ -436,49 +451,11 @@ public class GameController implements GameStateListener {
     }
 
     /**
-     * Vad som ska hända när knappen EndTurn klickas, jag har lagt till en extra GamePhase.
-     * Detta är så att om en spelare börjar spam klicka eller försöka attackera precis efter de klickat EndTurn.
-     * Så kommer de andra checks (som kollar vilken "Phase" det är) stoppa dem från att göra det tills endTurn är klar.
-     * Har skapat en ytterligare metod, "wakeUpCardsForPlayer" som väcker korten av den spelare som klickat endTurn.
-     *
-     * @author Jim, Erik
-     */
-    public void endTurnSinglePLayer(){
-        // Nytt för MULTIPLAYER gren
-        // I multiplayer skickar vi END_TURN till servern.
-        // Servern växlar tur, drar kort åt nästa spelare, och broadcastar nya spelläget.
-        if (gameClient != null) {
-            gameClient.endTurn();
-            gameState.setPhase(GamePhase.END_TURN); // blockera lokala handlingar tills servern svarar
-            return; // Viktigt här, kör INTE singleplayer logiken (AI osv)
-        }
-        // SLUT NYTT för multiplayer
-
-        gameState.setPhase(GamePhase.END_TURN);
-        Player currentPlayer = gameState.getCurrentPlayer();
-        PlayerID currentPlayerID = gameState.getCurrentPlayerId();
-
-        currentPlayer.drawUntilHandIsFull();
-        board.wakeUpCardsForPlayer(currentPlayerID);
-        board.resetAttacksForPlayer(currentPlayerID);
-
-        for(int i = 0; i < playerOne.getHand().size(); i++){
-            guiManager.renderCard(Zone.HAND,i,playerOne.getHand().get(i).getImagePath());
-        }
-
-        gameState.switchTurn();
-
-        gameState.setPhase(GamePhase.PLAY);
-
-        addMassageInGui(3, currentPlayer, null, null);
-    }
-
-
-    /**
      *
      * @param attackerIndex
      * @param defenderIndex
      * @return
+     * @author Jim,Leo
      */
     public boolean attackCard(int attackerIndex, int defenderIndex) {
         // Nytt för MULTIPLAYER gren
@@ -554,6 +531,12 @@ public class GameController implements GameStateListener {
         return true;
     }
 
+    /**
+     *
+     * @param attackCard
+     * @return
+     * @author Jim,Leo
+     */
     public boolean attackPlayer(int attackCard){
         // Nytt för MULTIPLAYER gren
         // I multiplayer skickar vi den direkta attacken till servern.
@@ -594,12 +577,12 @@ public class GameController implements GameStateListener {
 
 
     /**
-     * Vad som ska hända när knappen EndTurn klickas, jag har lagt till en extra GamePhase.
+     * Vad som ska hända när knappen EndTurn klickas, jag
      * Detta är så att om en spelare börjar spam klicka eller försöka attackera precis efter de klickat EndTurn.
      * Så kommer de andra checks (som kollar vilken "Phase" det är) stoppa dem från att göra det tills endTurn är klar.
      * Har skapat en ytterligare metod, "wakeUpCardsForPlayer" som väcker korten av den spelare som klickat endTurn.
      *
-     * @author Jim, Erik
+     * @author Jim, Erik, Leo
      */
     public void endTurn(){
         // MULTIPLAYER GREN
@@ -643,33 +626,11 @@ public class GameController implements GameStateListener {
      * @author Jim
      */
     public void gameOver(){
-        // BORDE FINNAS NÅGOT SOM TAR OSS TILL MAIN MENYN HÄR.
+        guiManager.switchToGameOverMenu();
         playerOne = new Player("Player 1");
         playerTwo = new Player("Player 2");
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
-
-        guiManager.switchToGameOverMenu();
-
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-        System.out.println("THE GAME HAS ENDED!");
-
-        // TODO.. Här ska det fixas game over, mest troligen blir det bara att gameState resettas samt GUI:n
-        // Om jag inte hunnit och ni redan kollar på detta, så kan ni göra en GUI metod som bara resettar allt.
-        // Och sedan kalla den här inne, så ska jag fixa att uppdaterra klasserna och all den delen strax.
-
-        //guiManager.switchToGameOverScreen(); //visar just nu endast ett tumt fönster som inte säger ngt mer än gamover.
-        // gameover metoden borde beräkna resultat av matchen och sedan visa det i giut via guimanager.
     }
 
     /**
