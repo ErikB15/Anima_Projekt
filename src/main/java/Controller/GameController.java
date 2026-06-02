@@ -1154,4 +1154,6 @@ public class GameController implements GameStateListener {
     public Card getCard(){
         return card;
     }
+
+
 }
