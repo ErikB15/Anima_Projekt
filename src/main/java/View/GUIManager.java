@@ -1360,17 +1360,4 @@ public class GUIManager {
 
     }
 
-    /*public void ChangeWinnerLabel(PlayerID winner){
-        Scene currentScene = (stage != null) ? stage.getScene() : scene;
-        if (currentScene == null) return;
-
-        ImageView view = (ImageView) currentScene.lookup("#winner");
-
-        if({winner == PlayerID.PLAYER_ONE){
-
-        } else{
-
-        }
-
-    }*/
 }
