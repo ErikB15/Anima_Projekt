@@ -232,6 +232,7 @@ public class GUIManager {
             stage.setScene(scene);
             stage.setResizable(false);
             stage.show();
+            showGameOver(gameController.getGameState().getWinner().getName());
 
         } catch(Exception e){
             e.printStackTrace();
@@ -812,7 +813,13 @@ public class GUIManager {
     }
 
     public void showGameOver(String name) {
-        sendMessageThroughGUI("Vinnare: " + name);
+        Scene currentScene = (stage != null) ? stage.getScene() : scene;
+        if (currentScene == null) return;
+
+        Label label = (Label) currentScene.lookup("#winner");
+        label.setText(name);
+
+        //sendMessageThroughGUI("Vinnare: " + name);
         // visa vem som vann
     }
 
@@ -1355,4 +1362,5 @@ public class GUIManager {
             pickCardTurn.setText(text);
         }
     }
+
 }
