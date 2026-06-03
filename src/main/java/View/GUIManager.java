@@ -1378,7 +1378,7 @@ public class GUIManager {
             stage.setScene(scene);
             stage.setResizable(false);
             stage.show();
-            
+
             Label label = (Label) scene.lookup("#winner");
             if (label != null) {
                 label.setText(winnerName);

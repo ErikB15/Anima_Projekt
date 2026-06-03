@@ -890,7 +890,7 @@ public class GameController implements GameStateListener {
      */
     @Override
     public void onGameOver(String winner) {
-        Platform.runLater(() -> guiManager.showGameOver(winner));
+        Platform.runLater(() -> guiManager.showGameOverMultiplayer(winner));
     }
 
     /**
