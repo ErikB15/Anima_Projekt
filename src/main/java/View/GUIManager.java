@@ -1363,4 +1363,28 @@ public class GUIManager {
         }
     }
 
+
+    public void showGameOverMultiplayer(String winnerName) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
+            root = loader.load();
+
+            GUIManager controller = loader.getController();
+            controller.setGameController(gameController);
+            controller.setStage(stage);
+            gameController.setGuiManager(controller);
+
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+            
+            Label label = (Label) scene.lookup("#winner");
+            if (label != null) {
+                label.setText(winnerName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

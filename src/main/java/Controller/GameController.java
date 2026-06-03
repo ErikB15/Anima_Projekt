@@ -745,7 +745,7 @@ public class GameController implements GameStateListener {
      * @author Leo
      */
     public void connectToServer(String playerName) throws Exception {
-        gameClient = new GameClient("10.80.50.93", 5555); // hostens lokala IP på skol-WiFi
+        gameClient = new GameClient("localhost", 5555);
         gameClient.setListener(this);
         gameClient.connect(playerName, playerName);
     }
@@ -890,7 +890,7 @@ public class GameController implements GameStateListener {
      */
     @Override
     public void onGameOver(String winner) {
-        Platform.runLater(() -> guiManager.showGameOver(winner));
+        Platform.runLater(() -> guiManager.showGameOverMultiplayer(winner));
     }
 
     /**
