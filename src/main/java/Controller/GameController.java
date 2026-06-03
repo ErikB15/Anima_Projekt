@@ -745,7 +745,7 @@ public class GameController implements GameStateListener {
      * @author Leo
      */
     public void connectToServer(String playerName) throws Exception {
-        gameClient = new GameClient("localhost", 5555);
+        gameClient = new GameClient("10.22.4.51", 5555); // hostens lokala IP på skol-WiFi
         gameClient.setListener(this);
         gameClient.connect(playerName, playerName);
     }
