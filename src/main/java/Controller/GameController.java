@@ -824,6 +824,11 @@ public class GameController implements GameStateListener {
             }
             guiManager.updateDraftPool(remainingIds);
 
+            // NYTT: uppdatera vem som har turn att välja kort
+            PlayerID currentDrafter = state.getCurrentDraftPlayerId();
+            if (currentDrafter != null) {
+                guiManager.updatePickCardTurn(currentDrafter == PlayerID.PLAYER_ONE ? "Player 1" : "Player 2");
+            }
             return;
         }
 
@@ -872,6 +877,8 @@ public class GameController implements GameStateListener {
         guiManager.updateMyHand(handPaths);
         guiManager.updateMyBoard(mySlotsPaths);
         guiManager.updateOpponentBoard(opponentSlotsPaths);
+        guiManager.changePlayerHP();
+        guiManager.displayTurnRound();
     }
 
     /**
@@ -964,6 +971,11 @@ public class GameController implements GameStateListener {
             gameState.setBoard(board);
         }
         gameState.setCardsPlayedThisTurn(serverState.getCardsPlayedThisTurn());
+
+        playerOne.setHp(serverState.getPlayerOne().getHp());
+        playerTwo.setHp(serverState.getPlayerTwo().getHp());
+
+        gameState.setTurnNumber(serverState.getTurnNumber());
 
         // KRITISKT för fryser annars, synca currentPlayer så isLocalPlayersTurn() ger rätt svar
         if (serverState.getCurrentPlayerId() != null) {
@@ -1144,9 +1156,15 @@ public class GameController implements GameStateListener {
      * @author Elna N.
      */
     public int getPlayerHP(int player){
-        if(player == 1){
-           return playerOne.getHp();
-        } else{
+        // player 1 = "min" HP, player 2 = "motståndarens" HP
+        // Mappa via localPlayerRole istället för hårdkodat PLAYER_ONE/TWO så det funkar för multiplayer
+        PlayerID myRole = (localPlayerRole != null) ? localPlayerRole : PlayerID.PLAYER_ONE;
+        PlayerID opponentRole = (myRole == PlayerID.PLAYER_ONE) ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
+
+        PlayerID target = (player == 1) ? myRole : opponentRole;
+        if (target == PlayerID.PLAYER_ONE) {
+            return playerOne.getHp();
+        } else {
             return playerTwo.getHp();
         }
     }

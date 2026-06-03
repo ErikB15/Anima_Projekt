@@ -1147,16 +1147,11 @@ public class GUIManager {
     public void joinButtonPressed(MouseEvent event){
         sendMessageThroughGUI("You Pressed Join!");
         try {
-            // 1. Byt till PickCardScreen INNAN vi ansluter
-            // (så den nya GUIManager instansen är aktiv när server meddelanden börjar komma)
-            switchToPickCardScreen();
-
-            // 2. Anslut till servern på localhost, server måste redan vara startad av host
-            gameController.connectToServer("Player2");
-
+            gameController.connectToServer("Player2"); // först försök ansluta
+            switchToPickCardScreen(); //byt scen bara om lyckas
         } catch (Exception e) {
-            e.printStackTrace();
             sendMessageThroughGUI("Kunde inte ansluta till servern: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -1185,16 +1180,18 @@ public class GUIManager {
 
     public void playerPressed(MouseEvent event) {
         String id = event.getPickResult().getIntersectedNode().getId();
-        if(isLocalPlayersTurn() && attackCardPicked){
-           if(id == enemyIcon.getId()){
-               enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
-               gameController.attackPlayer(cardToAttackWith);
-               //gameController.addMassageInGui(5, );
-               attackCardPicked = false;
-               attackCardPicked = false;
 
+        if (isLocalPlayersTurn() && gameController.isAttackerPicked()) {
+            if (id == enemyIcon.getId()) {
+                enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
 
-           }
+                // Använd Controllerns index istället för lokala cardToAttackWith
+                int attackerIndex = gameController.getIndexToCardToAttackWith();
+                gameController.attackPlayer(attackerIndex);
+
+                // Återställ Controllerns attack state efter attack
+                gameController.resetAttackState();
+            }
         }
     }
 
@@ -1351,5 +1348,11 @@ public class GUIManager {
             }
         }
 
+    }
+
+    public void updatePickCardTurn(String text) {
+        if (pickCardTurn != null) {
+            pickCardTurn.setText(text);
+        }
     }
 }
