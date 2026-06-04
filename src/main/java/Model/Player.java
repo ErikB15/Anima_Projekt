@@ -8,8 +8,7 @@ public class Player {
     private ArrayList<Card> deck;
     private ArrayList<Card> hand;
     private ArrayList<Card> graveyard;
-    private String name; //la till detta för konstruktorn för att servenr behöver veta vilket nätverks id som tillhär vilken spelare
-    //annrs leder det till att när vi skcikar json stängar till klienten vet den inte vem det tillhör
+    private String name;
 
 
     /**
@@ -135,14 +134,6 @@ public class Player {
         return deck;
     }
 
-    /**
-     * Enkel getter för att hämta graveyard spelaren har.
-     * @return En arraylist av cards som är spelarens graveyard.
-     * @author Jim Ström
-     */
-    public ArrayList<Card> getGraveyard() {
-        return graveyard;
-    }
 
 
 }

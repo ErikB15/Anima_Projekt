@@ -73,18 +73,6 @@ public class Board {
         }
     }
 
-    public boolean canComputerAttack(){
-        // Kolla isAsleep, så att det finns kort som inte sover.
-        for (int i = 0; i < playerTwoSlots.length; i++){
-            if (playerTwoSlots[i] != null){
-                if(!playerTwoSlots[i].getAsleep()){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
 
     public void resetAttacksForPlayer(PlayerID player) {
         Card[] slots = getSlotsForPlayer(player);
@@ -125,16 +113,6 @@ public class Board {
     public Card[] getSlotsForPlayer(PlayerID player){
         return player == PlayerID.PLAYER_ONE ? playerOneSlots : playerTwoSlots;
 
-    }
-
-    /**
-     * Hämtar motståndarens array av kort. Används främst utanför denna klassen, för GUI:et och controllern.
-     * @param player - Enum:et som säger vilken spelare är spelare 1 och vilken är spelare 2.
-     * @return - Ger tillbaka card array:en som har motståndarens kort på plan.
-     * @author Jim Ström
-     */
-    public Card[] getOpponentSlots(PlayerID player) {
-        return player == PlayerID.PLAYER_ONE ? playerTwoSlots : playerOneSlots;
     }
 
     /**

@@ -21,10 +21,8 @@ import javafx.util.Duration;
  */
 public class GameController implements GameStateListener {
     private Card[] allCards;
-    private ArrayList<Effect> allEffects;
-    private GameClient gameClient; // nytt fält så vi kan snacka med gameclient
+    private GameClient gameClient;
 
-    //Mekanik för att byta plats på kort i playerOneActiveCards
     private int indexCardOnHandToMove;
     private int indexSpotToPlaceCard;
     private boolean cardPicked = false;
@@ -42,17 +40,9 @@ public class GameController implements GameStateListener {
     private Board board;
     private PlayerID localPlayerRole;
     private GUIManager guiManager;
-    private Card testCard; //ENDAST FÖR TESTNING
-    private GamePhase lastKnownPhase; // håller koll på serverns senaste fas så vi kan detektera DRAFT till PLAY övergång
+    private GamePhase lastKnownPhase;
     private GameState gameState;
-    private DubbelHit dubbelHit;
-    private Taunt taunt;
-    private Heal heal;
-    private Shield shield;
-    private Poison poison;
-    private Buff buff;
     private boolean SinglePlayer;
-    private Card card;
 
     /**
      * Skapar en ny GameController och initierar spelets grunddata.
@@ -63,20 +53,12 @@ public class GameController implements GameStateListener {
      */
     public GameController(){
         allCards = new Card[12];
-        allEffects = new ArrayList<>();
         playerOne = new Player("Player1");
         playerTwo = new Player("Player2"); //identifera spelare för servern såd e har ett namn
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
         enemyAI = new EnemyAI(this, gameState);
         addAllCards();
-
-        dubbelHit = new DubbelHit();
-        heal = new Heal();
-        taunt = new Taunt();
-        shield = new Shield();
-        poison = new Poison();
-        buff = new Buff();
     }
 
 
@@ -87,24 +69,24 @@ public class GameController implements GameStateListener {
      * @author Erik
      */
     public void addAllCards(){
-        allCards[0] = new Card("Kenneth", 10,15,1,poison, "/CardPictures/Card1.png");
-        allCards[1] = new Card("KnifeGuy", 13,12,2,poison, "/CardPictures/Card2.png");
-        allCards[2] = new Card("Harrold", 1,37,3,poison, "/CardPictures/Card3.png");
-        allCards[3] = new Card("George", 5,20,4,poison, "/CardPictures/Card4.png");
-        allCards[4] = new Card("Monkey", 30,3,5,taunt, "/CardPictures/Card5.png");
-        allCards[5] = new Card("Wizard", 30,4,6,poison, "/CardPictures/Card6.png");
-        allCards[6] = new Card("blockHead", 1,38,7,shield, "/CardPictures/Card7.png");
-        allCards[7] = new Card("Twins", 10,17,8,dubbelHit, "/CardPictures/Card8.png");
-        allCards[8] = new Card("ChillGuy", 5,22,9,heal, "/CardPictures/Card9.png");
-        allCards[9] = new Card("Bob", 15,9,10,buff, "/CardPictures/Card10.png");
-        allCards[10] = new Card("Kick", 13,14,11,poison, "/CardPictures/Card11.png");
-        allCards[11] = new Card("Pernilla", 2,31,12,poison, "/CardPictures/Card12.png");
+        allCards[0] = new Card("Kenneth", 10,15,1, "/CardPictures/Card1.png");
+        allCards[1] = new Card("KnifeGuy", 13,12,2, "/CardPictures/Card2.png");
+        allCards[2] = new Card("Harrold", 1,37,3, "/CardPictures/Card3.png");
+        allCards[3] = new Card("George", 5,20,4, "/CardPictures/Card4.png");
+        allCards[4] = new Card("Monkey", 30,3,5, "/CardPictures/Card5.png");
+        allCards[5] = new Card("Wizard", 30,4,6, "/CardPictures/Card6.png");
+        allCards[6] = new Card("blockHead", 1,38,7, "/CardPictures/Card7.png");
+        allCards[7] = new Card("Twins", 10,17,8, "/CardPictures/Card8.png");
+        allCards[8] = new Card("ChillGuy", 5,22,9, "/CardPictures/Card9.png");
+        allCards[9] = new Card("Bob", 15,9,10, "/CardPictures/Card10.png");
+        allCards[10] = new Card("Kick", 13,14,11, "/CardPictures/Card11.png");
+        allCards[11] = new Card("Pernilla", 2,31,12, "/CardPictures/Card12.png");
     }
 
 
     public void startSingleplayer() {
         playerOne = new Player("Player1");
-        playerTwo = new Player("Player2"); //identifera spelare för servern såd e har ett namn
+        playerTwo = new Player("Player2");
         board = new Board();
         gameState = new GameState(playerOne, playerTwo, board);
         enemyAI = new EnemyAI(this, gameState);
@@ -137,16 +119,17 @@ public class GameController implements GameStateListener {
      * @author Jim Ström
      */
     public void startDraftPhase(){
-        int random = 1;  //endast för testning annars avänds raden under
-        //int random = (int)(Math.random() * 2) + 1;
+        int random = (int)(Math.random() * 2) + 1;
         if(random == 1){
             gameState.setFirstDraftPlayer(PlayerID.PLAYER_ONE);
             gameState.setCurrentPlayer(PlayerID.PLAYER_ONE);
+            gameState.setPhase(GamePhase.DRAFT);
         }else {
             gameState.setFirstDraftPlayer(PlayerID.PLAYER_TWO);
             gameState.setCurrentPlayer(PlayerID.PLAYER_TWO);
+            gameState.setPhase(GamePhase.DRAFT);
+            if(getSinglePlayer()){computerChooseCardInSinglePlayer();}
         }
-        gameState.setPhase(GamePhase.DRAFT);
     }
 
 
@@ -476,24 +459,17 @@ public class GameController implements GameStateListener {
 
         Player defenderPlayer = gameState.getOpponentPlayer();
 
-        System.out.println("Innan index checkarna");
         if (attackerIndex < 0 || attackerIndex >= board.getSlotsForPlayer(attackerPlayerID).length) return false;
         if (defenderIndex < 0 || defenderIndex >= board.getSlotsForPlayer(defenderPlayerID).length) return false;
 
         Card attacker = board.getCard(attackerPlayerID, attackerIndex);
         Card defender = board.getCard(defenderPlayerID, defenderIndex);
 
-        System.out.println("Innan null checkarna");
         if (attacker == null) return false;
         if (defender == null) return false;
 
-        System.out.println("Innan Asleep checken");
         if (attacker.getAsleep()) return false;
-        System.out.println("Innan HasAttacked This turn checken");
         if (attacker.getHasAttackedThisTurn()) return false;
-
-        System.out.println("Defender HP before: " + defender.getCardCurrentHP());
-        System.out.println("Attacker HP before: " + attacker.getCardCurrentHP());
 
         defender.takeDamage(attacker.getCardAD());
         attacker.takeDamage(defender.getCardAD());
@@ -525,9 +501,6 @@ public class GameController implements GameStateListener {
 
         }
 
-        System.out.println("Defender HP after: " + defender.getCardCurrentHP());
-        System.out.println("Attacker HP after: " + attacker.getCardCurrentHP());
-        System.out.println("attack färdig");
         return true;
     }
 
@@ -596,7 +569,6 @@ public class GameController implements GameStateListener {
         // SLUT MULTIPLAYER GREN
 
         gameState.setPhase(GamePhase.END_TURN);
-        System.out.println("player1 hp: " + playerOne.getHp() + ", player2 hp: " + playerTwo.getHp());
         Player currentPlayer = gameState.getCurrentPlayer();
         PlayerID currentPlayerID = gameState.getCurrentPlayerId();
 
@@ -680,8 +652,6 @@ public class GameController implements GameStateListener {
      * @author Erik, Jim
      */
     public void addMassageInGui(int eventNumber, Player player, Card firstCard, Card secondCard){
-        // guiManager.addMessageToEventLog(message);
-        // Finns ingen metod som lägger till meddelandet till Event log. Metoden ovan funkar ej.
         switch (eventNumber){
             case 1:
                 // Om någon placerar ett kort
@@ -1169,9 +1139,6 @@ public class GameController implements GameStateListener {
         }
     }
 
-    public Card getCard(){
-        return card;
-    }
 
 
 }

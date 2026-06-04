@@ -8,7 +8,6 @@ public class Card {
     private int cardMaxHP;
     private int cardCurrentHP;
     private int cardID;
-    private transient Effect cardEffect;
     private int cardCost;
     private boolean asleep;
     private boolean hasAttackedThisTurn;
@@ -23,16 +22,14 @@ public class Card {
      * @param cardAD - Attack förmågan av kortet.
      * @param cardMaxHP - Kortets max HP.
      * @param cardID - Kortets ID.
-     * @param cardEffect - En effekt som kortet eventuellt kommer at ha.
      * @param imagePath - Vägen till bilden som är kopplad till kortet.
      * @author Jim Ström
      */
-    public Card(String cardName, int cardAD, int cardMaxHP, int cardID, Effect cardEffect, String imagePath){
+    public Card(String cardName, int cardAD, int cardMaxHP, int cardID, String imagePath){
         this.cardAD = cardAD;
         this.cardMaxHP = cardMaxHP;
         this.cardID = cardID;
         this.cardName = cardName;
-        this.cardEffect = cardEffect;
         this.imagePath = imagePath;
         this.cardCurrentHP = cardMaxHP;
 
