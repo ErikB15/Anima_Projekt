@@ -25,6 +25,9 @@ public class Card {
      * @param imagePath - Vägen till bilden som är kopplad till kortet.
      * @author Jim Ström
      */
+
+
+    
     public Card(String cardName, int cardAD, int cardMaxHP, int cardID, String imagePath){
         this.cardAD = cardAD;
         this.cardMaxHP = cardMaxHP;

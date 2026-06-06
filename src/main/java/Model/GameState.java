@@ -32,6 +32,9 @@ public class GameState {
     private PlayerID currentDraftPlayer;
     private PlayerID firstDraftPlayer;
 
+
+    
+
     /**
      * Poängen här är att det ska skapas ett GameState när spelet startar.
      * Därför är alla värden just nu "standard" värden som spelet har när det börjar.

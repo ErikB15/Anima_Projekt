@@ -15,9 +15,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import Model.GameState;
-import Model.Board;
-import Model.Card;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -708,6 +705,7 @@ public class GUIManager {
 
         ImageView view = views[index];
 
+
         if (imagePath == null) {
             view.setImage(null);
             changeHP(index, " ", zone);
@@ -1210,6 +1208,28 @@ public class GUIManager {
     public void onMouseMoveOnCardArea(MouseEvent event) {
 
         ImageView card = (ImageView) event.getSource();
+        
+        // Förstorar kortet med 15% och flyttar det överst
+        card.setScaleX(1.15); 
+        card.setScaleY(1.15);
+        card.toFront();
+        bringHPLabelsToFront();
+
+        Label hpLabel = getHpLabelForCard(card.getId()); // Ser till att HP siffror inte hamnar bakom kortet
+             if (hpLabel != null) {
+                hpLabel.setScaleX(1.4); 
+                hpLabel.setScaleY(1.4);
+
+                // Räknar ut var mitten av kortet är
+                double centerX = card.getLayoutX() + (card.getFitWidth() / 2);
+                double centerY = card.getLayoutY() + (card.getFitHeight() / 2);
+
+
+                // "Knuffar" HP siffran utåt från mitten så den följer med kortets kanter
+                hpLabel.setTranslateX((hpLabel.getLayoutX() - centerX) * 0.15);
+                hpLabel.setTranslateY((hpLabel.getLayoutY() - centerY) * 0.15);
+        }
+
         Image img = card.getImage();
 
         String url = (img != null) ? img.getUrl() : null;
@@ -1315,6 +1335,23 @@ public class GUIManager {
 
         ImageView card = (ImageView) event.getSource();
 
+
+        // Återställer kortet till normal storlek
+        card.setScaleX(1.0); 
+        card.setScaleY(1.0);
+        card.setScaleZ(1.0);
+        bringHPLabelsToFront();
+
+        Label hpLabel = getHpLabelForCard(card.getId());
+            if (hpLabel != null) {
+                hpLabel.setScaleX(1.0);
+                hpLabel.setScaleY(1.0);
+                hpLabel.setTranslateX(0);
+                hpLabel.setTranslateY(0);
+            } 
+        
+
+
         card.setStyle("-fx-effect: dropshadow(gaussian, transparent, 0, 0.0, 0, 0);");
     }
     private void createBordersForPickCards() {
@@ -1387,4 +1424,80 @@ public class GUIManager {
             e.printStackTrace();
         }
     }
+
+/**
+ * Metod för att flytta alla HP labels framför andra komponenter efter toFront metoden som körs vid hover
+ * @author Daniel
+ */
+    private void bringHPLabelsToFront() {
+
+    Label[] hpLabels = {hp_0, hp_1, hp_2, hp_3, hp_4, hp_5, hp_6, hp_7, hp_8, hp_9, hp_10, hp_11, playerHP_1, playerHP_2};
+    
+
+    for (Label hp : hpLabels) {
+        if (hp != null) {
+            hp.toFront();
+            hp.setMouseTransparent(true);   // Stäng av mus-kollision för text 
+        }
+    }
+}
+
+
+/**
+     * Hjälpmetod för att hitta vilken HP-text (Label) som tillhör en specifik kortplats (ImageView).
+     * Används för att veta vilken siffra som ska förstoras när ett specifikt kort hovras.
+     * @author Daniel
+     */
+private Label getHpLabelForCard(String cardId) {
+    if (cardId == null || !cardId.contains("_")) return null;
+    
+    String[] splitID = cardId.split("_");
+    int index;
+    try {
+        index = Integer.parseInt(splitID[1]);
+    } catch (NumberFormatException e) {
+        return null;
+    }
+
+    if (cardId.startsWith("hand_")) {   // Jämför prefix
+        switch(index) {
+            case 0: return hp_0; 
+            case 1: return hp_1; 
+            case 2: return hp_2;
+        }
+    } else if (cardId.startsWith("p1board_")) {
+        switch(index) {
+            case 0: return hp_3; 
+            case 1: return hp_4; 
+            case 2: return hp_5; 
+            case 3: return hp_6;
+        }
+    } else if (cardId.startsWith("p2board_")) {
+        switch(index) {
+            case 0: 
+            return hp_7; 
+            case 1: return hp_8;
+            case 2: return hp_9; 
+            case 3: return hp_10;
+        }
+    } else if (cardId.startsWith("card_")) { // För PickCardScreen 
+        switch(index){
+            case 0: return hp_0; 
+            case 1: return hp_1;
+            case 2: return hp_2;
+            case 3: return hp_3;
+            case 4: return hp_4; 
+            case 5: return hp_5; 
+            case 6: return hp_6; 
+            case 7: return hp_7;
+            case 8: return hp_8; 
+            case 9: return hp_9; 
+            case 10: return hp_10; 
+            case 11: return hp_11;
+        }
+    }
+    return null;
+}
+
+
 }

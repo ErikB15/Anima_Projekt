@@ -33,6 +33,9 @@ public class Player {
         deck.add(addedCard);
     }
 
+
+    
+
     /**
      * Metoden som tillåter spelaren att dra ett nytt kort från sin "deck".
      * Den har några safety checks, är spelarens kortlek tom så reshuffle vi den genom en metod.
