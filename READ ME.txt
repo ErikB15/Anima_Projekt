@@ -1,0 +1,7 @@
+READ ME:
+
+Länk för att ladda ner koden: https://github.com/ErikB15/Anima_Projekt
+
+Applikationen använder JavaFX. För att kunna köra programet måste detta laddas ner. Länk för nedladdning: https://gluonhq.com/products/javafx/
+Scrolla ner och välj release 25. Efter nedladdning ska applikationen gå att köra. Koden för javaFX ligger i FXML-filerna under "recources" i intellij.
+Skulle det ändå dyka upp problem med att få JavaFX att köra finns här en guide med steg som kan behöva tas (Vi behövde dock inte göra detta, det sköttes av intellij): https://youtu.be/Ope4icw6bVk?is=M6zAeb_WrYHuPEGr
