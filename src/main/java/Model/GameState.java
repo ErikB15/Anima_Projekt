@@ -36,11 +36,13 @@ public class GameState {
     
 
     /**
-     * Poängen här är att det ska skapas ett GameState när spelet startar.
-     * Därför är alla värden just nu "standard" värden som spelet har när det börjar.
+     * GameState klassen är gjord för att främst spara spelet och allting som händer i spelet just nu.
+     * Men även för att kunna skicka information mellan serverar, det är detta objektet som är en typ av -
+     * "snapshot" av spelets gång för att vi ska kunna förmedla informatinoen fram och tillbaka.
      * @param playerOne - Spelare ett
      * @param playerTwo - Spelare två
      * @param board - Själva "board"
+     * @author Jim, Leo
      */
     public GameState(Player playerOne, Player playerTwo, Board board) {
         this.playerOne = playerOne;
@@ -62,11 +64,21 @@ public class GameState {
     }
 
 
+    /**
+     * Bytar- vems tur det är, currentPlayer är spelaren som får lov att göra saker.
+     * Detta används främst för draft fasen.
+     * @author Jim Ström
+     */
     public void switchPlayer() {
         currentPlayer = currentPlayer == PlayerID.PLAYER_ONE ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
     }
 
 
+    /**
+     * Likadan som switch player men ökar även en counter, nollställer en variabel och anropar en annan metod.
+     * Detta är för att vi vill använda denna specifikt under End Turn fasen.
+     * @author Jim Ström
+     */
     public void switchTurn() {
         if (currentPlayer == PlayerID.PLAYER_TWO){
             turnNumber++;
@@ -76,6 +88,11 @@ public class GameState {
         updateMaxCardsToPlayPerTurn();
     }
 
+    /**
+     * En enkel metod som kollar vilken tur det är och tillåter spelare att spela fler kort om det nått en vi-
+     * ss tur nummer.
+     * @author Jim Ström
+     */
     private void updateMaxCardsToPlayPerTurn() {
         if (turnNumber >= 9) {
             maxCardsToPlayPerTurn = 3;
@@ -86,10 +103,18 @@ public class GameState {
         }
     }
 
+    /**
+     * Kollar om spelet är över, i alla syften i princip en getter.
+     * @return Returnerar klass booleans om kollar om spelet är över.
+     */
     public boolean isGameOver() {
         return gameOver;
     }
 
+    /**
+     * Detta är metoden som kollar om spelet är över och i sådant fall sätter diverse värden utifrån resultat.
+     * @author Jim Ström
+     */
     public void checkGameOver() {
         if (playerOne.getHp() <= 0) {
             gameOver = true;
