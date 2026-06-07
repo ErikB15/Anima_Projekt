@@ -12,12 +12,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 import static java.lang.String.valueOf;
@@ -30,30 +28,21 @@ import static java.lang.String.valueOf;
  */
 
 public class GUIManager {
-//Denna klass tänker jag att vi använder som Controller för GUI. Denna klass ska skicka info vidare till andra controllers när saker sker i GUI.
 
-    //denna ska vara en check för vems tur det är. när det är den egna spelarens tur är denna true.
     private boolean isYourTurn = true;
     private PlayerID localRole = PlayerID.PLAYER_ONE;
     private boolean isDraftTurn = false;
     private Stage stage;
     private Scene scene;
     private Parent root;
-    //Alla Controllers som GUI ska ha kontakt med går genom denna klass, därför behövs instanser här.
-    //Finns instans av GUIManager i controller-klasserna också.
-    //private MainMenuController mainMenuController;
     private GameController gameController;
 
-    //boolean för att kontrollera ordningen av knapptryck i spelfas
-
-    //Detta är spelkorten på PickCardScreen. Finns kanske ett smartare sätt att göra detta
     @FXML private ImageView hand_0;
     @FXML private ImageView hand_1;
     @FXML private ImageView hand_2;
 
     @FXML private ImageView enemyIcon;
 
-    //Detta är labels för Hp i spelet. //Elna
     @FXML private Label hp_0;
     @FXML private Label hp_1;
     @FXML private Label hp_2;
@@ -69,11 +58,7 @@ public class GUIManager {
     @FXML private Label playerHP_1;
     @FXML private Label playerHP_2;
 
-
-
-    //Array för att lägga till alla Labels för Hp i i
-    private ArrayList<ImageView> boardImageViews = new ArrayList<ImageView>();
-    private ArrayList selectedCardsInPickCardphase = new ArrayList();
+    private ArrayList<ImageView> boardImageViews = new ArrayList<>();
 
     @FXML private Label pickCardTurn;
 
@@ -96,23 +81,24 @@ public class GUIManager {
     boolean validChoice;
 
     private Map<Zone, ImageView[]> zoneMap = new HashMap<>();
-    private ImageView[] views;
-    private boolean playerOnesTurn = true;
     private int cardToAttack;
     private int cardToAttackWith;
     private boolean attackCardPicked = false;
     private boolean cardFromHandPicked = false;
-    private boolean yourTurnToPickCard = true;
+
     @FXML
     private TextArea textArea;
     @FXML private Label turnNumber;
 
     private ArrayList<ImageView> pickCardViews = new ArrayList<>();
 
+    /**
+     * Metod som konstruktorn använder för att starta upp FXML-filerna. Anropas av Launch "Bakom kulisserna".
+     * @author Elna
+     */
     @FXML
     public void initialize(){
-            System.out.println("INIT GUIManager: " + this);
-            System.out.println("textArea = " + textArea);
+
     }
 
     /**
@@ -124,21 +110,13 @@ public class GUIManager {
     public GUIManager(){
         gameController = new GameController();
         gameController.setGuiManager(this);
-
-        /*
-        mainMenuController = new MainMenuController();
-        mainMenuController.setGuiManager(this);
-        mainMenuController.setGameController(gameController);
-        */
-
     }
 
     /**
      * Byter scen till startskärmen.
      * Laddar FXML, kopplar ny controller till GameController och ersätter aktuell scen i Stage.
-     *
-     * @Param: event - MouseEvent från knapptryck i gui
-     * @author: Erik, Elna
+     * @Param: event - MouseEvent från knapptryck i GUI
+     * @author: Elna, Erik
      */
 
     @FXML
@@ -164,21 +142,14 @@ public class GUIManager {
             e.printStackTrace();
         }
     }
+
     /**
-     * Byter tillbaka till startskärmen (huvudmenyn).
-     * Används av tillbaka-knappen på anslutningsskärmen.
-     *
-     * @param event MouseEvent från knapptryck i gui
-     * @author Leo
+     * Metod som bytar till scen för connect.
+     * @author Elna, Erik
      */
-    @FXML
-    public void switchToMainMenuScreen(MouseEvent event) {
-        switchToStartScreen(event);
-    }
 
     @FXML
     public void switchToConnectScreen(){
-        System.out.println("MULTIPLAYER KNAPPEN KLICKAD!");
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ConnectScreen.fxml"));
             root = loader.load();
@@ -194,8 +165,6 @@ public class GUIManager {
             stage.setResizable(false);
             stage.show();
 
-            controller.sendMessageToConsole();
-
             gameController.set();
 
         } catch(Exception e){
@@ -204,12 +173,8 @@ public class GUIManager {
     }
 
     /**
-     * Den ska byta menyn till game over menyn. Tror jag saknar något, för stage blir lika med null.
-     * Antog att ni sätter stagen någonstans för att vi ska kunna byta senare men variabeln verkar alltid vara null?
-     * Om jag fattat rätt efter typ 15 minuter av läsning så ska stage följa med de olika stages vi bytar till.
-     * Så varje stage vi bytar till ska sparas i variabeln stage så vi inte alltid behöver en mouse event för att byta stage
-     *
-     * @author Jim Ström
+     * Metod som bytar till gameOver screen, när gameController registrerar vinnare.
+     * @author Jim, Elna, Erik
      */
     @FXML
     public void switchToGameOverMenu(){
@@ -234,6 +199,12 @@ public class GUIManager {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Byter till gameOver screen när någon avslutar en match innan vinnare utropats.
+     * @param event knapptryck i GameBoard
+     * @author Elna, Erik
+     */
 
     @FXML
     public void switchToGameOverBUTTON(MouseEvent event){
@@ -264,7 +235,6 @@ public class GUIManager {
     /**
      * Byter scen till regler-skärmen för spelet.
      * Laddar FXML och visar spelregler i gui:t.
-     *
      * @Param: event - MouseEvent från användarinput
      * @author: Erik, Elna
      */
@@ -301,22 +271,10 @@ public class GUIManager {
         gameController.startSingleplayer();
     }
 
-    /**
-     * Metod för att skicka in boolean till switchToPickedCardScreen om det är singleplayer eller inte.
-     *
-     * //@param event - mousse clicked event
-     * @throws IOException
-     * @author Erik
-     */
-    @FXML
-    private void openMultiPlayer() throws IOException {
-        gameController.startMultiplayer();
-    }
 
     /**
      * Byter till skärmen där spelaren väljer kort.
      * Laddar gui, kopplar controller och binder kortdata till ImageView.
-     *
      * @Param: event - ActionEvent från knapptryck
      * @author: Erik, Elna
      */
@@ -353,7 +311,7 @@ public class GUIManager {
      * Initierar gui och startar GameController-logik.
      *
      * @Param: event - ActionEvent från knapptryck
-     * @author: Erik, ELna
+     * @author: Erik, Elna
      */
     @FXML
     public void switchToGameBoard() {
@@ -387,7 +345,7 @@ public class GUIManager {
     /**
      * Stänger applikationen helt.
      *
-     * @Param: e - MouseEvent från gui
+     * @Param: e - MouseEvent från GUI
      * @author: Elna
      */
     @FXML
@@ -440,51 +398,11 @@ public class GUIManager {
     }
 
     /**
-     * Hanterar klick på en spelplats på brädet.
-     * Validerar att ett kort först valts och skickar sedan platsindex till GameController.
-     *
-     * @Param: event - MouseEvent från klick på brädets UI
-     * @author: Elna
-     *
-     *
-     * ANVÄNDS EJ LÄNGRE FÖR ATT DET NU FINNS EN "HANDLEBOARDCLICK" METOD LÄNGRE NER SOM HANTERAR OM DET SKA PLACERAS KORT ELLER KORT SOM SKA ATTACKERA. //ERIK
-     */
-    /*
-    public void pickedSpotToPlaceCardIndexPoint(MouseEvent event){
-        if(isYourTurn == true) {
-            if (cardFromHandPicked == false) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Warning!");
-                alert.setContentText("The card you pick has to be from your hand!");
-                alert.show();
-                return;
-            }
-
-            String cardID = event.getPickResult().getIntersectedNode().getId();
-            String[] splitID = cardID.split("_");
-            int cardIDInt = Integer.parseInt(splitID[1]);
-
-            if ((cardIDInt <= 3) && (cardIDInt >= 0)) {
-                gameController.setIndexSpotToPlaceCard(cardIDInt);
-                cardFromHandPicked = false;
-                System.out.println(cardIDInt);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Warning!");
-                alert.setContentText("INVALID NUMBER");
-                alert.show();
-            }
-
-            isYourTurn = false;
-        }
-    }
-
-     */
-    /**
      * Skickar varning till gui.
-     * @param message
+     * @param message String som ska användas som text till GUI
      * @author: Elna
      */
+
     public void sendMessageThroughGUI(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Warning!");
@@ -500,14 +418,13 @@ public class GUIManager {
      * Om kort-valet är gilltig så gör vi dessutom om bilden till bakssidan så man ser att den är vald.
      *
      * @Param: event - MouseEvent från ImageView
-     * @author: Erik, Elna
+     * @author: Erik, Elna, Leo
      */
 
     public void pickedCard(MouseEvent event) {
         ImageView clickedCard = (ImageView) event.getSource();
         Card card = (Card) clickedCard.getUserData();
 
-        //ID som behövs för både multi och singleplayer
         String ID = event.getPickResult().getIntersectedNode().getId();
         String[] splitID = ID.split("_");
         int IDInt = Integer.parseInt(splitID[1]);
@@ -523,7 +440,7 @@ public class GUIManager {
 
             clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
             changeHP(IDInt, " ", null);
-            displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
+            displayPickedCardDraft(card.getImagePath(), PlayerID.PLAYER_ONE);
 
             gameController.sendDraftPick(card.getCardID());
             return;
@@ -534,27 +451,23 @@ public class GUIManager {
 
         System.out.println(IDInt);
 
-        displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
+       displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
         gameController.chooseCardPhase(IDInt);
     }
 
+    /**
+     * Updaterar GUI med ett korts baksida när det varlts i pickCardPhase
+     * @param IDInt indexplats på det kort som valts
+     * @author Erik
+     */
     public void updateGuiAfterCardIsPicked(int IDInt){
         changeHP(IDInt, " ", null);
-
-
         ImageView view = pickCardViews.get(IDInt);
         Image newImage = new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm());
         view.setImage(newImage);
     }
 
 
-    /**
-     * TESTMETOD för sammankoppling med GUI
-     * @author: Elna
-     */
-    public void sendMessageToConsole(){
-        System.out.println("Successfully sending message through GUIManager");
-    }
 
     /**
      * Returnerar alla ImageView-komponenter som representerar kort i pick-card-scenen.
@@ -584,10 +497,20 @@ public class GUIManager {
         return views;
     }
 
+    /**
+     * Sättmetod för GameController
+     * @param gameController Ett gamecontroller - objekt
+     * @author Erik
+     */
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
     }
 
+    /**
+     * Privat metod som bara används i game-rules screen.
+     * @param pane -en panel i game rules screen
+     * @author Erik
+     */
     private void showPane(Pane pane) {
 
         startMenu.setVisible(false);
@@ -612,31 +535,49 @@ public class GUIManager {
         pane.setManaged(true);
     }
 
+    /**
+     * Privat metod som bara används i game-rules screen.
+     * @author Erik
+     */
     @FXML private void showGeneralRules() {
         showPane(generalRules);
     }
 
+    /**
+     * Privat metod som bara används i game-rules screen.
+     * @author Erik
+     */
     @FXML private void showCardRules() {
         showPane(cardRules);
     }
 
+    /**
+     * Privat metod som bara används i game-rules screen.
+     * @author Erik
+     */
     @FXML private void showPlayerRules() {
         showPane(playerRules);
     }
 
+    /**
+     * Privat metod som bara används i game-rules screen.
+     * @author Erik
+     */
     @FXML private void showEffectsRules(){
         showPane(effectsRules);
     }
+
+    /**
+     * Privat metod som bara används i game-rules screen.
+     * @author Erik
+     */
     @FXML private void showMatchRules(){showPane(matchRules);}
 
-    private void makeDraggable(Image image){
 
-    }
-
-    public void killCard(){
-
-    }
-
+    /**
+     * Metod för att avsluta runda i GUI när spelare trycker på knapp.
+     * @author Elna, Erik, Jim
+     */
     public void endTurnInGuiInSinglePlayer(){
 
         System.out.println(gameController.getCurrentPlayerId() + " has ended their turn");
@@ -650,21 +591,11 @@ public class GUIManager {
         resetPlayerIcons();
     }
 
-    public void enemyPlaceCard(int index, String imagePath){
-        String fxID = ("p2board_" + index);
-        Image newImage = new Image(imagePath);
-
-        for(ImageView img : boardImageViews){
-
-            if(fxID.equals(img.getId())){
-                img.setImage(newImage);
-            }
-
-        }
-
-    }
-
-    public void addImageViewToList(){
+    /**
+     * Lägger till imageViews för spelbräda i en lista för att lättare kunna iterera igenom.
+     * @author Elna
+     */
+    private void addImageViewToList(){
         boardImageViews.add(p2board_0);
         boardImageViews.add(p2board_1);
         boardImageViews.add(p2board_2);
@@ -676,17 +607,33 @@ public class GUIManager {
         boardImageViews.add(p1board_3);
     }
 
+    /**
+     * Metod för att skicka meddelande till  eventlog
+     * @param message meddelande som ska visas för spelare
+     * @author Erik, Jim
+     */
     @FXML
     public void sendMessageToEventLog(String message){
         if (textArea == null) return;
         Platform.runLater(() -> textArea.appendText(message + "\n"));    }
 
+    /**
+     * Metod för att lägga imageViews i olika zoner.
+     * @author Erik
+     */
     public void init() {
         zoneMap.put(Zone.HAND, new ImageView[]{hand_0, hand_1, hand_2});
         zoneMap.put(Zone.PLAYER_BOARD, new ImageView[]{p1board_0, p1board_1, p1board_2, p1board_3});
         zoneMap.put(Zone.OPPONENT_BOARD, new ImageView[]{p2board_0, p2board_1, p2board_2, p2board_3});
     }
 
+    /**
+     * Metod för att rendera kort från logik ut i GUI
+     * @param zone Vilken zon kortet ska läggas i
+     * @param index Vilken indexplats kortet ska ut på
+     * @param imagePath Vilken path bilden har som ska renderas
+     * @author Elna, Erik
+     */
     public void renderCard(Zone zone, int index, String imagePath) {
         ImageView[] views = zoneMap.get(zone);
 
@@ -709,31 +656,11 @@ public class GUIManager {
         changeHP(index, hp, zone);
     }
 
-    //Används inte
-    /*public void renderHand(ArrayList<Card> hand) {
-        views = zoneMap.get(Zone.HAND);
-
-        for (int i = 0; i < views.length; i++) {
-            if (i < hand.size()){
-                InputStream stream = getClass().getResourceAsStream(hand.get(i).getImagePath());
-
-                if (stream == null) {
-                    System.out.println("Missing image: " + hand.get(i).getImagePath());
-                    continue;
-                }
-                views[i].setImage(new Image(stream));
-
-                if(hand.size() >= i){
-                    String hp = valueOf(getHPForCard(i, Zone.HAND));
-                    changeHP(i, hp, Zone.HAND);
-                }
-
-            } else {
-                views[i].setImage(null);
-            }
-        }
-    }*/
-
+    /**
+     * byter label i GUI för vilken spelares tur det är att välja kort.
+     * @param id - id för spelare vars tur det är
+     * @author Elna
+     */
     public void switchTurnLabelInPickCard(PlayerID id){
 
         if(id == PlayerID.PLAYER_ONE){
@@ -810,7 +737,7 @@ public class GUIManager {
      * Används av singleplayer-flödet, där vinnaren hämtas från det lokala spelläget.
      *
      * @param name namnet på spelaren som vann
-     * @author Leo
+     * @author Leo, Elna
      */
     public void showGameOver(String name) {
         Scene currentScene = (stage != null) ? stage.getScene() : scene;
@@ -823,20 +750,10 @@ public class GUIManager {
     }
 
     /**
-     * Visar ett felmeddelande för spelaren.
-     *
-     * @param msg felmeddelandets text
-     * @author Leo
-     */
-    public void showError(String msg) {
-        sendMessageThroughGUI(msg);
-    }
-
-    /**
-     * Här hanterar vi valet av kort på motståndaren bräda. Om allt går bra så anropar vi attack metoden. Och uppdaterar gui
+     * Hanterar val av kort på motståndaren bräda. Om allt går bra så anropar vi attack metoden. Och uppdaterar GUI
      *
      * @param event - eventtypen som skickas från guit.
-     * @author Erik
+     * @author Erik, Elna
      */
     public void pickedCardToAttack(MouseEvent event) {
         if(isLocalPlayersTurn()) {
@@ -863,25 +780,10 @@ public class GUIManager {
 
                 int attackerIndex = gameController.getIndexToCardToAttackWith();
 
-                GameState gameState = gameController.getGameState();
-                //Board board = gameState.getBoard();
-
                 cardToAttackWith = attackerIndex;
                 cardToAttack = defenderIndex;
 
                 gameController.attackCard(attackerIndex, defenderIndex);
-
-                // Dessa checks är onödiga och görs istället i GameControllern. Sen anropar gameControllern GUI:et.
-                //if (cardToAttackWith != null && !cardToAttackWith.isDead()) {
-                //    renderCard(Zone.PLAYER_BOARD, attackerIndex, cardToAttackWith.getImagePath());
-                //} else {
-                //    renderCard(Zone.PLAYER_BOARD, attackerIndex, null);
-                //}
-                //if (cardToAttack != null && !cardToAttack.isDead()) {
-                //    renderCard(Zone.OPPONENT_BOARD, defenderIndex, cardToAttack.getImagePath());
-                //} else {
-                //    renderCard(Zone.OPPONENT_BOARD, defenderIndex, null);
-                //}
 
             } else {
 
@@ -901,7 +803,7 @@ public class GUIManager {
      * Så metoden är basiclly bara en mega if-sats om vad det är för typ av klick.
      *
      * @Param event - typen av event som skickas från gui.
-     * @author Erik
+     * @author Erik, Elna, Jim
      */
     public void handleBoardClick(MouseEvent event) {
         if (!isLocalPlayersTurn()) {
@@ -938,18 +840,13 @@ public class GUIManager {
         gameController.setIndexOfCardOnMyBoardToAttackWith(index);
     }
 
-    public int getCardToAttack(){
-        return cardToAttack;
-    }
-
-    public int getCardToAttackWith(){
-        return cardToAttackWith;
-    }
-
-    public void setYourTurn(boolean yourTurn) {
-        isYourTurn = yourTurn;
-    }
-
+    /**
+     * Ändrar HP på kort beroende på dess värde i logik
+     * @param index -vilket index kort ligger på
+     * @param newValue - Nytt värde på HP
+     * @param zone - Vilken zon kortet ligger i
+     * @author Elna
+     */
     public void changeHP(int index, String newValue, Zone zone){
 
         if(gameController.getGameState().getPhase() == GamePhase.DRAFT){
@@ -1050,12 +947,23 @@ public class GUIManager {
 
     }
 
+    /**
+     * Updaterar HP för spelare i gameBoard
+     * @author Elna
+     */
     public void changePlayerHP(){
         playerHP_1.setText(String.valueOf(gameController.getPlayerHP(1)));
         playerHP_2.setText(String.valueOf(gameController.getPlayerHP(2)));
     }
 
 
+    /**
+     * Hämtar HP för kort från Kortobjekt i controller
+     * @param index - vilken index i array för kort som relevant hp ska hämtas från
+     * @param zone - Vilken zon kortet som ska hämtas ligger i
+     * @return returnerar HP i int
+     * @author Elna
+     */
     public int getHPForCard(int index, Zone zone){
 
         if(zone == Zone.HAND){
@@ -1082,6 +990,7 @@ public class GUIManager {
      * Metoden ska kunna kolla om det är den lokala (spelaren som kör programmet på sin dator just nu) spelarens tur,
      * och sedan returnerar den en boolean baserat på om det är deras tur eller inte.
      * @return En boolean som säger ja eller nej när en spelare klickar och frågar om det är deras tur.
+     * @author Jim
      */
     public boolean isLocalPlayersTurn() {
         return gameController.getGameState().getCurrentPlayerId() == localRole;
@@ -1121,13 +1030,16 @@ public class GUIManager {
             if (!remainingCardIds.contains(card.getCardID())) {
                 view.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
                 changeHP(i, " ", null);
-                displayPickedCardDraft(card.getImagePath(), PlayerID.PLAYER_TWO);
             }
-
 
         }
     }
 
+    /**
+     * Lägger till imageviews till scen i pickCardScreen
+     * @param scene scene dessa ska läggas till i
+     * @author Erik
+     */
     public void addPickCardViews(Scene scene){
         pickCardViews.add((ImageView) scene.lookup("#card_0"));
         pickCardViews.add((ImageView) scene.lookup("#card_1"));
@@ -1143,16 +1055,20 @@ public class GUIManager {
         pickCardViews.add((ImageView) scene.lookup("#card_11"));
     }
 
+    /**
+     * Visar vilken runda det är i GUI
+     * @author Jim
+     */
     public void displayTurnRound(){
         if (turnNumber == null) return;
         turnNumber.setText(String.valueOf(gameController.getGameState().getTurnNumber()));
-        //här kan man också skriva ut hur många kort som är tillåtna att placera var runda.
     }
 
-    //behöver en hostgame knapp, här skapar vi då servern
-
-    //samt en joingame knapp och metod där vi här connecttoserver genom gamecontroller metoden jag skapat där
-
+    /**
+     * Setter för stage
+     * @param stage
+     * @author Erik
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -1206,7 +1122,7 @@ public class GUIManager {
      * Kräver att det är spelarens tur och att ett attackerande kort redan valts.
      *
      * @param event MouseEvent från klick på ikonen
-     * @author Leo
+     * @author Leo, Elna
      */
     public void playerPressed(MouseEvent event) {
         String id = event.getPickResult().getIntersectedNode().getId();
@@ -1222,32 +1138,40 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Återställer spelare om han tryckts på under en turn
+     * @author Elna
+     */
     public void resetPlayerIcons(){
         enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2.png").toExternalForm()));
 
     }
 
+    /**
+     * Anropas när kort mus rör sig över kort
+     * @param event
+     * @author Erik, Daniel
+     */
     public void onMouseMoveOnCardArea(MouseEvent event) {
 
         ImageView card = (ImageView) event.getSource();
-        
-        // Förstorar kortet med 15% och flyttar det överst
+
         card.setScaleX(1.15); 
         card.setScaleY(1.15);
         card.toFront();
         bringHPLabelsToFront();
 
-        Label hpLabel = getHpLabelForCard(card.getId()); // Ser till att HP siffror inte hamnar bakom kortet
+        Label hpLabel = getHpLabelForCard(card.getId());
              if (hpLabel != null) {
                 hpLabel.setScaleX(1.4); 
                 hpLabel.setScaleY(1.4);
 
-                // Räknar ut var mitten av kortet är
+
                 double centerX = card.getLayoutX() + (card.getFitWidth() / 2);
                 double centerY = card.getLayoutY() + (card.getFitHeight() / 2);
 
 
-                // "Knuffar" HP siffran utåt från mitten så den följer med kortets kanter
+
                 hpLabel.setTranslateX((hpLabel.getLayoutX() - centerX) * 0.15);
                 hpLabel.setTranslateY((hpLabel.getLayoutY() - centerY) * 0.15);
         }
@@ -1353,12 +1277,12 @@ public class GUIManager {
             card.setStyle("-fx-effect: dropshadow(gaussian, red, 10, 0.7, 0, 0);");
         }
     }
+
     public void onMouseExitCardArea(MouseEvent event){
 
         ImageView card = (ImageView) event.getSource();
 
 
-        // Återställer kortet till normal storlek
         card.setScaleX(1.0); 
         card.setScaleY(1.0);
         card.setScaleZ(1.0);
@@ -1371,8 +1295,6 @@ public class GUIManager {
                 hpLabel.setTranslateX(0);
                 hpLabel.setTranslateY(0);
             } 
-        
-
 
         card.setStyle("-fx-effect: dropshadow(gaussian, transparent, 0, 0.0, 0, 0);");
     }

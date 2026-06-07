@@ -857,7 +857,7 @@ public class GameController implements GameStateListener {
      */
     @Override
     public void onError(String msg)         {
-        Platform.runLater(() -> guiManager.showError(msg));
+        Platform.runLater(() -> guiManager.sendMessageThroughGUI(msg));
     }
 
     /**
@@ -1086,8 +1086,7 @@ public class GameController implements GameStateListener {
     }
 
     public int getHPforCardBoard(int index, int whatPlayer){
-        // whatPlayer 1 = "min" sida, 2 = "motståndarens" sida
-        // Mappa via localPlayerRole istället för hårdkodat PLAYER_ONE/TWO så att HP speglas och inte kodat för position
+        
         PlayerID myRole = (localPlayerRole != null) ? localPlayerRole : PlayerID.PLAYER_ONE;
         PlayerID opponentRole = (myRole == PlayerID.PLAYER_ONE) ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
 
@@ -1111,8 +1110,6 @@ public class GameController implements GameStateListener {
      * @author Elna N.
      */
     public int getPlayerHP(int player){
-        // player 1 = "min" HP, player 2 = "motståndarens" HP
-        // Mappa via localPlayerRole istället för hårdkodat PLAYER_ONE/TWO så det funkar för multiplayer
         PlayerID myRole = (localPlayerRole != null) ? localPlayerRole : PlayerID.PLAYER_ONE;
         PlayerID opponentRole = (myRole == PlayerID.PLAYER_ONE) ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
 

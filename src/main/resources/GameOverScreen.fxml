@@ -18,7 +18,7 @@
             <Font name="Courier New" size="70.0" />
          </font>
       </Label>
-      <ImageView fitHeight="73.0" fitWidth="138.0" layoutX="586.0" layoutY="300.0" onMouseClicked="#switchToMainMenuScreen" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="73.0" fitWidth="138.0" layoutX="586.0" layoutY="300.0" onMouseClicked="#switchToStartScreen" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Back.png" />
          </image>
