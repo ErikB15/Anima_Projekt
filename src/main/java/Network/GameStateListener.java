@@ -10,9 +10,9 @@ package Network;
  * skärmen ser ut, den anropar bara dessa metoder när något händer.
  * GameController tar emot anropet och vidarebefordrar till GUIManager.
  *
- * Viktigt här är att alla metoder anropas från en bakgrundstråd (nätverkstråden).
- * GameController använder Platform.runLater() för att säkert uppdatera
- * JavaFX tråden från dessa metoder från vad jag fattade.
+ * Alla metoder anropas från en bakgrundstråd (nätverkstråden).
+ * GameController använder därför Platform.runLater() för att säkert
+ * uppdatera JavaFX-tråden när dessa metoder anropas.
  *
  * @author Leo
  */
@@ -21,13 +21,13 @@ public interface GameStateListener {
      * Anropas när spelaren anslutit men väntar på motståndaren.
      * @author Leo
      */
-    void onWaiting(); //visa "väntar på motståndare"
+    void onWaiting();
 
     /**
      * Anropas när det är spelarens tur att agera.
      * @author Leo
      */
-    void onYourTurn(); //aktiverA spelarens knappar, så de kan trycka
+    void onYourTurn();
 
     /**
      * Anropas när servern skickar ett uppdaterat spelläge.
@@ -37,7 +37,7 @@ public interface GameStateListener {
      * @param json spelläget serialiserat som JSON
      * @author Leo
      */
-    void onGameStateUpdate(String json); //ta emot spelläge som JSON
+    void onGameStateUpdate(String json);
 
     /**
      * Anropas när spelet är slut.
@@ -45,7 +45,7 @@ public interface GameStateListener {
      * @param winnerName namnet på spelaren som vann
      * @author Leo
      */
-    void onGameOver(String winnerName); //visa vinnare
+    void onGameOver(String winnerName);
 
     /**
      * Anropas när ett felmeddelande tas emot från servern.
@@ -53,7 +53,7 @@ public interface GameStateListener {
      * @param message beskrivning av felet
      * @author Leo
      */
-    void onError(String message); //visa felmeddelande
+    void onError(String message);
 
     /**
      * Anropas när ett chattmeddelande tas emot.
@@ -61,7 +61,7 @@ public interface GameStateListener {
      * @param message chattmeddelandets text
      * @author Leo
      */
-    void onChat(String message); //detta är om vi implemnetrar en chat, då visa chatmeddelande
+    void onChat(String message);
 
     /**
      * Anropas när spelet startar och servern tilldelar spelaren en roll.
@@ -70,14 +70,11 @@ public interface GameStateListener {
      * @param role spelarens tilldelade roll som sträng
      * @author Leo
      */
-    void onGameStart(String role); // ta emot vilken roll man har (PLAYER_ONE eller PLAYER_TWO)
+    void onGameStart(String role);
 
     /**
      * Anropas när det är spelarens tur att välja ett kort i draft-fasen.
      * @author Leo
      */
-    void onDraftTurn(); // det är din tur att välja kort
+    void onDraftTurn();
 }
-
-
-//spellägget skicka som en rå JSON fil så vi får se hur vi löser det med GUI tolka när vi vet vad den ska rita och hur

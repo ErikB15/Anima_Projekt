@@ -49,8 +49,8 @@ public class GameClient {
         this.displayName = displayName;
         socket = new Socket(serverHost, serverPort);
         out = new PrintWriter(socket.getOutputStream(), true);
-        new Thread(this::listenToServer).start(); //En bakgrundtråd som lyssnar på servern
-        send(new GameMessage(GameMessage.Type.JOIN, displayName, steamId)); //presentera sig för server, vi skickar att vi sa join game med steamid
+        new Thread(this::listenToServer).start();
+        send(new GameMessage(GameMessage.Type.JOIN, displayName, steamId));
     }
 
     /**
@@ -96,14 +96,13 @@ public class GameClient {
         }
     }
 
-    //metoder nedan är handlingar en spelare kan
-
     /**
      * Skickar ett meddelande om att spelaren vill spela ett kort.
-     * Payload är "kortId,brädindex" så att servern vet vilket kort och var det ska placeras.
+     * Payload har formatet "kortId,brädindex" så att servern vet
+     * vilket kort som spelas och var det ska placeras.
      *
-     * @param cardId     id (int) på kortet som spelas
-     * @param boardIndex platsen på brädet där kortet placeras (0–3)
+     * @param cardId     id på kortet som spelas
+     * @param boardIndex platsen på brädet där kortet placeras (0 till 3)
      * @author Leo
      */
     public void playCard(int cardId, int boardIndex) {
@@ -111,13 +110,13 @@ public class GameClient {
         send(new GameMessage(GameMessage.Type.PLAY_CARD, payload, steamId));
     }
 
-
     /**
      * Skickar ett meddelande om att spelaren vill attackera ett av motståndarens kort.
-     * Payload är "attackerIndex,defenderIndex" så att servern vet vilka kort som strider.
+     * Payload har formatet "attackerIndex,defenderIndex" så att servern
+     * vet vilka kort som strider mot varandra.
      *
-     * @param attackerIndex platsen på vårt bräde där attackerande kortet står (0–3)
-     * @param defenderIndex platsen på motståndarens bräde där försvarande kortet står (0–3)
+     * @param attackerIndex platsen på vårt bräde där det attackerande kortet står (0 till 3)
+     * @param defenderIndex platsen på motståndarens bräde där försvararen står (0 till 3)
      * @author Leo
      */
     public void attackCard(int attackerIndex, int defenderIndex) {
@@ -127,14 +126,15 @@ public class GameClient {
 
     /**
      * Skickar ett meddelande om att spelaren vill attackera motståndaren direkt.
-     * Payload är bara attackerIndex eftersom målet alltid är motståndarens HP.
+     * Payload innehåller bara attackerIndex eftersom målet alltid är motståndarens HP.
      *
-     * @param attackerIndex platsen på vårt bräde där attackerande kortet står (0–3)
+     * @param attackerIndex platsen på vårt bräde där det attackerande kortet står (0 till 3)
      * @author Leo
      */
     public void attackPlayer(int attackerIndex) {
         send(new GameMessage(GameMessage.Type.ATTACK_PLAYER, String.valueOf(attackerIndex), steamId));
     }
+
     /**
      * Skickar ett meddelande om att spelaren avslutar sin tur.
      *

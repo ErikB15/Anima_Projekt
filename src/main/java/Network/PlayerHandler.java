@@ -72,32 +72,25 @@ public class PlayerHandler implements Runnable {
 
         switch (msg.getType()) {
             case JOIN -> {
-                // Registrera spelaren med deras namn och nätverksström
                 this.steamId = msg.getSteamId();
                 server.registerPlayer(steamId, out);
             }
             case DRAFT_PICK -> {
-                // Spelare väljer ett kort i draft-fasen
                 server.handleDraftPick(steamId, msg.getPayload());
             }
             case PLAY_CARD -> {
-                // Delegera till servern som hanterar spellogik och broadcast
                 server.handlePlayCard(steamId, msg.getPayload());
             }
             case ATTACK_CARD -> {
-                // Spelare attackerar motståndarens kort
                 server.handleAttackCard(steamId, msg.getPayload());
             }
             case ATTACK_PLAYER -> {
-                // Spelare attackerar motståndaren direkt
                 server.handleAttackPlayer(steamId, msg.getPayload());
             }
             case END_TURN -> {
-                // Delegera till servern som byter tur och notifierar spelarna
                 server.handleEndTurn(steamId);
             }
             case CHAT -> {
-                // Skicka chattmeddelandet till alla spelare
                 server.broadcast(new GameMessage(GameMessage.Type.CHAT, msg.getPayload(), steamId));
             }
         }

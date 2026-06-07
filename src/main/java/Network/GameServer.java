@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-import java.util.stream.*;
 
 /**
  * Spelservern som körs på hostens dator.
@@ -73,24 +72,19 @@ public class GameServer {
             Player p1 = new Player(p1Name);
             Player p2 = new Player(name);
 
-            // Skapa spelläget med en gemensam kortpool (draft fas)
             gameState = new GameState(p1, p2, new Board());
             gameState.setDraftPool(createAllCards());
             gameState.setPhase(GamePhase.DRAFT);
 
-            // Slumpa vem som väljer kort först i draften
             PlayerID firstDrafter = Math.random() < 0.5 ? PlayerID.PLAYER_ONE : PlayerID.PLAYER_TWO;
             gameState.setFirstDraftPlayer(firstDrafter);
             gameState.setCurrentDraftPlayer(firstDrafter);
 
-            // Berätta för varje spelare vilken roll de har
             sendToPlayer(p1Name, new GameMessage(GameMessage.Type.GAME_START, "PLAYER_ONE", ""));
             sendToPlayer(name,   new GameMessage(GameMessage.Type.GAME_START, "PLAYER_TWO", ""));
 
-            // Broadcast spelläget (med draft-pool) så båda ser korten
             broadcast(new GameMessage(GameMessage.Type.GAME_STATE, gson.toJson(gameState), ""));
 
-            // Säg vem som väljer kort först
             String firstDrafterName = getPlayerNameByRole(firstDrafter);
             sendToPlayer(firstDrafterName, new GameMessage(GameMessage.Type.DRAFT_TURN, "", ""));
         }
@@ -115,17 +109,14 @@ public class GameServer {
         PlayerID playerRole = playerRoles.get(playerName);
         if (playerRole == null) return;
 
-        // Kolla att det är rätt spelares tur att välja
         if (gameState.getCurrentDraftPlayerId() != playerRole) return;
 
-        // Hitta kortet i draft-poolen
         Card chosen = null;
         for (Card c : gameState.getDraftPool()) {
             if (c.getCardID() == cardId) { chosen = c; break; }
         }
         if (chosen == null) return;
 
-        // Lägg kortet i spelarens kortlek och ta bort ur poolen
         Player picker = (playerRole == PlayerID.PLAYER_ONE)
                 ? gameState.getPlayerOne()
                 : gameState.getPlayerTwo();
@@ -133,11 +124,9 @@ public class GameServer {
         gameState.getDraftPool().remove(chosen);
 
         if (gameState.getDraftPool().isEmpty()) {
-            // Draft klar, dela ut kort och starta spelfasen
             gameState.getPlayerOne().drawUntilHandIsFull();
             gameState.getPlayerTwo().drawUntilHandIsFull();
 
-            // Den som INTE startade draften börjar spelfasen
             PlayerID firstPlayPlayer = (gameState.getFirstDraftPlayer() == PlayerID.PLAYER_ONE)
                     ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
             gameState.setCurrentPlayer(firstPlayPlayer);
@@ -149,8 +138,6 @@ public class GameServer {
                     new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
 
         } else {
-            // switchPlayer i GameState är buggad efter merge, ändrar currentPlayer istället för currentDraftPlayer
-            // Vi sätter draft, spelaren direkt här istället.
             PlayerID nextDrafter = (gameState.getCurrentDraftPlayerId() == PlayerID.PLAYER_ONE)
                     ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
             gameState.setCurrentDraftPlayer(nextDrafter);
@@ -162,10 +149,12 @@ public class GameServer {
 
     /**
      * Hanterar när en spelare spelar ett kort under spelfasen.
-     * Payload: "kortId,brädindex"
+     * Payload har formatet "kortId,brädindex".
+     * Kortet placeras på brädet, tas bort ur handen och kostnaden dras
+     * från spelarens HP. Det uppdaterade spelläget broadcastas sedan.
      *
      * @param playerName spelarens namn
-     * @param payload    "kortId,brädindex"
+     * @param payload    kortets id och platsen på brädet
      * @author Leo
      */
     public synchronized void handlePlayCard(String playerName, String payload) {
@@ -189,7 +178,6 @@ public class GameServer {
                 ? gameState.getPlayerOne()
                 : gameState.getPlayerTwo();
 
-        // Hitta kortet i handen
         Card cardToPlay = null;
         int handIndex = -1;
         for (int i = 0; i < player.getHand().size(); i++) {
@@ -221,16 +209,15 @@ public class GameServer {
         broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
     }
 
-
     /**
      * Hanterar när en spelare attackerar ett av motståndarens kort.
-     * Payload: "attackerIndex,defenderIndex"
+     * Payload har formatet "attackerIndex,defenderIndex".
      *
-     * Kör samma logik som GameController.attackCard() men på serverns gameState:
-     * båda korten tar skada, döda kort skickas till graveyard, GAME_STATE broadcastas.
+     * Båda korten tar skada av varandra, döda kort skickas till graveyard
+     * och det uppdaterade spelläget broadcastas till båda spelarna.
      *
      * @param playerName spelarens namn
-     * @param payload    "attackerIndex,defenderIndex"
+     * @param payload    indexen på det attackerande och försvarande kortet
      * @author Leo
      */
     public synchronized void handleAttackCard(String playerName, String payload) {
@@ -247,7 +234,6 @@ public class GameServer {
 
         PlayerID attackerRole = playerRoles.get(playerName);
         if (attackerRole == null) return;
-        // Kolla att det faktiskt är denna spelares tur
         if (gameState.getCurrentPlayerId() != attackerRole) return;
 
         PlayerID defenderRole = (attackerRole == PlayerID.PLAYER_ONE)
@@ -267,12 +253,10 @@ public class GameServer {
         if (attacker.getAsleep()) return;
         if (attacker.getHasAttackedThisTurn()) return;
 
-        // Båda korten tar skada
         defender.takeDamage(attacker.getCardAD());
         attacker.takeDamage(defender.getCardAD());
         attacker.setHasAttackedThisTurn(true);
 
-        // Döda kort hamnar i graveyard
         Player defenderPlayer = (defenderRole == PlayerID.PLAYER_ONE)
                 ? gameState.getPlayerOne() : gameState.getPlayerTwo();
         Player attackerPlayer = (attackerRole == PlayerID.PLAYER_ONE)
@@ -303,12 +287,11 @@ public class GameServer {
 
     /**
      * Hanterar när en spelare attackerar motståndaren direkt.
-     * Payload: "attackerIndex"
-     *
-     * Motståndarens HP tar skada. Om HP når 0 slutar spelet.
+     * Payload innehåller indexet på det attackerande kortet.
+     * Motståndarens HP minskar och om det når noll är spelet slut.
      *
      * @param playerName spelarens namn
-     * @param payload    "attackerIndex"
+     * @param payload    indexet på det attackerande kortet
      * @author Leo
      */
     public synchronized void handleAttackPlayer(String playerName, String payload) {
@@ -374,39 +357,43 @@ public class GameServer {
         broadcast(new GameMessage(GameMessage.Type.CHAT, "___________________________", ""));
         sendToPlayer(gameState.getCurrentPlayer().getName(),
                 new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
-        sendToPlayer(gameState.getCurrentPlayer().getName(),
-                new GameMessage(GameMessage.Type.YOUR_TURN, "", ""));
     }
 
     /**
-     /**
      * Skapar listan med alla 12 kort som ingår i draft poolen.
-     * MÅSTE matcha GameController.addAllCards() exakt, annars får klienterna
-     * fel kortvärden från servern jämfört med vad GUI är förberedd att rendera.
+     * Listan måste matcha GameController.addAllCards() exakt, annars får
+     * klienterna fel kortvärden från servern jämfört med vad GUI ska rendera.
      *
-     * Effect fältet sätts till null på serversidan eftersom servern inte
-     * kör effekter (de hanteras på klientsidan om alls).
+     * Effektfältet sätts till null på serversidan eftersom servern inte
+     * kör korteffekter, de hanteras på klientsidan.
      *
-     * @return en ny ArrayList med 12 kort i id ordning 1-12
+     * @return en ny ArrayList med 12 kort i id-ordning 1 till 12
      * @author Leo
      */
     private ArrayList<Card> createAllCards() {
         ArrayList<Card> cards = new ArrayList<>();
         cards.add(new Card("Kenneth",   10, 15, 1,  null, "/CardPictures/Card1.png"));
         cards.add(new Card("KnifeGuy",  13, 12, 2,  null, "/CardPictures/Card2.png"));
-        cards.add(new Card("Harrold",   1,  30, 3,  null, "/CardPictures/Card3.png"));
+        cards.add(new Card("Harrold",   1,  37, 3,  null, "/CardPictures/Card3.png"));
         cards.add(new Card("George",    5,  20, 4,  null, "/CardPictures/Card4.png"));
-        cards.add(new Card("Monkey",    30, 5,  5,  null, "/CardPictures/Card5.png"));
-        cards.add(new Card("Wizard",    30, 5,  6,  null, "/CardPictures/Card6.png"));
-        cards.add(new Card("blockHead", 1,  35, 7,  null, "/CardPictures/Card7.png"));
+        cards.add(new Card("Monkey",    30, 3,  5,  null, "/CardPictures/Card5.png"));
+        cards.add(new Card("Wizard",    30, 4,  6,  null, "/CardPictures/Card6.png"));
+        cards.add(new Card("blockHead", 1,  38, 7,  null, "/CardPictures/Card7.png"));
         cards.add(new Card("Twins",     10, 17, 8,  null, "/CardPictures/Card8.png"));
         cards.add(new Card("ChillGuy",  5,  22, 9,  null, "/CardPictures/Card9.png"));
-        cards.add(new Card("Bob",       15, 8,  10, null, "/CardPictures/Card10.png"));
-        cards.add(new Card("Kick",      13, 13, 11, null, "/CardPictures/Card11.png"));
-        cards.add(new Card("Pernilla",  2,  28, 12, null, "/CardPictures/Card12.png"));
+        cards.add(new Card("Bob",       15, 9,  10, null, "/CardPictures/Card10.png"));
+        cards.add(new Card("Kick",      13, 14, 11, null, "/CardPictures/Card11.png"));
+        cards.add(new Card("Pernilla",  2,  31, 12, null, "/CardPictures/Card12.png"));
         return cards;
     }
 
+    /**
+     * Hämtar spelarnamnet som hör till en given roll.
+     *
+     * @param role rollen att söka efter (PLAYER_ONE eller PLAYER_TWO)
+     * @return namnet på spelaren med den rollen, eller tom sträng om ingen hittas
+     * @author Leo
+     */
     private String getPlayerNameByRole(PlayerID role) {
         return playerRoles.entrySet().stream()
                 .filter(e -> e.getValue() == role)
@@ -414,16 +401,35 @@ public class GameServer {
                 .findFirst().orElse("");
     }
 
+    /**
+     * Skickar ett meddelande till alla anslutna spelare.
+     *
+     * @param msg meddelandet som ska skickas
+     * @author Leo
+     */
     public void broadcast(GameMessage msg) {
         String json = gson.toJson(msg);
         players.values().forEach(out -> out.println(json));
     }
 
+    /**
+     * Skickar ett meddelande till en enskild spelare.
+     *
+     * @param playerName namnet på spelaren som ska ta emot meddelandet
+     * @param msg        meddelandet som ska skickas
+     * @author Leo
+     */
     public void sendToPlayer(String playerName, GameMessage msg) {
         PrintWriter out = players.get(playerName);
         if (out != null) out.println(gson.toJson(msg));
     }
 
+    /**
+     * Hämtar uppslagstabellen med alla anslutna spelare och deras strömmar.
+     *
+     * @return en map där nyckeln är spelarnamnet och värdet är spelarens utström
+     * @author Leo
+     */
     public Map<String, PrintWriter> getPlayers() {
         return players;
     }

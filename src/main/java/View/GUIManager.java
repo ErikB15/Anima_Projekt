@@ -37,8 +37,8 @@ public class GUIManager {
 
     //denna ska vara en check för vems tur det är. när det är den egna spelarens tur är denna true.
     private boolean isYourTurn = true;
-    private PlayerID localRole = PlayerID.PLAYER_ONE; // vilken sida av brädet är "min"
-    private boolean isDraftTurn = false; //är det min tur att välja kort
+    private PlayerID localRole = PlayerID.PLAYER_ONE;
+    private boolean isDraftTurn = false;
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -168,13 +168,12 @@ public class GUIManager {
         }
     }
     /**
-     * Byter scen till anslutningsskärmen.
-     * Laddar FXML och kopplar GameController till den nya GUI-instansen.
+     * Byter tillbaka till startskärmen (huvudmenyn).
+     * Används av tillbaka-knappen på anslutningsskärmen.
      *
-     * @Param: event - MouseEvent från knapptryck i gui
-     * @author: Erik, Elna
+     * @param event MouseEvent från knapptryck i gui
+     * @author Leo
      */
-
     @FXML
     public void switchToMainMenuScreen(MouseEvent event) {
         switchToStartScreen(event);
@@ -516,30 +515,22 @@ public class GUIManager {
         String[] splitID = ID.split("_");
         int IDInt = Integer.parseInt(splitID[1]);
 
-        // MULTIPLAYER GREN
         if (gameController.isMultiplayer()) {
-            System.out.println("(GUI) pickedCard klick. isDraftTurn=" + isDraftTurn + ", localRole=" + localRole);
-            // Kolla om det är spelarens tur att välja (sätts av onDraftTurn till enableDraftPicking)
             if (!isDraftTurn) {
                 sendMessageThroughGUI("Vänta på din tur att välja kort!");
                 return;
             }
             if (card == null) return;
 
-            // Förhindra dubbelklick innan servern svarar
             isDraftTurn = false;
 
-            // Visa baksidan lokalt direkt (snabb feedback)
             clickedCard.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
             changeHP(IDInt, " ", null);
             displayPickedCardDraft(card.getImagePath(), gameController.getCurrentPlayerId());
 
-            // Skicka valet till servern. Servern lägger kortet i din deck och broadcastar GAME_STATE.
             gameController.sendDraftPick(card.getCardID());
-
-            return; // VIKTIGT här, kör INTE singleplayer logiken nedanför
+            return;
         }
-        // SLUT MULTIPLAYER GREN
 
         if (!isLocalPlayersTurn()){return;}
 
@@ -755,19 +746,28 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Anropas när spelaren anslutit och väntar på att en motståndare ska ansluta.
+     *
+     * @author Leo
+     */
     public void showWaiting() {
-        System.out.println("Väntar...");
-        // Ska visa text som säger att man väntar, t.ex eventloggen eller en ny label
+        System.out.println("Väntar på motståndare...");
     }
 
+    /**
+     * Aktiverar spelarens möjlighet att agera när det blivit deras tur.
+     *
+     * @author Leo
+     */
     public void enableCardButtons() {
         isYourTurn = true;
     }
 
     /**
-     * Ritar om spelarens hand med givna bildvägar
-     * Listan kan ha 0-3 element. Tomma platser rensar bilden där.
-     * HP läses från lokal model (synkad från server via Controller).
+     * Ritar om spelarens hand med givna bildvägar.
+     * Listan kan ha upp till 3 element. Tomma platser rensar bilden där.
+     * HP läses från den lokala modellen som synkats från servern via Controller.
      *
      * @param imagePaths bildvägar för korten i handen
      * @author Leo
@@ -807,30 +807,31 @@ public class GUIManager {
         }
     }
 
-    public void updateBoard(String json) {
-        System.out.println("Spelläge: " + json);
-        // Tar emot hela spelläget från servern och ritar om behöver Gson import
-    }
-
+    /**
+     * Visar vinnaren på spelbrädets befintliga scen.
+     * Används av singleplayer-flödet, där vinnaren hämtas från det lokala spelläget.
+     *
+     * @param name namnet på spelaren som vann
+     * @author Leo
+     */
     public void showGameOver(String name) {
         Scene currentScene = (stage != null) ? stage.getScene() : scene;
         if (currentScene == null) return;
 
         Label label = (Label) currentScene.lookup("#winner");
-        label.setText(name);
-
-        //sendMessageThroughGUI("Vinnare: " + name);
-        // visa vem som vann
+        if (label != null) {
+            label.setText(name);
+        }
     }
 
+    /**
+     * Visar ett felmeddelande för spelaren.
+     *
+     * @param msg felmeddelandets text
+     * @author Leo
+     */
     public void showError(String msg) {
         sendMessageThroughGUI(msg);
-        // visa felmeddelnde
-    }
-
-    public void showChat(String msg) {
-        System.out.println("Chatt: " + msg);
-        //visa chatmeddelande
     }
 
     /**
@@ -1068,9 +1069,14 @@ public class GUIManager {
         }
     }
 
-    //Avgör i updateboard vilken slots som ritas som "min sida"
+    /**
+     * Sätter vilken roll den lokala spelaren har.
+     * Avgör i renderingen vilken sida av brädet som ritas som spelarens egen sida.
+     *
+     * @param role den lokala spelarens roll (PLAYER_ONE eller PLAYER_TWO)
+     * @author Leo
+     */
     public void setLocalRole(PlayerID role) {
-        System.out.println("(GUI) setLocalRole anropad med " + role + " på instance " + this);
         this.localRole = role;
     }
 
@@ -1083,24 +1089,27 @@ public class GUIManager {
         return gameController.getGameState().getCurrentPlayerId() == localRole;
     }
 
-    // Ska anropas när det är din tur att välja kort i draft. Utan denna kan spelaren aldrig klicka på ett kort
+    /**
+     * Aktiverar kortvalet när det är spelarens tur att välja kort i draft-fasen.
+     * Utan detta kan spelaren inte klicka på något kort.
+     *
+     * @author Leo
+     */
     public void enableDraftPicking() {
         isDraftTurn = true;
     }
 
     /**
-     * Uppdaterar PickCardScreen så att kort som inte finns kvar i poolen
-     * visas med baksidan vilket menas, någon har valt dem
+     * Uppdaterar PickCardScreen så att kort som inte längre finns i poolen
+     * visas med baksidan uppåt, vilket betyder att någon redan har valt dem.
      *
-     * Kortens ID hämtas från userData (sätts av bindCardsToView).
-     * Om kortets ID inte finns i remainingCardIds då betyder det någon har valt det.
+     * Kortens id hämtas från userData som sätts av bindCardsToView. Om ett korts
+     * id inte finns i remainingCardIds har det valts och vänds till baksidan.
      *
-     * @param remainingCardIds id för kort som FORTFARANDE finns i poolen
+     * @param remainingCardIds id för de kort som fortfarande finns kvar i poolen
      * @author Leo
      */
     public void updateDraftPool(java.util.HashSet<Integer> remainingCardIds) {
-        // scene fältet är inte satt på den nya GUIManager instansen (kopieras inte via setStage)
-        // Hämta scenen från stage istället därför det blev problem
         Scene currentScene = (stage != null) ? stage.getScene() : scene;
         if (currentScene == null) return;
 
@@ -1112,7 +1121,6 @@ public class GUIManager {
             if (card == null) continue;
 
             if (!remainingCardIds.contains(card.getCardID())) {
-                // Kortet är valt, visa baksidan
                 view.setImage(new Image(getClass().getResource("/CardBACKSIDE.png").toExternalForm()));
                 changeHP(i, " ", null);
                 displayPickedCardDraft(card.getImagePath(), PlayerID.PLAYER_TWO);
@@ -1151,32 +1159,42 @@ public class GUIManager {
         this.stage = stage;
     }
 
+    /**
+     * Ansluter till en redan startad server som spelare 2.
+     * Försöker ansluta först och byter scen till PickCardScreen bara om
+     * anslutningen lyckas, så att en misslyckad anslutning inte lämnar spelaren
+     * på en tom skärm.
+     *
+     * @param event MouseEvent från knapptryck i gui
+     * @author Leo
+     */
     public void joinButtonPressed(MouseEvent event){
-        sendMessageThroughGUI("You Pressed Join!");
         try {
-            gameController.connectToServer("Player2"); // först försök ansluta
-            switchToPickCardScreen(); //byt scen bara om lyckas
+            gameController.connectToServer("Player2");
+            switchToPickCardScreen();
         } catch (Exception e) {
             sendMessageThroughGUI("Kunde inte ansluta till servern: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    /**
+     * Startar en server och ansluter som spelare 1 (host).
+     * Servern startas i en bakgrundstråd så att den inte blockerar gui-tråden.
+     * Scenbytet sker innan anslutningen så att den nya GUIManager-instansen är
+     * aktiv när servermeddelanden börjar komma in.
+     *
+     * @param event MouseEvent från knapptryck i gui
+     * @author Leo
+     */
     public void hostButtonPressed(MouseEvent event){
-        sendMessageThroughGUI("You Pressed Host!");
         try {
-            // 1. Starta GameServer i en bakgrundstråd så den inte blockerar GUI
             Network.GameServer server = new Network.GameServer();
             new Thread(server::start).start();
 
-            // 2. Vänta lite så servern hinner sätta upp socket lyssnaren
             Thread.sleep(300);
 
-            // 3. Byt till PickCardScreen INNAN vi ansluter
-            // (så den nya GUIManager instansen är aktiv när server meddelanden börjar komma)
             switchToPickCardScreen();
-
-            // 4. Anslut som spelare 1, servern svarar med WAITING tills spelare 2 ansluter
             gameController.connectToServer("Player1");
 
         } catch (Exception e) {
@@ -1185,6 +1203,13 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Hanterar klick på motståndarens spelarikon för en direkt attack.
+     * Kräver att det är spelarens tur och att ett attackerande kort redan valts.
+     *
+     * @param event MouseEvent från klick på ikonen
+     * @author Leo
+     */
     public void playerPressed(MouseEvent event) {
         String id = event.getPickResult().getIntersectedNode().getId();
 
@@ -1192,11 +1217,8 @@ public class GUIManager {
             if (id == enemyIcon.getId()) {
                 enemyIcon.setImage(new Image(getClass().getResource("/ProfileMan2UPSET.png").toExternalForm()));
 
-                // Använd Controllerns index istället för lokala cardToAttackWith
                 int attackerIndex = gameController.getIndexToCardToAttackWith();
                 gameController.attackPlayer(attackerIndex);
-
-                // Återställ Controllerns attack state efter attack
                 gameController.resetAttackState();
             }
         }
@@ -1357,13 +1379,26 @@ public class GUIManager {
 
     }
 
+    /**
+     * Uppdaterar texten som visar vems tur det är att välja kort i draft-fasen.
+     *
+     * @param text texten som ska visas, till exempel "Player 1" eller "Player 2"
+     * @author Leo
+     */
     public void updatePickCardTurn(String text) {
         if (pickCardTurn != null) {
             pickCardTurn.setText(text);
         }
     }
 
-
+    /**
+     * Byter till GameOverScreen och visar vinnaren i multiplayer.
+     * Vinnarnamnet kommer från servern som parameter eftersom det lokala
+     * spelläget inte har någon vinnare satt i multiplayer.
+     *
+     * @param winnerName namnet på vinnaren, skickat av servern
+     * @author Leo
+     */
     public void showGameOverMultiplayer(String winnerName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GameOverScreen.fxml"));
