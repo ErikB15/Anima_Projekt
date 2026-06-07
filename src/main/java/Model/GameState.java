@@ -32,6 +32,9 @@ public class GameState {
     private PlayerID currentDraftPlayer;
     private PlayerID firstDraftPlayer;
 
+
+    
+
     /**
      * Poängen här är att det ska skapas ett GameState när spelet startar.
      * Därför är alla värden just nu "standard" värden som spelet har när det börjar.
@@ -58,12 +61,12 @@ public class GameState {
         this.draftPool = new ArrayList<>();
     }
 
-    // Ändrar vem som ska välja kort i "draft" fasen.
+
     public void switchPlayer() {
         currentPlayer = currentPlayer == PlayerID.PLAYER_ONE ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
     }
 
-    // Ska kunna ändra på vilken tur det är.
+
     public void switchTurn() {
         if (currentPlayer == PlayerID.PLAYER_TWO){
             turnNumber++;
@@ -140,8 +143,6 @@ public class GameState {
 
     public Player getWinner() {return winner;}
 
-    public Player getCurrentDraftPlayer() {return currentDraftPlayer == PlayerID.PLAYER_ONE ? playerOne : playerTwo;}
-
     public PlayerID getCurrentDraftPlayerId() {return currentDraftPlayer;}
 
     public PlayerID getFirstDraftPlayer() {return firstDraftPlayer;}
@@ -152,8 +153,6 @@ public class GameState {
 
     public void setTurnNumber(int turnNumber) {this.turnNumber = turnNumber;}
 
-    public void setMaxCardsToPlayPerTurn(int maxCardsToPlayPerTurn) {this.maxCardsToPlayPerTurn = maxCardsToPlayPerTurn;}
-
     public void setCurrentDraftPlayer(PlayerID currentDraftPlayer) {this.currentDraftPlayer = currentDraftPlayer;}
 
     public void setCurrentPlayer(PlayerID currentPlayer) {this.currentPlayer = currentPlayer;}
@@ -162,13 +161,5 @@ public class GameState {
 
     public void setDraftPool(ArrayList<Card> draftPool) {this.draftPool = draftPool;}
 
-    public void setGameOver(boolean gameOver) {this.gameOver = gameOver;}
-
     public void setPhase(GamePhase phase) {this.phase = phase;}
-
-    public void setPlayerOne(Player playerOne) {this.playerOne = playerOne;}
-
-    public void setPlayerTwo(Player playerTwo) {this.playerTwo = playerTwo;}
-
-    public void setWinner(Player winner) {this.winner = winner;}
 }

@@ -238,32 +238,6 @@ public class EnemyAI {
 
         double hpPercentage = ((double) totalDeckHealth / (totalDeckAttack + totalDeckHealth)) * 100;
 
-        if (aggressive){
-            System.out.println("Personality: Aggressive");
-
-            System.out.println("Attack: " + totalDeckAttack);
-            System.out.println("Health: " + totalDeckHealth);
-
-            System.out.printf("AD: %.1f%%%n", adPercentage);
-            System.out.printf("HP: %.1f%%%n", hpPercentage);
-        } else if (defensive) {
-            System.out.println("Personality: Defensive");
-
-            System.out.println("Attack: " + totalDeckAttack);
-            System.out.println("Health: " + totalDeckHealth);
-
-            System.out.printf("AD: %.1f%%%n", adPercentage);
-            System.out.printf("HP: %.1f%%%n", hpPercentage);
-        }else {
-            System.out.println("Personality: Balanced");
-
-            System.out.println("Attack: " + totalDeckAttack);
-            System.out.println("Health: " + totalDeckHealth);
-
-            System.out.printf("AD: %.1f%%%n", adPercentage);
-            System.out.printf("HP: %.1f%%%n", hpPercentage);
-            
-        }
         return bestIndex;
     }
 
