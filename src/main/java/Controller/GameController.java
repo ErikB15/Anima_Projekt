@@ -963,7 +963,7 @@ public class GameController implements GameStateListener {
         Platform.runLater(() -> guiManager.enableDraftPicking());
     }
 
-    //Borde tas bort!
+
     public void set(){
         gameState.setPhase(GamePhase.PLAY);
     }
@@ -971,6 +971,7 @@ public class GameController implements GameStateListener {
     public GameState getGameState(){
         return gameState;
     }
+
     public void resetAttackState() {
         System.out.println("RESET ATTACK STATE CALLED");
 
@@ -985,7 +986,6 @@ public class GameController implements GameStateListener {
 
     public void resetPlacementState() {
 
-        System.out.println("RESET PLACEMENT STATE CALLED");
 
         indexCardOnHandToMove = -1;
         indexSpotToPlaceCard = -1;
@@ -994,10 +994,6 @@ public class GameController implements GameStateListener {
         spotPicked = false;
     }
 
-    public void resetAllSelectionStates() {
-        resetPlacementState();
-        resetAttackState();
-    }
 
     public boolean isCardPicked() {
         return cardPicked;
@@ -1006,13 +1002,6 @@ public class GameController implements GameStateListener {
     public boolean isAttackerPicked() {
         return attackerPicked;
     }
-
-    public boolean isDefenderPicked() {
-        return defenderPicked;
-    }
-
-
-
 
     /**
      * Sätter index för vilket kort i handen som ska flyttas.
@@ -1086,7 +1075,6 @@ public class GameController implements GameStateListener {
     }
 
     public int getHPforCardBoard(int index, int whatPlayer){
-        
         PlayerID myRole = (localPlayerRole != null) ? localPlayerRole : PlayerID.PLAYER_ONE;
         PlayerID opponentRole = (myRole == PlayerID.PLAYER_ONE) ? PlayerID.PLAYER_TWO : PlayerID.PLAYER_ONE;
 
