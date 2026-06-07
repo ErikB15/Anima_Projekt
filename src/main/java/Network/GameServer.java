@@ -372,18 +372,18 @@ public class GameServer {
      */
     private ArrayList<Card> createAllCards() {
         ArrayList<Card> cards = new ArrayList<>();
-        cards.add(new Card("Kenneth",   10, 15, 1,"/CardPictures/Card1.png"));
-        cards.add(new Card("KnifeGuy",  13, 12, 2,"/CardPictures/Card2.png"));
-        cards.add(new Card("Harrold",   1,  30, 3,"/CardPictures/Card3.png"));
-        cards.add(new Card("George",    5,  20, 4,"/CardPictures/Card4.png"));
-        cards.add(new Card("Monkey",    30, 5,  5,"/CardPictures/Card5.png"));
-        cards.add(new Card("Wizard",    30, 5,  6,"/CardPictures/Card6.png"));
-        cards.add(new Card("blockHead", 1,  35, 7,"/CardPictures/Card7.png"));
-        cards.add(new Card("Twins",     10, 17, 8,"/CardPictures/Card8.png"));
-        cards.add(new Card("ChillGuy",  5,  22, 9,"/CardPictures/Card9.png"));
-        cards.add(new Card("Bob",       15, 8,  10,"/CardPictures/Card10.png"));
-        cards.add(new Card("Kick",      13, 13, 11,"/CardPictures/Card11.png"));
-        cards.add(new Card("Pernilla",  2,  28, 12,"/CardPictures/Card12.png"));
+        cards.add(new Card("Kenneth",   10, 15, 1,  "/CardPictures/Card1.png"));
+        cards.add(new Card("KnifeGuy",  13, 12, 2,  "/CardPictures/Card2.png"));
+        cards.add(new Card("Harrold",   1,  37, 3,  "/CardPictures/Card3.png"));
+        cards.add(new Card("George",    5,  20, 4,  "/CardPictures/Card4.png"));
+        cards.add(new Card("Monkey",    30, 3,  5,  "/CardPictures/Card5.png"));
+        cards.add(new Card("Wizard",    30, 4,  6,  "/CardPictures/Card6.png"));
+        cards.add(new Card("blockHead", 1,  38, 7,  "/CardPictures/Card7.png"));
+        cards.add(new Card("Twins",     10, 17, 8,  "/CardPictures/Card8.png"));
+        cards.add(new Card("ChillGuy",  5,  22, 9,  "/CardPictures/Card9.png"));
+        cards.add(new Card("Bob",       15, 9,  10, "/CardPictures/Card10.png"));
+        cards.add(new Card("Kick",      13, 14, 11, "/CardPictures/Card11.png"));
+        cards.add(new Card("Pernilla",  2,  31, 12, "/CardPictures/Card12.png"));
         return cards;
     }
 
