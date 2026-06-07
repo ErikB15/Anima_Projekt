@@ -74,6 +74,12 @@ public class Board {
     }
 
 
+    /**
+     * Används för att ställa om boolean värdet på kortet som säger ifall kortet har attackerat eller inte.
+     * Denna metoden anropas när en spelare har klickat "End Turn" knappen.
+     * @param player - Spelaren vars kort ska ställas om.
+     * @author Jim Ström
+     */
     public void resetAttacksForPlayer(PlayerID player) {
         Card[] slots = getSlotsForPlayer(player);
 

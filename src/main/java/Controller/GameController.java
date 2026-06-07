@@ -49,7 +49,7 @@ public class GameController implements GameStateListener {
      * Initierar listor för alla kort och effekter samt skapar spelare och spelbräde.
      * Anropar addAllCards() för att fylla spelet med alla hårdkodade kort.
      *
-     * @author Erik,Jim Ström, Elna
+     * @author Erik,Jim, Elna
      */
     public GameController(){
         allCards = new Card[12];
@@ -84,6 +84,10 @@ public class GameController implements GameStateListener {
     }
 
 
+    /**
+     * Metoden som används för att starta singleplayer, bytar screen och sätter de nödvändiga värdena.
+     * @author Jim, Erik
+     */
     public void startSingleplayer() {
         playerOne = new Player("Player1");
         playerTwo = new Player("Player2");
@@ -100,15 +104,14 @@ public class GameController implements GameStateListener {
 
     }
 
+    /**
+     * Metoden som anropas för att starta multiplayer.
+     * Det viktigaste här är egentligen att vi sätter singleplayer boolean till false.
+     * @author Jim Ström
+     */
     public void startMultiplayer(){
-        // Här ska servern på något sätt definera vilken spelare som är PLAYER_ONE och vem som är PLAYER_TWO
-
         startDraftPhase();
-        // Metoden under ska anropas här, men går inte för den behöver ett mouse event.
-        // Metoden under kommer i framtiden antagligen bara anropas via controllern, så hade nog-
-        // varit bäst om den inte behövde en mouse event.
         setSinglePLayer(false);
-        //guiManager.switchToConnectScreen();
     }
 
 
@@ -333,6 +336,7 @@ public class GameController implements GameStateListener {
      * @param handIndex - Indexet på kortet i handen vi vill röra.
      * @param boardIndex - Index på brädan där vi vill placera kortet.
      * @return - Returnerar en boolean för ifall att det lyckades eller inte.
+     * @author Jim, Erik, Leo, Elna
      */
     public boolean placeCard(int handIndex, int boardIndex){
 
@@ -434,10 +438,14 @@ public class GameController implements GameStateListener {
     }
 
     /**
-     *
-     * @param attackerIndex
-     * @param defenderIndex
-     * @return
+     * Det är denna metoden som använd när ett kort ska attackera ett annat kort.
+     * Vi får index på båda korten så att vi kan kolla, vi hämtar den "aktiva" spelaren och motståndaren.
+     * Sedan kollas det väldigt många if satser som bestämmer om draget är giltligt.
+     * Efter att korten attackerats och påverkats av varandra så kollar vi om kortet är dött eller inte.
+     * Är det dött skickar vi vidare det.
+     * @param attackerIndex Indexet på kortet som ska attackera.
+     * @param defenderIndex Indexet på kortet som ska attackeras.
+     * @return Ger tillbaka en boolean beroende på om det gick att attackera eller inte.
      * @author Jim,Leo
      */
     public boolean attackCard(int attackerIndex, int defenderIndex) {
@@ -505,9 +513,11 @@ public class GameController implements GameStateListener {
     }
 
     /**
-     *
-     * @param attackCard
-     * @return
+     * Detta är metoden som används för att ett kort ska kunna attackera spelaren.
+     * Återigen flera if satser för att kolla om draget är giltligt. Är draget giltligt går det igenom och skadar spelaren.
+     * Sedan kollar vi om spelaren är död eller inte.
+     * @param attackCard Indexet på kortet som ska attackera.
+     * @return Ger tillbaka en boolean beroende på om attacken gick eller ej.
      * @author Jim,Leo
      */
     public boolean attackPlayer(int attackCard){

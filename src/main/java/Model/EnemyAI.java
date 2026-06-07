@@ -15,6 +15,16 @@ public class EnemyAI {
     private int totalDeckAttack;
     private int totalDeckHealth;
 
+    /**
+     * Ett försök på en AI klass som ska reagera på vad den faktiska spelaren gör och har för kort på fältet.
+     * Finns utrymme för utveckling, men reagerar endå på en del saker!
+     * I början sätts några värden och genom en randomizer bestämmer vi personligheten på datorn.
+     *
+     * @param controller - Controllern som AI:n använder för att göra saker.
+     * @param gameState - gameState som AI:n använder för att få information för att ta beslut.
+     * @author Jim Ström
+     */
+
     public EnemyAI(GameController controller, GameState gameState) {
         this.controller = controller;
         this.gameState = gameState;
@@ -205,9 +215,10 @@ public class EnemyAI {
 
 
     /**
-
-     * @param allCards
-     * @return
+     * Den här metoden har syftet att ge ett visst "score" till korten under draft fasen.
+     * Detta score påverkas av diverse faktorer såsom kortens HP,AD och personligheten av datorn.
+     * @param allCards - Alla korten som finns tillgängliga under draft fasen.
+     * @return Ger tillbaka ett index på det kort som vi helst vill ha.
      * @author Jim Ström
      */
     public int scoreDraftCards(Card[] allCards){
@@ -332,6 +343,13 @@ public class EnemyAI {
     }
 
 
+    /**
+     * Detta är vad som räknar ut poängen för det exakta kortet vi får in.
+     * AD, HP och personlighet är vad som bestämmer poängen för kortet.
+     * @param card Kort objektet som ska evaluears.
+     * @return Poängen kopplad till kortet.
+     * @author Jim Ström
+     */
     private int calculateDraftScore(Card card){
         int attackScore = card.getCardAD();
         int healthScore = card.getCardMaxHP();
@@ -344,6 +362,11 @@ public class EnemyAI {
         return totalScore;
     }
 
+    /**
+     *
+     * @param card
+     * @return
+     */
     private int calculateRatioScore(Card card){
         double attackPoints = card.getCardAD() + totalDeckAttack;
         double healthPoints = card.getCardMaxHP() + totalDeckHealth;

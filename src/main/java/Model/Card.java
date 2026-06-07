@@ -17,7 +17,7 @@ public class Card {
     /**
      * Denna klassen är egentligen typ bara sparande av information.
      * Har lite hantering också men den är inte mycket.
-     * Har gjort en TEMPORÄR  formel som kan komma att ändras, gjort för testning.
+     * Finns även en väldigt simpel formel som bestämmer hur mycket ett kort ska kosta.
      * @param cardName - Namnet på kortet.
      * @param cardAD - Attack förmågan av kortet.
      * @param cardMaxHP - Kortets max HP.
@@ -37,7 +37,6 @@ public class Card {
         this.cardCurrentHP = cardMaxHP;
 
         cardCost = Math.round((cardAD * 2 + cardMaxHP) / 5f);
-        // Temporär formel som lagts till endast för testning.
     }
 
     /**
@@ -56,7 +55,7 @@ public class Card {
     }
 
     /**
-     * Denna kollar bara om kortet är dött eller inte, gjort nu, kanske inte används, för se.
+     * Denna kollar bara om kortet är dött eller inte.
      * @return Returnerar en boolean som säger sant om kortet är dött eller falskt om kortet inte är dött.
      * @author Jim Ström
      */
@@ -66,7 +65,6 @@ public class Card {
     /**
      * Normaltvist försöker jag göra en kommentar på allting.
      * Men om ni skrollar ner lite, tror jag ni förstår varför jag inte gör en kommentar på allting under.
-     * Kommer det in att vi måste göra kommentarer på allt? Då får jag göra det men i nuläget skippar vi detta.
      * Massa getters och setters för alla de olika variablerna som Card klassen innehåller.
      * @author Jim Ström
      */
